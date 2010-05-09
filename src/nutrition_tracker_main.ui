@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NutritionTrackerMainUI</class>
+ <widget class="QMainWindow" name="NutritionTrackerMainUI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Nutrition Tracker (Alpha)</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuImport_Nutrition_Data">
+     <property name="title">
+      <string>Import Nutrition Data</string>
+     </property>
+     <addaction name="actionFrom_SparkPeople"/>
+     <addaction name="actionFrom_NutritionData_com"/>
+    </widget>
+    <addaction name="menuImport_Nutrition_Data"/>
+    <addaction name="actionExport_Nutrition_Data"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuMeal">
+    <property name="title">
+     <string>Track</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionAdd_Food_s_to_Current_Day"/>
+    <addaction name="actionClear_today_s_entries"/>
+   </widget>
+   <widget class="QMenu" name="menuFood">
+    <property name="title">
+     <string>Food</string>
+    </property>
+    <addaction name="actionAdd_new_food"/>
+    <addaction name="actionAdd_new_composite_food"/>
+    <addaction name="actionCreate_template"/>
+    <addaction name="separator"/>
+    <addaction name="actionSearch_foods"/>
+    <addaction name="actionManage_templates"/>
+   </widget>
+   <widget class="QMenu" name="menuReports">
+    <property name="title">
+     <string>Reports</string>
+    </property>
+    <addaction name="actionDaily"/>
+    <addaction name="actionWeekly_Report"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionConstraint_Solver"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout_Nutrition_Tracker"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuMeal"/>
+   <addaction name="menuFood"/>
+   <addaction name="menuReports"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionAdd_new_food">
+   <property name="text">
+    <string>Enter new food...</string>
+   </property>
+  </action>
+  <action name="actionAdd_new_composite_food">
+   <property name="text">
+    <string>Create composite food...</string>
+   </property>
+  </action>
+  <action name="actionCreate_template">
+   <property name="text">
+    <string>Create template...</string>
+   </property>
+  </action>
+  <action name="actionExport_Nutrition_Data">
+   <property name="text">
+    <string>Export Nutrition Data...</string>
+   </property>
+  </action>
+  <action name="actionDaily">
+   <property name="text">
+    <string>Daily Report...</string>
+   </property>
+  </action>
+  <action name="actionWeekly_Report">
+   <property name="text">
+    <string>Weekly Report...</string>
+   </property>
+  </action>
+  <action name="actionClear_today_s_entries">
+   <property name="text">
+    <string>Clear current day's entries</string>
+   </property>
+  </action>
+  <action name="actionSearch_foods">
+   <property name="text">
+    <string>Search foods...</string>
+   </property>
+  </action>
+  <action name="actionConstraint_Solver">
+   <property name="text">
+    <string>Constraint Solver...</string>
+   </property>
+  </action>
+  <action name="actionAbout_Nutrition_Tracker">
+   <property name="text">
+    <string>About Nutrition Tracker...</string>
+   </property>
+  </action>
+  <action name="actionManage_templates">
+   <property name="text">
+    <string>Manage templates...</string>
+   </property>
+  </action>
+  <action name="actionBeakfast">
+   <property name="text">
+    <string>Beakfast...</string>
+   </property>
+  </action>
+  <action name="actionLunch">
+   <property name="text">
+    <string>Lunch...</string>
+   </property>
+  </action>
+  <action name="actionDinner">
+   <property name="text">
+    <string>Dinner...</string>
+   </property>
+  </action>
+  <action name="actionOther">
+   <property name="text">
+    <string>Other...</string>
+   </property>
+  </action>
+  <action name="actionBreakfast">
+   <property name="text">
+    <string>Breakfast...</string>
+   </property>
+  </action>
+  <action name="actionLunch_2">
+   <property name="text">
+    <string>Lunch...</string>
+   </property>
+  </action>
+  <action name="actionDinner_2">
+   <property name="text">
+    <string>Dinner...</string>
+   </property>
+  </action>
+  <action name="actionOther_2">
+   <property name="text">
+    <string>Other...</string>
+   </property>
+  </action>
+  <action name="actionFrom_SparkPeople">
+   <property name="text">
+    <string>From SparkPeople...</string>
+   </property>
+  </action>
+  <action name="actionFrom_NutritionData_com">
+   <property name="text">
+    <string>From NutritionData.com...</string>
+   </property>
+  </action>
+  <action name="actionAdd_Food_s_to_Current_Day">
+   <property name="text">
+    <string>Add Food(s) to Current Day...</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
