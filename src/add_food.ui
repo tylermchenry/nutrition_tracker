@@ -68,6 +68,9 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="dsbAmount">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="minimumSize">
         <size>
          <width>75</width>
@@ -80,7 +83,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="cbUnit"/>
+      <widget class="QComboBox" name="cbUnit">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label_2">
@@ -96,7 +103,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="cbMeal"/>
+      <widget class="QComboBox" name="cbMeal">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer">
@@ -113,6 +124,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="btnAdd">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Add</string>
        </property>
