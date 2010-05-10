@@ -13,12 +13,6 @@ public:
     AddFood(const QSqlDatabase& db, QWidget *parent = 0);
     ~AddFood();
 
-public slots:
-
-  void clearSearchResults();
-  void addSearchResult(int id, const QString& type, const QString& description);
-  void updateAddControls(QListWidgetItem* curSelectedItem);
-
 private:
     Ui::AddFoodClass ui;
 
