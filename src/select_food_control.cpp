@@ -16,7 +16,7 @@ SelectFoodControl::~SelectFoodControl()
 void SelectFoodControl::clearFoodList()
 {
   ui.lstResults->clear();
-  ui.dsbAmount->setEnabled(false);
+  ui.txtAmount->setEnabled(false);
   ui.cbUnit->setEnabled(false);
   ui.cbMeal->setEnabled(false);
   ui.btnAdd->setEnabled(false);
@@ -31,7 +31,7 @@ void SelectFoodControl::updateAddControls(QListWidgetItem* curSelectedItem)
 {
   bool enableControls = (curSelectedItem != NULL);
 
-  ui.dsbAmount->setEnabled(enableControls);
+  ui.txtAmount->setEnabled(enableControls);
   ui.cbUnit->setEnabled(enableControls);
   ui.cbMeal->setEnabled(enableControls);
   ui.btnAdd->setEnabled(enableControls);

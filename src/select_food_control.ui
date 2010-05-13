@@ -41,20 +41,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="dsbAmount">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>75</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
+      <widget class="QLineEdit" name="txtAmount"/>
      </item>
      <item>
       <widget class="QComboBox" name="cbUnit">
