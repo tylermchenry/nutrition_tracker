@@ -1,6 +1,7 @@
 #include "nutrition_tracker_main.h"
 #include "nutrition_tracker.h"
 #include "add_food.h"
+#include "edit_food.h"
 #include "database_information.h"
 
 NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
@@ -11,6 +12,8 @@ NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
 
   connect(ui.actionAdd_Food_s_to_Current_Day, SIGNAL(triggered()),
           this, SLOT(showAddFood()));
+  connect(ui.actionAdd_new_food, SIGNAL(triggered()),
+          this, SLOT(showEditFood()));
 }
 
 NutritionTrackerMain::~NutritionTrackerMain()
@@ -34,3 +37,7 @@ void NutritionTrackerMain::showAddFood()
   (new AddFood(db, this))->exec();
 }
 
+void NutritionTrackerMain::showEditFood()
+{
+  (new EditFood(this))->exec();
+}
