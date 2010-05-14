@@ -9,6 +9,7 @@
 #define UNIT_H_
 
 #include <QString>
+#include <QSharedPointer>
 
 class Unit
 {
@@ -24,7 +25,7 @@ class Unit
       static const Dimension PREFERRED_DIMENSION = Dimensions::Weight;
     };
 
-    static const Unit* getPreferredUnit
+    static QSharedPointer<const Unit> getPreferredUnit
       (Dimensions::Dimension dimension = Dimensions::PREFERRED_DIMENSION);
 
     Unit(const QString& abbrevation = "");
@@ -42,7 +43,7 @@ class Unit
 
     // Conversion factor is what you need to multiply an amount in unit by
     // in order to get the amount in terms of otherUnit.
-    double getConversionFactor(const Unit* otherUnit) const;
+    double getConversionFactor(const QSharedPointer<const Unit>& otherUnit) const;
 
   private:
 
@@ -51,7 +52,7 @@ class Unit
     Dimensions::Dimension dimension;
     double basicConversionFactor;
 
-    static const Unit* getBasicUnit(Dimensions::Dimension dimension);
+    static QSharedPointer<const Unit> getBasicUnit(Dimensions::Dimension dimension);
 
 };
 

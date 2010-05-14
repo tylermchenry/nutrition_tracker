@@ -8,7 +8,7 @@
 #include "unit.h"
 #include <stdexcept>
 
-const Unit* Unit::getPreferredUnit(Dimensions::Dimension dimension)
+QSharedPointer<const Unit> Unit::getPreferredUnit(Dimensions::Dimension dimension)
 {
   return getBasicUnit(dimension);
 }
@@ -22,7 +22,7 @@ Unit::~Unit()
 {
 }
 
-double Unit::getConversionFactor(const Unit* otherUnit) const
+double Unit::getConversionFactor(const QSharedPointer<const Unit>& otherUnit) const
 {
   if (otherUnit == NULL) {
     return 1;
@@ -36,7 +36,7 @@ double Unit::getConversionFactor(const Unit* otherUnit) const
   }
 }
 
-const Unit* Unit::getBasicUnit(Dimensions::Dimension dimension)
+QSharedPointer<const Unit> Unit::getBasicUnit(Dimensions::Dimension dimension)
 {
-  return NULL; // TODO: Implement
+  return QSharedPointer<const Unit>(); // TODO: Implement
 }

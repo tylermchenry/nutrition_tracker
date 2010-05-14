@@ -8,8 +8,9 @@
 #ifndef AMOUNT_H_
 #define AMOUNT_H_
 
-#include "unit.h"
+#include <QSharedPointer>
 #include <stdexcept>
+#include "unit.h"
 
 /*
  * This is an abstract base that must be inherited from using the
@@ -25,11 +26,11 @@ class Amount
 
     virtual ~Amount() {}
 
-    inline const S* getSubstance() const { return substance; }
+    inline QSharedPointer<const S> getSubstance() const { return substance; }
 
-    inline const Unit* getUnit() const { return unit; }
+    inline QSharedPointer<const Unit> getUnit() const { return unit; }
 
-    double getAmount(const Unit* otherUnit = NULL) const;
+    double getAmount(const QSharedPointer<const Unit>& otherUnit = QSharedPointer<const Unit>()) const;
 
     SA operator+ (const SA& rhs) const;
     SA operator- (const SA& rhs) const;
@@ -43,35 +44,38 @@ class Amount
 
   protected:
 
-    Amount(const S* substance = NULL, double amount = 0,
-           const Unit* unit = NULL);
+    Amount(const QSharedPointer<const S>& substance = QSharedPointer<const S>(),
+           double amount = 0,
+           const QSharedPointer<const Unit>& unit = QSharedPointer<const Unit>());
 
     virtual QString getSubstanceName(bool plural = false) const = 0;
 
   private:
 
-    const S* substance;
+    QSharedPointer<const S> substance;
     double amount;
-    const Unit* unit;
+    QSharedPointer<const Unit> unit;
 };
 
 template<typename S, typename SA>
-Amount<S, SA>::Amount(const S* substance, double amount, const Unit* unit)
+Amount<S, SA>::Amount(const QSharedPointer<const S>& substance, double amount,
+                      const QSharedPointer<const Unit>& unit)
   : substance(substance), amount(std::max(amount, 0.0)), unit(unit)
 {
   // Invariant: Either substance and unit are both NULL, or neither is
-  if (unit == NULL) {
-    substance = NULL;
+  if (unit == NULL || substance == NULL) {
+    this->substance = QSharedPointer<const S>();
+    this->unit = QSharedPointer<const Unit>();
   }
 
   // Invariant: If substance is NULL, amount is zero
-  if (substance == NULL) {
-    amount = 0;
+  if (this->substance == NULL) {
+    this->amount = 0;
   }
 }
 
 template<typename S, typename SA>
-double Amount<S,SA>::getAmount(const Unit* otherUnit) const
+double Amount<S,SA>::getAmount(const QSharedPointer<const Unit>& otherUnit) const
 {
   if (substance == NULL) {
     return 0;

@@ -15,11 +15,12 @@ class NutrientAmount : public Amount<Nutrient, NutrientAmount>
 {
   public:
 
-    NutrientAmount(const Nutrient* nutrient = NULL, double amount = 0);
+    NutrientAmount(const QSharedPointer<const Nutrient>& nutrient = QSharedPointer<const Nutrient>(),
+                   double amount = 0);
 
     virtual ~NutrientAmount();
 
-    inline const Nutrient* getNutrient() { return getSubstance(); }
+    inline QSharedPointer<const Nutrient> getNutrient() { return getSubstance(); }
 
   protected:
 

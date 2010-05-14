@@ -1,5 +1,7 @@
 #include "database_information.h"
 #include <QMessageBox>
+#include <QSqlError>
+#include <QDebug>
 
 DatabaseInformation::DatabaseInformation(QWidget *parent)
     : QDialog(parent)
@@ -63,7 +65,7 @@ void DatabaseInformation::makeConnection()
 
   } else {
 
-    ui.lblFailed->setText("Connection failed. Please try again.");
+    ui.lblFailed->setText("Connection failed: " + db.lastError().text());
 
     ui.txtServer->setEnabled(true);
     ui.txtDatabase->setEnabled(true);
@@ -71,5 +73,7 @@ void DatabaseInformation::makeConnection()
     ui.txtPassword->setEnabled(true);
     ui.btnConnect->setEnabled(true);
     ui.btnExit->setEnabled(true);
+
+    db.close();
   }
 }

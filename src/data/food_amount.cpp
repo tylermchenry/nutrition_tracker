@@ -9,8 +9,8 @@
 #include "food.h"
 #include <stdexcept>
 
-FoodAmount::FoodAmount(const Food* food, double amount,
-                       const Unit* unit)
+FoodAmount::FoodAmount(const QSharedPointer<const Food>& food, double amount,
+                       const QSharedPointer<const Unit>& unit)
   : Amount<Food, FoodAmount>(food, amount, unit)
 {
 }

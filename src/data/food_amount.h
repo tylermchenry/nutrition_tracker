@@ -19,12 +19,13 @@ class FoodAmount : public Amount<Food, FoodAmount>
 {
   public:
 
-    explicit FoodAmount(const Food* food = NULL, double amount = 0,
-                        const Unit* unit = NULL);
+    explicit FoodAmount(const QSharedPointer<const Food>& food = QSharedPointer<const Food>(),
+                        double amount = 0,
+                        const QSharedPointer<const Unit>& unit = QSharedPointer<const Unit>());
 
     virtual ~FoodAmount();
 
-    inline const Food* getFood() const { return getSubstance(); }
+    inline QSharedPointer<const Food> getFood() const { return getSubstance(); }
 
     QMap<QString, NutrientAmount> getScaledNutrients() const;
 

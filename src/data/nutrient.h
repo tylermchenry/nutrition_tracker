@@ -9,6 +9,7 @@
 #define NUTRIENT_H_
 
 #include <QString>
+#include <QSharedPointer>
 #include "unit.h"
 
 class Nutrient
@@ -22,7 +23,7 @@ class Nutrient
 
     inline QString getName() const { return name; }
 
-    inline const Unit* getStandardUnit() const { return standardUnit; }
+    inline QSharedPointer<const Unit> getStandardUnit() const { return standardUnit; }
 
     inline double getRDI() const { return rdi; }
 
@@ -30,7 +31,7 @@ class Nutrient
 
     QString id;
     QString name;
-    const Unit* standardUnit;
+    QSharedPointer<const Unit> standardUnit;
     double rdi;
 };
 

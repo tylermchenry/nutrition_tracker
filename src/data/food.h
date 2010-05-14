@@ -11,6 +11,7 @@
 #include <QVector>
 #include <QMap>
 #include <QString>
+#include <QSharedPointer>
 #include "data/food_amount.h"
 #include "data/nutrient_amount.h"
 #include "data/unit.h"
@@ -27,7 +28,7 @@ class Food
 
     inline FoodAmount getBaseAmount() const { return baseAmount; }
 
-    void setBaseAmount(double amount, const Unit* unit);
+    void setBaseAmount(double amount, const QSharedPointer<const Unit>& unit);
 
     virtual QVector<FoodAmount> getComponents() const;
 

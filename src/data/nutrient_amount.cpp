@@ -8,9 +8,9 @@
 #include "nutrient_amount.h"
 #include <stdexcept>
 
-NutrientAmount::NutrientAmount(const Nutrient* nutrient, double amount)
-  : Amount<Nutrient, NutrientAmount>
-      (nutrient, amount, (nutrient == NULL ? NULL : nutrient->getStandardUnit()))
+NutrientAmount::NutrientAmount(const QSharedPointer<const Nutrient>& nutrient, double amount)
+  : Amount<Nutrient, NutrientAmount>(nutrient, amount,
+      (nutrient == NULL ? QSharedPointer<const Unit>() : nutrient->getStandardUnit()))
 {
 }
 
