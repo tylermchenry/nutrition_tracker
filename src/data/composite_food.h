@@ -1,22 +1,22 @@
 /*
- * compound_food.h
+ * composite_food.h
  *
  *  Created on: May 14, 2010
  *      Author: tmchenry
  */
 
-#ifndef COMPOUND_FOOD_H_
-#define COMPOUND_FOOD_H_
+#ifndef COMPOSITE_FOOD_H_
+#define COMPOSITE_FOOD_H_
 
 #include "food.h"
 
-class CompoundFood: public Food
+class CompositeFood: public Food
 {
   public:
 
-    explicit CompoundFood(int id = 0);
+    explicit CompositeFood(int id = 0);
 
-    virtual ~CompoundFood();
+    virtual ~CompositeFood();
 
     virtual QVector<FoodAmount> getComponents() const;
 

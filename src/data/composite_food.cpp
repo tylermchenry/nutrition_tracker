@@ -1,30 +1,30 @@
 /*
- * compound_food.cpp
+ * composite_food.cpp
  *
  *  Created on: May 14, 2010
  *      Author: tmchenry
  */
 
-#include "compound_food.h"
+#include "composite_food.h"
 
-CompoundFood::CompoundFood(int id)
+CompositeFood::CompositeFood(int id)
   : Food("COMPOUND_" + QString::number(id)), id(id)
 {
   // TODO Auto-generated constructor stub
 
 }
 
-CompoundFood::~CompoundFood()
+CompositeFood::~CompositeFood()
 {
   // TODO Auto-generated destructor stub
 }
 
-QVector<FoodAmount> CompoundFood::getComponents() const
+QVector<FoodAmount> CompositeFood::getComponents() const
 {
   return components;
 }
 
-QMap<QString, NutrientAmount> CompoundFood::getNutrients() const
+QMap<QString, NutrientAmount> CompositeFood::getNutrients() const
 {
   // TODO: Intelligently cache instead of recomputing each time
 
@@ -39,7 +39,7 @@ QMap<QString, NutrientAmount> CompoundFood::getNutrients() const
   return nutrients;
 }
 
-QMap<QString, NutrientAmount>& CompoundFood::mergeNutrients
+QMap<QString, NutrientAmount>& CompositeFood::mergeNutrients
   (QMap<QString, NutrientAmount>& nutrients,
    const QMap<QString, NutrientAmount>& newNutrients)
 {
