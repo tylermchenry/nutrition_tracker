@@ -30,7 +30,11 @@ class Amount
 
     inline QSharedPointer<const Unit> getUnit() const { return unit; }
 
-    double getAmount(const QSharedPointer<const Unit>& otherUnit = QSharedPointer<const Unit>()) const;
+    double getAmount
+      (const QSharedPointer<const Unit>& otherUnit = QSharedPointer<const Unit>()) const;
+
+    void setAmount
+      (double amount, const QSharedPointer<const Unit>& unit = QSharedPointer<const Unit>());
 
     SA operator+ (const SA& rhs) const;
     SA operator- (const SA& rhs) const;
@@ -83,6 +87,20 @@ double Amount<S,SA>::getAmount(const QSharedPointer<const Unit>& otherUnit) cons
     return amount;
   } else {
     return std::max(amount * unit->getConversionFactor(otherUnit), 0.0);
+  }
+}
+
+template<typename S, typename SA>
+void Amount<S, SA>::setAmount(double amount, const QSharedPointer<const Unit>& unit)
+{
+  if (this->substance != NULL) {
+    this->amount = std::max(amount, 0.0);
+    if (unit != NULL) {
+      this->unit = unit;
+    }
+  } else {
+    throw std::logic_error(("Attempted to change the amount of an undefined " +
+                             getSubstanceName() + ".").toStdString());
   }
 }
 

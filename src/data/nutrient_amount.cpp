@@ -18,6 +18,34 @@ NutrientAmount::~NutrientAmount()
 {
 }
 
+double NutrientAmount::getAmountAsPercentRDI() const
+{
+  if (getUnit() == NULL) {
+
+    return 0;
+
+  } else {
+
+    // If the RDI is x units of Foo, and the current amount is y units of Bar,
+    // then compute (y Bar * (Foo/Bar)) / (x Foo), where Foo/Bar is the conversion factor
+
+    return (getAmount() * getUnit()->getConversionFactor(getNutrient()->getStandardUnit())) /
+        getNutrient()->getRDI();
+  }
+}
+
+void NutrientAmount::setAmountFromPercentRDI
+  (double pct_rdi, const QSharedPointer<const Unit>& unit)
+{
+  const QSharedPointer<const Unit> targetUnit = (unit != NULL ? unit : getUnit());
+
+  // If the RDI is x units of Foo and we want y fraction of the RDI in units of Bar, then
+  // compute: y * (x Foo) * (Bar/Foo), where Bar/Foo is the conversion factor.
+
+  setAmount(pct_rdi * getNutrient()->getRDI() *
+            getNutrient()->getStandardUnit()->getConversionFactor(targetUnit), unit);
+}
+
 QString NutrientAmount::getSubstanceName(bool plural) const
 {
   return QString("nutrient") + (plural ? "s" : "");

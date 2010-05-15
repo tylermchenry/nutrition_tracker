@@ -20,7 +20,12 @@ class NutrientAmount : public Amount<Nutrient, NutrientAmount>
 
     virtual ~NutrientAmount();
 
-    inline QSharedPointer<const Nutrient> getNutrient() { return getSubstance(); }
+    inline QSharedPointer<const Nutrient> getNutrient() const { return getSubstance(); }
+
+    double getAmountAsPercentRDI() const;
+
+    void setAmountFromPercentRDI
+      (double pct_rdi, const QSharedPointer<const Unit>& unit = QSharedPointer<const Unit>());
 
   protected:
 
