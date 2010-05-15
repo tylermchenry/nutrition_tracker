@@ -82,12 +82,10 @@ Unit::~Unit()
 
 double Unit::getConversionFactor(const QSharedPointer<const Unit>& otherUnit) const
 {
-  if (otherUnit == NULL) {
+  if ((otherUnit == NULL) || (otherUnit == getBasicUnit(dimension))) {
     return 1;
   } else if (otherUnit->getDimension() != dimension) {
     throw std::logic_error("Attempted to convert units of different dimensions.");
-  } else if (otherUnit == getBasicUnit(dimension)) {
-    return basicConversionFactor;
   } else {
     return basicConversionFactor /
       otherUnit->getConversionFactor(getBasicUnit(dimension));

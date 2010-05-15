@@ -13,27 +13,19 @@ Food::Food(const QString& id, const QString& name, double weightAmount,
 : id(id), name(name)
 {
   if (weightAmount > 0) {
-    baseAmounts[Unit::Dimensions::Weight] =
-      FoodAmount(QSharedPointer<const Food>(this), weightAmount,
-                 Unit::getPreferredUnit(Unit::Dimensions::Weight));
+    baseAmounts[Unit::Dimensions::Weight] = weightAmount;
   }
 
   if (volumeAmount > 0) {
-    baseAmounts[Unit::Dimensions::Volume] =
-      FoodAmount(QSharedPointer<const Food>(this), volumeAmount,
-                 Unit::getPreferredUnit(Unit::Dimensions::Volume));
+    baseAmounts[Unit::Dimensions::Volume] = volumeAmount;
   }
 
   if (quantityAmount > 0) {
-    baseAmounts[Unit::Dimensions::Quantity] =
-      FoodAmount(QSharedPointer<const Food>(this), quantityAmount,
-                 Unit::getPreferredUnit(Unit::Dimensions::Quantity));
+    baseAmounts[Unit::Dimensions::Quantity] = quantityAmount;
   }
 
   if (servingAmount > 0) {
-    baseAmounts[Unit::Dimensions::Serving] =
-      FoodAmount(QSharedPointer<const Food>(this), servingAmount,
-                 Unit::getPreferredUnit(Unit::Dimensions::Serving));
+    baseAmounts[Unit::Dimensions::Serving] = servingAmount;
   }
 }
 
@@ -44,7 +36,8 @@ Food::~Food()
 FoodAmount Food::getBaseAmount(Unit::Dimensions::Dimension dimension) const
 {
   if (baseAmounts.contains(dimension)) {
-    return baseAmounts[dimension];
+    return FoodAmount(QSharedPointer<const Food>(this), baseAmounts[dimension],
+                       Unit::getPreferredUnit(dimension));
   } else {
     return FoodAmount();
   }
@@ -53,8 +46,7 @@ FoodAmount Food::getBaseAmount(Unit::Dimensions::Dimension dimension) const
 void Food::setBaseAmount(double amount, const QSharedPointer<const Unit>& unit)
 {
   if (unit != NULL) {
-    baseAmounts[unit->getDimension()] =
-      FoodAmount(QSharedPointer<const Food>(this), amount, unit);
+    baseAmounts[unit->getDimension()] = amount * unit->getConversionFactor();
   } else {
     throw std::logic_error("Attempted to set the base amount of a food without a unit.");
   }

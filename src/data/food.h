@@ -44,7 +44,7 @@ class Food
 
     QString id;
     QString name;
-    QMap<Unit::Dimensions::Dimension, FoodAmount> baseAmounts;
+    QMap<Unit::Dimensions::Dimension, double> baseAmounts;
 
 };
 

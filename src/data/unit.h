@@ -51,7 +51,8 @@ class Unit
 
     // Conversion factor is what you need to multiply an amount in unit by
     // in order to get the amount in terms of otherUnit.
-    double getConversionFactor(const QSharedPointer<const Unit>& otherUnit) const;
+    double getConversionFactor
+      (const QSharedPointer<const Unit>& otherUnit = QSharedPointer<const Unit>()) const;
 
   private:
 
