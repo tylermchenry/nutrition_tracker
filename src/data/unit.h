@@ -9,7 +9,9 @@
 #define UNIT_H_
 
 #include <QString>
+#include <QVector>
 #include <QSharedPointer>
+#include <QtSql/QSqlQuery>
 
 class Unit
 {
@@ -23,12 +25,18 @@ class Unit
           Serving
       };
       static const Dimension PREFERRED_DIMENSION = Dimensions::Weight;
+      static Dimension fromHumanReadable(const QString& str);
+      static QString toHumanReadable(Dimension dim);
     };
 
     static QSharedPointer<const Unit> getPreferredUnit
       (Dimensions::Dimension dimension = Dimensions::PREFERRED_DIMENSION);
 
-    Unit(const QString& abbrevation = "");
+    static QSharedPointer<const Unit> getUnit(const QString& abbreviation);
+
+    static QVector<QSharedPointer<const Unit> > getAllUnits();
+
+    static QVector<QSharedPointer<const Unit> > getAllUnits(Dimensions::Dimension dimension);
 
     virtual ~Unit();
 
@@ -47,6 +55,9 @@ class Unit
 
   private:
 
+    Unit(const QString& abbreviation, const QString& name,
+          Dimensions::Dimension dimension, double basicConversionFactor);
+
     QString abbreviation;
     QString name;
     Dimensions::Dimension dimension;
@@ -54,6 +65,7 @@ class Unit
 
     static QSharedPointer<const Unit> getBasicUnit(Dimensions::Dimension dimension);
 
+    static QVector<QSharedPointer<const Unit> > createUnitsFromQueryResults(QSqlQuery& query);
 };
 
 #endif /* UNIT_H_ */
