@@ -32,7 +32,7 @@ class Nutrient
     QString id;
     QString name;
     QSharedPointer<const Unit> standardUnit;
-    double rdi;
+    double rdi; // RDI in terms of standard unit
 };
 
 #endif /* NUTRIENT_H_ */
