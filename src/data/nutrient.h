@@ -10,18 +10,45 @@
 
 #include <QString>
 #include <QSharedPointer>
-#include "unit.h"
+#include <QtSql/QSqlQuery>
+#include "data/unit.h"
 
 class Nutrient
 {
   public:
 
-    explicit Nutrient(const QString& id = "");
+    struct Categories {
+      enum Category {
+          Basic,
+          Vitamin,
+          Mineral,
+          Additional,
+          Hidden
+      };
+      static Category fromHumanReadable(const QString& str);
+      static QString toHumanReadable(Category cat);
+    };
+
+    static QSharedPointer<const Nutrient> getNutrient(const QString& id);
+
+    static QVector<QSharedPointer<const Nutrient> > getAllNutrients();
+
+    static QVector<QSharedPointer<const Nutrient> > getAllNutrients
+      (Categories::Category category);
+
+    static QSharedPointer<const Nutrient> createNutrientFromQueryResults
+      (const QSqlQuery& query, const QString& tablePrefix = "");
+
+    static QVector<QSharedPointer<const Nutrient> > createNutrientsFromQueryResults
+      (QSqlQuery& query, const QString& tablePrefix = "");
+
     virtual ~Nutrient();
 
     inline QString getId() const { return id; }
 
     inline QString getName() const { return name; }
+
+    inline Categories::Category getCategory() const { return category; }
 
     inline QSharedPointer<const Unit> getStandardUnit() const { return standardUnit; }
 
@@ -29,8 +56,12 @@ class Nutrient
 
   private:
 
+    Nutrient(const QString& id, const QString& name, Categories::Category category,
+              const QSharedPointer<const Unit>& standardUnit, double rdi);
+
     QString id;
     QString name;
+    Categories::Category category;
     QSharedPointer<const Unit> standardUnit;
     double rdi; // RDI in terms of standard unit
 };

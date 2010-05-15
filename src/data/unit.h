@@ -38,6 +38,12 @@ class Unit
 
     static QVector<QSharedPointer<const Unit> > getAllUnits(Dimensions::Dimension dimension);
 
+    static QSharedPointer<const Unit> createUnitFromQueryResults
+      (const QSqlQuery& query, const QString& tablePrefix = "");
+
+    static QVector<QSharedPointer<const Unit> > createUnitsFromQueryResults
+      (QSqlQuery& query, const QString& tablePrefix = "");
+
     virtual ~Unit();
 
     inline QString getAbbreviation() const { return abbreviation; }
@@ -65,8 +71,6 @@ class Unit
     double basicConversionFactor;
 
     static QSharedPointer<const Unit> getBasicUnit(Dimensions::Dimension dimension);
-
-    static QVector<QSharedPointer<const Unit> > createUnitsFromQueryResults(QSqlQuery& query);
 };
 
 #endif /* UNIT_H_ */

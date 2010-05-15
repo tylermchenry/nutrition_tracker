@@ -30,11 +30,7 @@ QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
   QVector<QSharedPointer<const Unit> > units;
 
   if (query.exec()) {
-    units = createUnitsFromQueryResults(query);
-  }
-
-  if (units.size() > 0) {
-    return units[0];
+    return createUnitFromQueryResults(query);
   } else {
     return QSharedPointer<const Unit>();
   }
@@ -65,6 +61,49 @@ QVector<QSharedPointer<const Unit> > Unit::getAllUnits(Dimensions::Dimension dim
   } else {
     return QVector<QSharedPointer<const Unit> >();
   }
+}
+
+QSharedPointer<const Unit> Unit::createUnitFromQueryResults
+  (const QSqlQuery& query, const QString& tablePrefix)
+{
+  QString prefix = (tablePrefix == "" ? "" : tablePrefix + ".");
+
+  int abbrevField = query.record().indexOf(prefix + "Unit");
+  int dimField = query.record().indexOf(prefix + "Type");
+  int nameField = query.record().indexOf(prefix + "Name");
+  int factorField = query.record().indexOf(prefix + "Factor");
+
+  if (query.isValid()) {
+    return QSharedPointer<const Unit>
+      (new Unit(query.value(abbrevField).toString(),
+                query.value(nameField).toString(),
+                Dimensions::fromHumanReadable(query.value(dimField).toString()),
+                query.value(factorField).toDouble()));
+  } else {
+    return QSharedPointer<const Unit>();
+  }
+}
+
+QVector<QSharedPointer<const Unit> > Unit::createUnitsFromQueryResults
+  (QSqlQuery& query, const QString& tablePrefix)
+{
+  QString prefix = (tablePrefix == "" ? "" : tablePrefix + ".");
+  QVector<QSharedPointer<const Unit> > units;
+
+  int abbrevField = query.record().indexOf(prefix + "Unit");
+  int dimField = query.record().indexOf(prefix + "Type");
+  int nameField = query.record().indexOf(prefix + "Name");
+  int factorField = query.record().indexOf(prefix + "Factor");
+
+  while (query.next()) {
+    units.push_back(QSharedPointer<const Unit>
+                    (new Unit(query.value(abbrevField).toString(),
+                              query.value(nameField).toString(),
+                              Dimensions::fromHumanReadable(query.value(dimField).toString()),
+                              query.value(factorField).toDouble())));
+  }
+
+  return units;
 }
 
 Unit::Unit(const QString& abbreviation, const QString& name,
@@ -122,26 +161,6 @@ QSharedPointer<const Unit> Unit::getBasicUnit(Dimensions::Dimension dimension)
       return QSharedPointer<const Unit>();
     }
   }
-}
-
-QVector<QSharedPointer<const Unit> > Unit::createUnitsFromQueryResults(QSqlQuery& query)
-{
-  QVector<QSharedPointer<const Unit> > units;
-
-  int abbrevField = query.record().indexOf("Unit");
-  int dimField = query.record().indexOf("Type");
-  int nameField = query.record().indexOf("Name");
-  int factorField = query.record().indexOf("Factor");
-
-  while (query.next()) {
-    units.push_back(QSharedPointer<const Unit>
-                    (new Unit(query.value(abbrevField).toString(),
-                              query.value(nameField).toString(),
-                              Dimensions::fromHumanReadable(query.value(dimField).toString()),
-                              query.value(factorField).toDouble())));
-  }
-
-  return units;
 }
 
 Unit::Dimensions::Dimension Unit::Dimensions::fromHumanReadable(const QString& str)
