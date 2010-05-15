@@ -26,6 +26,8 @@ class Amount
 
     virtual ~Amount() {}
 
+    bool isDefined() const { return (substance != NULL); }
+
     inline QSharedPointer<const S> getSubstance() const { return substance; }
 
     inline QSharedPointer<const Unit> getUnit() const { return unit; }

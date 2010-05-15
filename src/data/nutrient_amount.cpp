@@ -6,6 +6,7 @@
  */
 
 #include "nutrient_amount.h"
+#include "nutrient.h"
 #include <stdexcept>
 
 NutrientAmount::NutrientAmount(const QSharedPointer<const Nutrient>& nutrient, double amount)

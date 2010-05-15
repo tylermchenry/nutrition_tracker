@@ -20,13 +20,14 @@ class Food
 {
   public:
 
-    explicit Food(const QString& id = "");
-
     virtual ~Food();
 
     inline QString getId() const { return id; }
 
-    inline FoodAmount getBaseAmount() const { return baseAmount; }
+    inline QString getName() const { return name; }
+
+    FoodAmount getBaseAmount
+      (Unit::Dimensions::Dimension dimension = Unit::Dimensions::PREFERRED_DIMENSION) const;
 
     void setBaseAmount(double amount, const QSharedPointer<const Unit>& unit);
 
@@ -34,10 +35,16 @@ class Food
 
     virtual QMap<QString, NutrientAmount> getNutrients() const = 0;
 
+  protected:
+
+    Food(const QString& id, const QString& name, double weightAmount,
+         double volumeAmount, double quantityAmount, double servingAmount);
+
   private:
 
     QString id;
-    FoodAmount baseAmount;
+    QString name;
+    QMap<Unit::Dimensions::Dimension, FoodAmount> baseAmounts;
 
 };
 

@@ -8,7 +8,7 @@
 #include "single_food.h"
 
 SingleFood::SingleFood(int id)
-  : Food("SINGLE_" + QString::number(id)), id(id)
+  : Food("SINGLE_" + QString::number(id), "", 0, 0, 0, 0), id(id)
 {
 }
 

@@ -8,7 +8,7 @@
 #include "composite_food.h"
 
 CompositeFood::CompositeFood(int id)
-  : Food("COMPOUND_" + QString::number(id)), id(id)
+  : Food("COMPOUND_" + QString::number(id), "", 0, 0, 0, 0), id(id)
 {
   // TODO Auto-generated constructor stub
 
