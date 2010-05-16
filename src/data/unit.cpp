@@ -162,6 +162,7 @@ Unit::Dimensions::Dimension Unit::Dimensions::fromHumanReadable(const QString& s
   if (lowerStr == "quantity") return Dimensions::Quantity;
   if (lowerStr == "serving")  return Dimensions::Serving;
   if (lowerStr == "energy")   return Dimensions::Energy;
+  if (lowerStr == "iu")   return Dimensions::IU;
 
   throw std::range_error("String does not describe a dimension.");
 }
@@ -174,6 +175,7 @@ QString Unit::Dimensions::toHumanReadable(Dimension dim)
     case Quantity: return "Quantity";
     case Serving:  return "Serving";
     case Energy:   return "Energy";
+    case IU:       return "IU";
     default:      throw std::range_error("Dimension enumeration out of range.");
   }
 }

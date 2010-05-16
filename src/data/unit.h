@@ -23,7 +23,8 @@ class Unit
           Volume,
           Quantity,
           Serving,
-          Energy
+          Energy,
+          IU
       };
       static const Dimension PREFERRED_DIMENSION = Dimensions::Weight;
       static Dimension fromHumanReadable(const QString& str);
