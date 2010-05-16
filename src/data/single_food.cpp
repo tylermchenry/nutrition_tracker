@@ -66,7 +66,7 @@ QSharedPointer<const SingleFood> SingleFood::createSingleFoodFromQueryResults(QS
     const QSqlRecord& record = query.record();
     return QSharedPointer<const SingleFood>
       (new SingleFood(record.field("Food_Id").value().toInt(),
-                      record.field("Description").value().toString(),
+                      record.field("Long_Desc").value().toString(),
                       EntrySources::fromHumanReadable(record.field("Entry_Src").value().toString()),
                       nutrients,
                       record.field("Weight_g").value().toDouble(),
