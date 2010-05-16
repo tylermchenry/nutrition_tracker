@@ -14,7 +14,19 @@ class CompositeFood: public Food
 {
   public:
 
-    explicit CompositeFood(int id = 0);
+    struct ContainedTypes {
+      enum ContainedType {
+          SingleFood,
+          CompositeFood
+      };
+      static ContainedType fromHumanReadable(const QString& str);
+      static QString toHumanReadable(ContainedType src);
+    };
+
+    static QSharedPointer<const CompositeFood> getCompositeFood(int id);
+
+    static QSharedPointer<const CompositeFood> createCompositeFoodFromQueryResults
+      (QSqlQuery& query);
 
     virtual ~CompositeFood();
 
