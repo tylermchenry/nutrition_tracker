@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>711</width>
-    <height>643</height>
+    <width>581</width>
+    <height>319</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="txtName"/>
      </item>
     </layout>
    </item>
@@ -41,7 +41,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="comboBox"/>
+      <widget class="QComboBox" name="cboCategory"/>
      </item>
      <item>
       <widget class="QLabel" name="label_3">
@@ -51,7 +51,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="comboBox_2">
+      <widget class="QComboBox" name="cboSource">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -65,7 +65,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="comboBox_3">
+      <widget class="QComboBox" name="cboOwner">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -100,10 +100,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_10"/>
+       <widget class="QLineEdit" name="txtWeight">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBox_4"/>
+       <widget class="QComboBox" name="cboWeightUnit"/>
       </item>
       <item>
        <widget class="QLabel" name="label_7">
@@ -113,10 +117,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_11"/>
+       <widget class="QLineEdit" name="txtVolume">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBox_5"/>
+       <widget class="QComboBox" name="cboVolumeUnit"/>
       </item>
       <item>
        <widget class="QLabel" name="label_8">
@@ -126,7 +134,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_12"/>
+       <widget class="QLineEdit" name="txtQuantity">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_9">
@@ -136,7 +148,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_9"/>
+       <widget class="QLineEdit" name="txtServings">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -154,44 +170,62 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="1" column="4">
-       <widget class="QLineEdit" name="lineEdit_2">
+       <widget class="QLineEdit" name="txtCaloriesFat">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
       <item row="1" column="7">
-       <widget class="QLineEdit" name="lineEdit_4">
+       <widget class="QLineEdit" name="txtCaloriesCarb">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
       <item row="1" column="10">
-       <widget class="QLineEdit" name="lineEdit_6">
+       <widget class="QLineEdit" name="txtCaloriesProtein">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
       <item row="1" column="5">
-       <widget class="QLineEdit" name="lineEdit_3">
+       <widget class="QLineEdit" name="txtCaloriesFatPct">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
       <item row="1" column="8">
-       <widget class="QLineEdit" name="lineEdit_5">
+       <widget class="QLineEdit" name="txtCaloriesCarbPct">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
       <item row="1" column="11">
-       <widget class="QLineEdit" name="lineEdit_7">
+       <widget class="QLineEdit" name="txtCaloriesProteinPct">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -307,7 +341,11 @@ p, li { white-space: pre-wrap; }
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLineEdit" name="lineEdit_8"/>
+       <widget class="QLineEdit" name="txtCalories">
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -315,7 +353,7 @@ p, li { white-space: pre-wrap; }
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <widget class="QGroupBox" name="groupBox_2">
+      <widget class="QGroupBox" name="grpBasicNutrients">
        <property name="title">
         <string>Basic Nutrients</string>
        </property>
@@ -330,116 +368,6 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QLabel" name="label_13">
-          <property name="text">
-           <string>Total Fat</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0" colspan="2">
-         <widget class="QLabel" name="label_14">
-          <property name="text">
-           <string>Saturated Fat</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0" colspan="2">
-         <widget class="QLabel" name="label_15">
-          <property name="text">
-           <string>Monounsaturated Fat</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0" colspan="2">
-         <widget class="QLabel" name="label_16">
-          <property name="text">
-           <string>Polyunsaturated Fat</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0" colspan="2">
-         <widget class="QLabel" name="label_23">
-          <property name="text">
-           <string>Trans Fat</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="0" colspan="2">
-         <widget class="QLabel" name="label_17">
-          <property name="text">
-           <string>Cholesterol</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="1">
-         <widget class="QLabel" name="label_18">
-          <property name="text">
-           <string>Sodium</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="0" colspan="2">
-         <widget class="QLabel" name="label_19">
-          <property name="text">
-           <string>Total Carbohydrates</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="0" colspan="2">
-         <widget class="QLabel" name="label_20">
-          <property name="text">
-           <string>Dietary Fiber</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="1">
-         <widget class="QLabel" name="label_21">
-          <property name="text">
-           <string>Sugars</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="14" column="1">
-         <widget class="QLabel" name="label_22">
-          <property name="text">
-           <string>Protein</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="2">
          <widget class="Line" name="line_2">
           <property name="orientation">
@@ -447,150 +375,14 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="5" column="1">
-         <widget class="QLabel" name="label_31">
-          <property name="text">
-           <string>Unsaturated Fat</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QLineEdit" name="lineEdit_13"/>
-        </item>
-        <item row="4" column="2">
-         <widget class="QLineEdit" name="lineEdit_14"/>
-        </item>
-        <item row="5" column="2">
-         <widget class="QLineEdit" name="lineEdit_15"/>
-        </item>
-        <item row="6" column="2">
-         <widget class="QLineEdit" name="lineEdit_16"/>
-        </item>
-        <item row="7" column="2">
-         <widget class="QLineEdit" name="lineEdit_17"/>
-        </item>
-        <item row="8" column="2">
-         <widget class="QLineEdit" name="lineEdit_18"/>
-        </item>
-        <item row="9" column="2">
-         <widget class="QLineEdit" name="lineEdit_19"/>
-        </item>
-        <item row="10" column="2">
-         <widget class="QLineEdit" name="lineEdit_20"/>
-        </item>
-        <item row="11" column="2">
-         <widget class="QLineEdit" name="lineEdit_21"/>
-        </item>
-        <item row="12" column="2">
-         <widget class="QLineEdit" name="lineEdit_22"/>
-        </item>
-        <item row="13" column="2">
-         <widget class="QLineEdit" name="lineEdit_23"/>
-        </item>
-        <item row="14" column="2">
-         <widget class="QLineEdit" name="lineEdit_24"/>
-        </item>
-        <item row="3" column="3">
-         <widget class="QLabel" name="label_32">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>g</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="2">
-         <widget class="QComboBox" name="comboBox_6"/>
-        </item>
-        <item row="4" column="3">
-         <widget class="QLabel" name="label_33">
-          <property name="text">
-           <string>g</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="3">
-         <widget class="QLabel" name="label_34">
-          <property name="text">
-           <string>g</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="3">
-         <widget class="QLabel" name="label_35">
-          <property name="text">
-           <string>g</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="3">
-         <widget class="QLabel" name="label_36">
-          <property name="text">
-           <string>g</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="3">
-         <widget class="QLabel" name="label_37">
-          <property name="text">
-           <string>g</string>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="3">
-         <widget class="QLabel" name="label_38">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="3">
-         <widget class="QLabel" name="label_39">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="3">
-         <widget class="QLabel" name="label_40">
-          <property name="text">
-           <string>g</string>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="3">
-         <widget class="QLabel" name="label_41">
-          <property name="text">
-           <string>g</string>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="3">
-         <widget class="QLabel" name="label_42">
-          <property name="text">
-           <string>g</string>
-          </property>
-         </widget>
-        </item>
-        <item row="14" column="3">
-         <widget class="QLabel" name="label_43">
-          <property name="text">
-           <string>g</string>
-          </property>
-         </widget>
+         <widget class="QComboBox" name="cboNutrientDimensions"/>
         </item>
        </layout>
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox_2">
+      <widget class="QGroupBox" name="grpVitamins">
        <property name="title">
         <string>Vitamins</string>
        </property>
@@ -605,116 +397,6 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QLabel" name="label_13">
-          <property name="text">
-           <string>Vitamin A</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0" colspan="2">
-         <widget class="QLabel" name="label_14">
-          <property name="text">
-           <string>Vitamin C</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0" colspan="2">
-         <widget class="QLabel" name="label_15">
-          <property name="text">
-           <string>Vitamin E</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0" colspan="2">
-         <widget class="QLabel" name="label_16">
-          <property name="text">
-           <string>Vitamin K</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0" colspan="2">
-         <widget class="QLabel" name="label_23">
-          <property name="text">
-           <string>Thiamin (B1)</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="0" colspan="2">
-         <widget class="QLabel" name="label_17">
-          <property name="text">
-           <string>Riboflavin (B2)</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="1">
-         <widget class="QLabel" name="label_18">
-          <property name="text">
-           <string>Niacin (B3)</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="0" colspan="2">
-         <widget class="QLabel" name="label_19">
-          <property name="text">
-           <string>Pantothenic Acid (B5)</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="0" colspan="2">
-         <widget class="QLabel" name="label_20">
-          <property name="text">
-           <string>Vitamin B6</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="1">
-         <widget class="QLabel" name="label_21">
-          <property name="text">
-           <string>Folate (B9)</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="14" column="1">
-         <widget class="QLabel" name="label_22">
-          <property name="text">
-           <string>Vitamin B12</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="2">
          <widget class="Line" name="line_2">
           <property name="orientation">
@@ -722,150 +404,14 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="5" column="1">
-         <widget class="QLabel" name="label_31">
-          <property name="text">
-           <string>Vitamin D</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QLineEdit" name="lineEdit_13"/>
-        </item>
-        <item row="4" column="2">
-         <widget class="QLineEdit" name="lineEdit_14"/>
-        </item>
-        <item row="5" column="2">
-         <widget class="QLineEdit" name="lineEdit_15"/>
-        </item>
-        <item row="6" column="2">
-         <widget class="QLineEdit" name="lineEdit_16"/>
-        </item>
-        <item row="7" column="2">
-         <widget class="QLineEdit" name="lineEdit_17"/>
-        </item>
-        <item row="8" column="2">
-         <widget class="QLineEdit" name="lineEdit_18"/>
-        </item>
-        <item row="9" column="2">
-         <widget class="QLineEdit" name="lineEdit_19"/>
-        </item>
-        <item row="10" column="2">
-         <widget class="QLineEdit" name="lineEdit_20"/>
-        </item>
-        <item row="11" column="2">
-         <widget class="QLineEdit" name="lineEdit_21"/>
-        </item>
-        <item row="12" column="2">
-         <widget class="QLineEdit" name="lineEdit_22"/>
-        </item>
-        <item row="13" column="2">
-         <widget class="QLineEdit" name="lineEdit_23"/>
-        </item>
-        <item row="14" column="2">
-         <widget class="QLineEdit" name="lineEdit_24"/>
-        </item>
-        <item row="3" column="3">
-         <widget class="QLabel" name="label_32">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>IU</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="2">
-         <widget class="QComboBox" name="comboBox_6"/>
-        </item>
-        <item row="4" column="3">
-         <widget class="QLabel" name="label_33">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="3">
-         <widget class="QLabel" name="label_34">
-          <property name="text">
-           <string>IU</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="3">
-         <widget class="QLabel" name="label_35">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="3">
-         <widget class="QLabel" name="label_36">
-          <property name="text">
-           <string>mcg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="3">
-         <widget class="QLabel" name="label_37">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="3">
-         <widget class="QLabel" name="label_38">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="3">
-         <widget class="QLabel" name="label_39">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="3">
-         <widget class="QLabel" name="label_40">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="3">
-         <widget class="QLabel" name="label_41">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="3">
-         <widget class="QLabel" name="label_42">
-          <property name="text">
-           <string>mcg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="14" column="3">
-         <widget class="QLabel" name="label_43">
-          <property name="text">
-           <string>mcg</string>
-          </property>
-         </widget>
+         <widget class="QComboBox" name="cboVitaminDimensions"/>
         </item>
        </layout>
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox_2">
+      <widget class="QGroupBox" name="grpMinerals">
        <property name="title">
         <string>Minerals</string>
        </property>
@@ -880,86 +426,6 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QLabel" name="label_13">
-          <property name="text">
-           <string>Calcium</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0" colspan="2">
-         <widget class="QLabel" name="label_14">
-          <property name="text">
-           <string>Iron</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0" colspan="2">
-         <widget class="QLabel" name="label_15">
-          <property name="text">
-           <string>Potassium</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0" colspan="2">
-         <widget class="QLabel" name="label_16">
-          <property name="text">
-           <string>Zinc</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0" colspan="2">
-         <widget class="QLabel" name="label_23">
-          <property name="text">
-           <string>Copper</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="0" colspan="2">
-         <widget class="QLabel" name="label_17">
-          <property name="text">
-           <string>Manganese</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="1">
-         <widget class="QLabel" name="label_18">
-          <property name="text">
-           <string>Selenium</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="0" colspan="2">
-         <widget class="QLabel" name="label_19">
-          <property name="text">
-           <string>Fluoride</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="2">
          <widget class="Line" name="line_2">
           <property name="orientation">
@@ -967,148 +433,8 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="5" column="1">
-         <widget class="QLabel" name="label_31">
-          <property name="text">
-           <string>Phosphorus</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QLineEdit" name="lineEdit_13"/>
-        </item>
-        <item row="4" column="2">
-         <widget class="QLineEdit" name="lineEdit_14"/>
-        </item>
-        <item row="5" column="2">
-         <widget class="QLineEdit" name="lineEdit_15"/>
-        </item>
-        <item row="6" column="2">
-         <widget class="QLineEdit" name="lineEdit_16"/>
-        </item>
-        <item row="7" column="2">
-         <widget class="QLineEdit" name="lineEdit_17"/>
-        </item>
-        <item row="8" column="2">
-         <widget class="QLineEdit" name="lineEdit_18"/>
-        </item>
-        <item row="9" column="2">
-         <widget class="QLineEdit" name="lineEdit_19"/>
-        </item>
-        <item row="10" column="2">
-         <widget class="QLineEdit" name="lineEdit_20"/>
-        </item>
-        <item row="11" column="2">
-         <widget class="QLineEdit" name="lineEdit_21"/>
-        </item>
-        <item row="3" column="3">
-         <widget class="QLabel" name="label_32">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="2">
-         <widget class="QComboBox" name="comboBox_6"/>
-        </item>
-        <item row="4" column="3">
-         <widget class="QLabel" name="label_33">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="3">
-         <widget class="QLabel" name="label_34">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="3">
-         <widget class="QLabel" name="label_35">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="3">
-         <widget class="QLabel" name="label_36">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="3">
-         <widget class="QLabel" name="label_37">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="3">
-         <widget class="QLabel" name="label_38">
-          <property name="text">
-           <string>mg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="3">
-         <widget class="QLabel" name="label_39">
-          <property name="text">
-           <string>mcg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="3">
-         <widget class="QLabel" name="label_40">
-          <property name="text">
-           <string>mcg</string>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="2">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="14" column="2">
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="13" column="2">
-         <widget class="QPushButton" name="pushButton_5">
-          <property name="text">
-           <string>Additional
-Nutrients...</string>
-          </property>
-         </widget>
+         <widget class="QComboBox" name="cboMineralDimensions"/>
         </item>
        </layout>
       </widget>
@@ -1138,9 +464,12 @@ Nutrients...</string>
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="pushButton">
        <property name="text">
-        <string>Save and Close</string>
+        <string>Save</string>
+       </property>
+       <property name="default">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -1152,9 +481,12 @@ Nutrients...</string>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="pushButton_3">
        <property name="text">
-        <string>Save</string>
+        <string>Save and Close</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
