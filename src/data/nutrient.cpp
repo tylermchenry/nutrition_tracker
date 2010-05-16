@@ -126,6 +126,7 @@ Nutrient::Categories::Category Nutrient::Categories::fromHumanReadable(const QSt
 {
   QString lowerStr = str.toLower();
 
+  if (lowerStr == "energy")     return Categories::Energy;
   if (lowerStr == "basic")      return Categories::Basic;
   if (lowerStr == "vitamin")    return Categories::Vitamin;
   if (lowerStr == "mineral")    return Categories::Mineral;
@@ -139,6 +140,7 @@ Nutrient::Categories::Category Nutrient::Categories::fromHumanReadable(const QSt
 QString Nutrient::Categories::toHumanReadable(Category cat)
 {
   switch (cat) {
+    case Energy:     return "Energy";
     case Basic:      return "Basic";
     case Vitamin:    return "Vitamin";
     case Mineral:    return "Mineral";

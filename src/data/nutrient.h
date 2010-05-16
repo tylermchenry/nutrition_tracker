@@ -19,6 +19,7 @@ class Nutrient
 
     struct Categories {
       enum Category {
+          Energy,
           Basic,
           Vitamin,
           Mineral,
