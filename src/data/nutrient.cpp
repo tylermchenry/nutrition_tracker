@@ -7,8 +7,10 @@
 
 #include "nutrient.h"
 #include <QVariant>
+#include <QDebug>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlRecord>
+#include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
 #include <stdexcept>
 
@@ -27,8 +29,8 @@ QSharedPointer<const Nutrient> Nutrient::getNutrient(const QString& id)
                 "LIMIT 1");
   query.bindValue(":id", id);
 
-  if (query.exec()) {
-    return createNutrientFromQueryResults(query, "nutrient_definition");
+  if (query.exec() && query.first()) {
+    return createNutrientFromRecord(query.record());
   } else {
     return QSharedPointer<const Nutrient>();
   }
@@ -49,7 +51,7 @@ QVector<QSharedPointer<const Nutrient> > Nutrient::getAllNutrients()
   QVector<QSharedPointer<const Nutrient> > nutrients;
 
   if (query.exec()) {
-    nutrients = createNutrientsFromQueryResults(query, "nutrient_definition");
+    nutrients = createNutrientsFromQueryResults(query);
   }
 
   return nutrients;
@@ -74,53 +76,34 @@ QVector<QSharedPointer<const Nutrient> > Nutrient::getAllNutrients
   QVector<QSharedPointer<const Nutrient> > nutrients;
 
   if (query.exec()) {
-    nutrients = createNutrientsFromQueryResults(query, "nutrient_definition");
+    nutrients = createNutrientsFromQueryResults(query);
   }
 
   return nutrients;
 }
 
-QSharedPointer<const Nutrient> Nutrient::createNutrientFromQueryResults
-  (const QSqlQuery& query, const QString& tablePrefix)
+QSharedPointer<const Nutrient> Nutrient::createNutrientFromRecord
+  (const QSqlRecord& record)
 {
-  QString prefix = (tablePrefix == "" ? "" : tablePrefix + ".");
-
-  int idField = query.record().indexOf(prefix + "Nutr_No");
-  int categoryField = query.record().indexOf(prefix + "Category");
-  int nameField = query.record().indexOf(prefix + "ShortName");
-  int rdiField = query.record().indexOf(prefix + "RDI");
-
-  if (query.isValid()) {
+  if (!record.isEmpty()) {
     return QSharedPointer<const Nutrient>
-      (new Nutrient(query.value(idField).toString(),
-                    query.value(nameField).toString(),
-                    Categories::fromHumanReadable(query.value(categoryField).toString()),
-                    Unit::createUnitFromQueryResults(query, "units"),
-                    query.value(rdiField).toDouble()));
+      (new Nutrient(record.field("Nutr_No").value().toString(),
+                    record.field("ShortName").value().toString(),
+                    Categories::fromHumanReadable(record.field("Category").value().toString()),
+                    Unit::createUnitFromRecord(record),
+                    record.field("RDI").value().toDouble()));
   } else {
     return QSharedPointer<const Nutrient>();
   }
 }
 
 QVector<QSharedPointer<const Nutrient> > Nutrient::createNutrientsFromQueryResults
-  (QSqlQuery& query, const QString& tablePrefix)
+  (QSqlQuery& query)
 {
-  QString prefix = (tablePrefix == "" ? "" : tablePrefix + ".");
   QVector<QSharedPointer<const Nutrient> > nutrients;
 
-  int idField = query.record().indexOf(prefix + "Nutr_No");
-  int categoryField = query.record().indexOf(prefix + "Category");
-  int nameField = query.record().indexOf(prefix + "ShortName");
-  int rdiField = query.record().indexOf(prefix + "RDI");
-
   while (query.next()) {
-    nutrients.push_back
-      (QSharedPointer<const Nutrient>
-        (new Nutrient(query.value(idField).toString(),
-                      query.value(nameField).toString(),
-                      Categories::fromHumanReadable(query.value(categoryField).toString()),
-                      Unit::createUnitFromQueryResults(query, "units"),
-                      query.value(rdiField).toDouble())));
+    nutrients.push_back(createNutrientFromRecord(query.record()));
   }
 
   return nutrients;
@@ -130,6 +113,9 @@ Nutrient::Nutrient(const QString& id, const QString& name, Categories::Category 
                    const QSharedPointer<const Unit>& standardUnit, double rdi)
   : id(id), name(name), category(category), standardUnit(standardUnit), rdi(rdi)
 {
+  qDebug() << "Created nutrient ID " << id << " named " << name << " in category "
+           << Categories::toHumanReadable(category) << ". Standard unit is "
+           << standardUnit->getNameAndAbbreviation() << " RDI is " << rdi;
 }
 
 Nutrient::~Nutrient()
@@ -146,6 +132,7 @@ Nutrient::Categories::Category Nutrient::Categories::fromHumanReadable(const QSt
   if (lowerStr == "additional") return Categories::Additional;
   if (lowerStr == "hidden")     return Categories::Hidden;
 
+  qDebug() << "Bad category: " << str;
   throw std::range_error("String does not describe a Category.");
 }
 

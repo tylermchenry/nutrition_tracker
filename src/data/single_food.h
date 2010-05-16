@@ -22,22 +22,34 @@ class SingleFood: public Food
           Custom
       };
       static EntrySource fromHumanReadable(const QString& str);
-      static QString toHumanReadable(EntrySource dim);
+      static QString toHumanReadable(EntrySource src);
     };
 
-    explicit SingleFood(int id = 0);
+    static QSharedPointer<const SingleFood> getSingleFood(int id);
+
+    static QSharedPointer<const SingleFood> createSingleFoodFromQueryResults(QSqlQuery& query);
 
     virtual ~SingleFood();
 
-    int getSingleFoodId() const;
+    inline int getSingleFoodId() const { return id; }
+
+    inline EntrySources::EntrySource getEntrySource() const { return entrySource; }
 
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
   private:
 
+    SingleFood(int id, const QString& name, EntrySources::EntrySource entrySource,
+                const QMap<QString, NutrientAmount>& nutrients,
+                double weightAmount, double volumeAmount,
+                double quantityAmount, double servingAmount);
+
     int id;
     EntrySources::EntrySource entrySource;
     QMap<QString, NutrientAmount> nutrients;
+
+    static QMap<QString, QSharedPointer<const Unit> > createNutrientsFromQueryResults
+      (QSqlQuery& query);
 };
 
 #endif /* SINGLE_FOOD_H_ */

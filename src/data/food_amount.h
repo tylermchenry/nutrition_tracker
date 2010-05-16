@@ -10,8 +10,8 @@
 
 #include <QMap>
 #include <QString>
-#include "data/nutrient_amount.h"
 #include "data/amount.h"
+#include "data/nutrient_amount.h"
 
 class Food; // Forward decl
 

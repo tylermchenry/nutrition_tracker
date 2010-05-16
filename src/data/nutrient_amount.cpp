@@ -21,7 +21,7 @@ NutrientAmount::~NutrientAmount()
 
 double NutrientAmount::getAmountAsPercentRDI() const
 {
-  if (getUnit() == NULL) {
+  if ((getUnit() == NULL) || (getAmount() == 0) || (getNutrient()->getRDI() == 0)) {
 
     return 0;
 

@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlRecord>
+#include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
 #include <stdexcept>
 
@@ -29,8 +30,8 @@ QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
 
   QVector<QSharedPointer<const Unit> > units;
 
-  if (query.exec()) {
-    return createUnitFromQueryResults(query);
+  if (query.exec() && query.first()) {
+    return createUnitFromRecord(query.record());
   } else {
     return QSharedPointer<const Unit>();
   }
@@ -63,44 +64,25 @@ QVector<QSharedPointer<const Unit> > Unit::getAllUnits(Dimensions::Dimension dim
   }
 }
 
-QSharedPointer<const Unit> Unit::createUnitFromQueryResults
-  (const QSqlQuery& query, const QString& tablePrefix)
+QSharedPointer<const Unit> Unit::createUnitFromRecord(const QSqlRecord& record)
 {
-  QString prefix = (tablePrefix == "" ? "" : tablePrefix + ".");
-
-  int abbrevField = query.record().indexOf(prefix + "Unit");
-  int dimField = query.record().indexOf(prefix + "Type");
-  int nameField = query.record().indexOf(prefix + "Name");
-  int factorField = query.record().indexOf(prefix + "Factor");
-
-  if (query.isValid()) {
+  if (!record.isEmpty()) {
     return QSharedPointer<const Unit>
-      (new Unit(query.value(abbrevField).toString(),
-                query.value(nameField).toString(),
-                Dimensions::fromHumanReadable(query.value(dimField).toString()),
-                query.value(factorField).toDouble()));
+      (new Unit(record.field("Unit").value().toString(),
+                record.field("Name").value().toString(),
+                Dimensions::fromHumanReadable(record.field("Type").value().toString()),
+                record.field("Factor").value().toDouble()));
   } else {
     return QSharedPointer<const Unit>();
   }
 }
 
-QVector<QSharedPointer<const Unit> > Unit::createUnitsFromQueryResults
-  (QSqlQuery& query, const QString& tablePrefix)
+QVector<QSharedPointer<const Unit> > Unit::createUnitsFromQueryResults(QSqlQuery& query)
 {
-  QString prefix = (tablePrefix == "" ? "" : tablePrefix + ".");
   QVector<QSharedPointer<const Unit> > units;
 
-  int abbrevField = query.record().indexOf(prefix + "Unit");
-  int dimField = query.record().indexOf(prefix + "Type");
-  int nameField = query.record().indexOf(prefix + "Name");
-  int factorField = query.record().indexOf(prefix + "Factor");
-
   while (query.next()) {
-    units.push_back(QSharedPointer<const Unit>
-                    (new Unit(query.value(abbrevField).toString(),
-                              query.value(nameField).toString(),
-                              Dimensions::fromHumanReadable(query.value(dimField).toString()),
-                              query.value(factorField).toDouble())));
+    units.push_back(createUnitFromRecord(query.record()));
   }
 
   return units;
@@ -121,13 +103,21 @@ Unit::~Unit()
 
 double Unit::getConversionFactor(const QSharedPointer<const Unit>& otherUnit) const
 {
-  if ((otherUnit == NULL) || (otherUnit == getBasicUnit(dimension))) {
+  const QSharedPointer<const Unit> basicUnit = getBasicUnit(dimension);
+
+  if ((otherUnit == NULL) || (*otherUnit == *this)) {
     return 1;
+  } else if (*otherUnit == *basicUnit) {
+    return basicConversionFactor;
+  } else if (*this == *basicUnit) {
+    return 1 / otherUnit->basicConversionFactor;
   } else if (otherUnit->getDimension() != dimension) {
     throw std::logic_error("Attempted to convert units of different dimensions.");
   } else {
-    return basicConversionFactor /
-      otherUnit->getConversionFactor(getBasicUnit(dimension));
+    // This unit is in terms of Foo, other unit is in terms of Bar, and basic unit is Baz.
+    // The conversion factor z that we multiply x Foo by to get an equivalent y Bar is:
+    // z = (Bar / Foo) = (Baz / Foo) * (Bar / Baz)
+    return basicConversionFactor * basicUnit->getConversionFactor(otherUnit);
   }
 }
 
@@ -171,6 +161,7 @@ Unit::Dimensions::Dimension Unit::Dimensions::fromHumanReadable(const QString& s
   if (lowerStr == "volume")   return Dimensions::Volume;
   if (lowerStr == "quantity") return Dimensions::Quantity;
   if (lowerStr == "serving")  return Dimensions::Serving;
+  if (lowerStr == "energy")   return Dimensions::Energy;
 
   throw std::range_error("String does not describe a dimension.");
 }
@@ -182,6 +173,7 @@ QString Unit::Dimensions::toHumanReadable(Dimension dim)
     case Volume:   return "Volume";
     case Quantity: return "Quantity";
     case Serving:  return "Serving";
+    case Energy:   return "Energy";
     default:      throw std::range_error("Dimension enumeration out of range.");
   }
 }

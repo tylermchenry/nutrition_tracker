@@ -13,7 +13,6 @@
 #include <QString>
 #include <QSharedPointer>
 #include "data/food_amount.h"
-#include "data/nutrient_amount.h"
 #include "data/unit.h"
 
 class Food

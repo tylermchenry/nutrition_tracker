@@ -24,6 +24,11 @@ class CompositeFood: public Food
 
   private:
 
+    CompositeFood(int id, const QString& name,
+                    const QVector<FoodAmount>& components,
+                    double weightAmount, double volumeAmount,
+                    double quantityAmount, double servingAmount);
+
     int id;
     QVector<FoodAmount> components;
 

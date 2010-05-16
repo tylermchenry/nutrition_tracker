@@ -22,7 +22,8 @@ class Unit
           Weight,
           Volume,
           Quantity,
-          Serving
+          Serving,
+          Energy
       };
       static const Dimension PREFERRED_DIMENSION = Dimensions::Weight;
       static Dimension fromHumanReadable(const QString& str);
@@ -38,11 +39,10 @@ class Unit
 
     static QVector<QSharedPointer<const Unit> > getAllUnits(Dimensions::Dimension dimension);
 
-    static QSharedPointer<const Unit> createUnitFromQueryResults
-      (const QSqlQuery& query, const QString& tablePrefix = "");
+    static QSharedPointer<const Unit> createUnitFromRecord(const QSqlRecord& record);
 
     static QVector<QSharedPointer<const Unit> > createUnitsFromQueryResults
-      (QSqlQuery& query, const QString& tablePrefix = "");
+      (QSqlQuery& query);
 
     virtual ~Unit();
 
@@ -59,6 +59,8 @@ class Unit
     // in order to get the amount in terms of otherUnit.
     double getConversionFactor
       (const QSharedPointer<const Unit>& otherUnit = QSharedPointer<const Unit>()) const;
+
+    inline bool operator==(const Unit& rhs) const { return abbreviation == rhs.abbreviation; }
 
   private:
 

@@ -6,17 +6,19 @@
  */
 
 #include "composite_food.h"
+#include "data/nutrient_amount.h"
 
-CompositeFood::CompositeFood(int id)
-  : Food("COMPOUND_" + QString::number(id), "", 0, 0, 0, 0), id(id)
+CompositeFood::CompositeFood(int id, const QString& name,
+                             const QVector<FoodAmount>& components,
+                             double weightAmount, double volumeAmount,
+                             double quantityAmount, double servingAmount)
+  : Food("COMPOSITE_" + QString::number(id), name, weightAmount, volumeAmount,
+         quantityAmount, servingAmount), id(id), components(components)
 {
-  // TODO Auto-generated constructor stub
-
 }
 
 CompositeFood::~CompositeFood()
 {
-  // TODO Auto-generated destructor stub
 }
 
 QVector<FoodAmount> CompositeFood::getComponents() const

@@ -36,11 +36,10 @@ class Nutrient
     static QVector<QSharedPointer<const Nutrient> > getAllNutrients
       (Categories::Category category);
 
-    static QSharedPointer<const Nutrient> createNutrientFromQueryResults
-      (const QSqlQuery& query, const QString& tablePrefix = "");
+    static QSharedPointer<const Nutrient> createNutrientFromRecord(const QSqlRecord& record);
 
     static QVector<QSharedPointer<const Nutrient> > createNutrientsFromQueryResults
-      (QSqlQuery& query, const QString& tablePrefix = "");
+      (QSqlQuery& query);
 
     virtual ~Nutrient();
 
