@@ -1,0 +1,79 @@
+Nutrition Tracker 
+Copyright © 2010 Tyler McHenry <tyler@nerdland.net>
+
+LICENSING
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see
+    <http://www.gnu.org/licenses/>.
+
+ABOUT
+
+    Nutrition Tracker is a program for tracking personal food
+    consumption. Once foods are entered, the user can view aggregate
+    nutrition data in several different forms. 
+
+STATUS
+
+    This application is still heavily in development and is not fully
+    functional. At this stage, it should not be used by anyone except
+    those who wish to contribute to its development.
+
+    The name "Nutrition Tracker" is generic and considered temporary.
+
+BACKGROUND
+
+    The development of this application was inspired by the shortcomings
+    of free nutrition tracking websites such as SparkPeople and
+    NutritionData. 
+
+    The basis for all of these tools, including Nutrition Tracker, is
+    the freely available USDA nutrition information database. However,
+    the existing tools were missing some obvious and useful features,
+    particularly relating to home cooking. The two main "itches" I hope
+    to scratch with this tool are:
+
+      1. Arbitrary Compositing of Foods
+
+         All nutrition tracking tools allow you to create composit foods
+         (or "food groups") by combining several existing individual
+         foods. However, no existing free tool makes it simple to
+         combine multiple composite foods into a new composite food in a
+         straightforward and coherent manner. In other words, no other
+         tool treats composite foods as first-class food items.
+
+      2. Automatic unit and dimension conversion
+
+         All existing nutrition tracking tools have severe and
+         unnecessary limitations on the units and dimensions that
+         custom-entered foods and composite foods can be specified
+         in. This often requires the user to do a large amount of math
+         on their own to come up with measurements that the tool will
+         accept. This is very user-unfriendly. Math is always something
+         that the application should be able to do on a user's behalf.
+
+TECHNOLOGIES
+
+    Nutrition Tracker is based on Nokia's Qt framework, and is intended
+    to be cross-platform.
+
+FUTURE PLANS
+
+    Eventually, the plan is to break this into a back-end server that
+    wraps the underlying database, and a "dumb" front-end GUI so that
+    ultimately other GUIs (e.g. a web interface) can be created that
+    will interoperate with the same backend. Initially, however,
+    Nutrition Tracker is a single, self-contained application.
+
+
+       
