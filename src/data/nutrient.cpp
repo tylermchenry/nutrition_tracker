@@ -14,6 +14,8 @@
 #include <QtSql/QSqlError>
 #include <stdexcept>
 
+QMap<QString, QWeakPointer<const Nutrient> > Nutrient::nutrientCache;
+
 QSharedPointer<const Nutrient> Nutrient::getNutrient(const QString& id)
 {
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
@@ -86,12 +88,19 @@ QSharedPointer<const Nutrient> Nutrient::createNutrientFromRecord
   (const QSqlRecord& record)
 {
   if (!record.isEmpty()) {
-    return QSharedPointer<const Nutrient>
-      (new Nutrient(record.field("Nutr_No").value().toString(),
+    QString id = record.field("Nutr_No").value().toString();
+    if (!nutrientCache[id]) {
+      QSharedPointer<const Nutrient> nutrient
+      (new Nutrient(id,
                     record.field("ShortName").value().toString(),
                     Categories::fromHumanReadable(record.field("Category").value().toString()),
                     Unit::createUnitFromRecord(record),
                     record.field("RDI").value().toDouble()));
+      nutrientCache[id] = nutrient;
+      return nutrient;
+    } else {
+      return nutrientCache[id].toStrongRef();
+    }
   } else {
     return QSharedPointer<const Nutrient>();
   }

@@ -10,7 +10,9 @@
 #define GROUP_H_
 
 #include <QVector>
+#include <QMap>
 #include <QSharedPointer>
+#include <QWeakPointer>
 #include <QtSql/QSqlQuery>
 
 class Group
@@ -46,6 +48,7 @@ class Group
     QString id;
     QString name;
 
+    static QMap<QString, QWeakPointer<const Group> > groupCache;
 };
 
 #endif /* GROUP_H_ */

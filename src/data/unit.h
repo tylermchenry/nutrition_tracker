@@ -11,6 +11,7 @@
 #include <QString>
 #include <QVector>
 #include <QSharedPointer>
+#include <QWeakPointer>
 #include <QtSql/QSqlQuery>
 
 class Unit
@@ -74,6 +75,8 @@ class Unit
     double basicConversionFactor;
 
     static QSharedPointer<const Unit> getBasicUnit(Dimensions::Dimension dimension);
+
+    static QMap<QString, QWeakPointer<const Unit> > unitCache;
 };
 
 #endif /* UNIT_H_ */

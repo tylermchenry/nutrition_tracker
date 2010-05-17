@@ -9,7 +9,9 @@
 #define NUTRIENT_H_
 
 #include <QString>
+#include <QMap>
 #include <QSharedPointer>
+#include <QWeakPointer>
 #include <QtSql/QSqlQuery>
 #include "data/unit.h"
 
@@ -64,6 +66,8 @@ class Nutrient
     Categories::Category category;
     QSharedPointer<const Unit> standardUnit;
     double rdi; // RDI in terms of standard unit
+
+    static QMap<QString, QWeakPointer<const Nutrient> > nutrientCache;
 };
 
 #endif /* NUTRIENT_H_ */

@@ -14,6 +14,8 @@
 #include <QtSql/QSqlError>
 #include <stdexcept>
 
+QMap<QString, QWeakPointer<const Unit> > Unit::unitCache;
+
 QSharedPointer<const Unit> Unit::getPreferredUnit(Dimensions::Dimension dimension)
 {
   return getBasicUnit(dimension);
@@ -65,11 +67,18 @@ QVector<QSharedPointer<const Unit> > Unit::getAllUnits(Dimensions::Dimension dim
 QSharedPointer<const Unit> Unit::createUnitFromRecord(const QSqlRecord& record)
 {
   if (!record.isEmpty()) {
-    return QSharedPointer<const Unit>
-      (new Unit(record.field("Unit").value().toString(),
+    QString abbrev = record.field("Unit").value().toString();
+    if (!unitCache[abbrev]) {
+      QSharedPointer<const Unit> unit
+      (new Unit(abbrev,
                 record.field("Name").value().toString(),
                 Dimensions::fromHumanReadable(record.field("Type").value().toString()),
                 record.field("Factor").value().toDouble()));
+      unitCache[abbrev] = unit;
+      return unit;
+    } else {
+      return unitCache[abbrev].toStrongRef();
+    }
   } else {
     return QSharedPointer<const Unit>();
   }

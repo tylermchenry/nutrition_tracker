@@ -16,6 +16,8 @@
 
 const QString Group::DEFAULT_GROUP_ID = "9999";
 
+QMap<QString, QWeakPointer<const Group> > Group::groupCache;
+
 QSharedPointer<const Group> Group::getDefaultGroup()
 {
   return getGroup(DEFAULT_GROUP_ID);
@@ -53,9 +55,15 @@ QVector<QSharedPointer<const Group> > Group::getAllGroups()
 QSharedPointer<const Group> Group::createGroupFromRecord(const QSqlRecord& record)
 {
   if (!record.isEmpty()) {
-    return QSharedPointer<const Group>
-      (new Group(record.field("FdGrp_Cd").value().toString(),
-                 record.field("FdGrp_Desc").value().toString()));
+    QString id = record.field("FdGrp_Cd").value().toString();
+    if (!groupCache[id]) {
+      QSharedPointer<const Group> group
+        (new Group(id, record.field("FdGrp_Desc").value().toString()));
+      groupCache[id] = group;
+      return group;
+    } else {
+      return groupCache[id].toStrongRef();
+    }
   } else {
     return QSharedPointer<const Group>();
   }
