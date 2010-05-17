@@ -28,8 +28,6 @@ QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
                 "ORDER BY Name LIMIT 1");
   query.bindValue(":abbrev", abbreviation);
 
-  QVector<QSharedPointer<const Unit> > units;
-
   if (query.exec() && query.first()) {
     return createUnitFromRecord(query.record());
   } else {
