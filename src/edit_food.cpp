@@ -1,10 +1,11 @@
 #include "edit_food.h"
-#include "data/unit.h"
 #include <QDebug>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>
 #include <QtGui/QSpacerItem>
+#include "data/unit.h"
+#include "data/group.h"
 
 EditFood::EditFood(const QSqlDatabase& db, QWidget *parent)
     : QDialog(parent), db(db)
@@ -54,12 +55,14 @@ EditFood::EditFood(const QSqlDatabase& db, QWidget *parent)
       }
     }
 
-    if (query.exec("SELECT FdGrp_Cd, FdGrp_Desc FROM group_description ORDER BY FdGrp_Desc ASC")) {
-      while (query.next()) {
-        ui.cboCategory->addItem(query.value(1).toString(), query.value(0).toString());
-        if (query.value(0).toString() == "2200") { /* Meals, Entrees and Sidedishes */
-           ui.cboCategory->setCurrentIndex(ui.cboCategory->count()-1);
-        }
+    QVector<QSharedPointer<const Group> > groups = Group::getAllGroups();
+
+    for (QVector<QSharedPointer<const Group> >::const_iterator i = groups.begin();
+         i != groups.end(); ++i)
+    {
+      ui.cboCategory->addItem((*i)->getName(), (*i)->getId());
+      if (**i == *Group::getDefaultGroup()) {
+         ui.cboCategory->setCurrentIndex(ui.cboCategory->count()-1);
       }
     }
 
