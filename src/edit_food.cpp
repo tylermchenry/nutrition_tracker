@@ -1,14 +1,11 @@
 #include "edit_food.h"
 #include <QDebug>
-#include <QtSql/QSqlQuery>
-#include <QtSql/QSqlRecord>
-#include <QtSql/QSqlError>
 #include <QtGui/QSpacerItem>
 #include "data/unit.h"
 #include "data/group.h"
 
-EditFood::EditFood(const QSqlDatabase& db, QWidget *parent)
-    : QDialog(parent), db(db)
+EditFood::EditFood(QWidget *parent)
+    : QDialog(parent)
 {
 	ui.setupUi(this);
 
@@ -28,8 +25,6 @@ EditFood::EditFood(const QSqlDatabase& db, QWidget *parent)
     ui.cboSource->addItem("USDA");
 
     ui.cboOwner->addItem("User");
-
-    QSqlQuery query(db);
 
     QVector<QSharedPointer<const Unit> > weightUnits =
         Unit::getAllUnits(Unit::Dimensions::Weight);

@@ -2,7 +2,6 @@
 #define EDIT_FOOD_H
 
 #include <QtGui/QDialog>
-#include <QtSql/QSqlDatabase>
 #include "ui_edit_food.h"
 #include "data/nutrient.h"
 #include "data/nutrient_amount.h"
@@ -12,7 +11,7 @@ class EditFood : public QDialog
     Q_OBJECT
 
 public:
-    EditFood(const QSqlDatabase& db, QWidget *parent = 0);
+    EditFood(QWidget *parent = 0);
     ~EditFood();
 
     class NutrientAmountDisplay
@@ -60,8 +59,6 @@ public:
 
 private:
     Ui::EditFoodUI ui;
-
-    QSqlDatabase db;
 
     QVector<NutrientAmountDisplay> basicNutrients;
     QVector<NutrientAmountDisplay> vitamins;
