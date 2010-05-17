@@ -10,7 +10,8 @@ INCLUDEPATH += . \
     src
 
 # Input
-HEADERS += src/data/composite_food.h \
+HEADERS += src/data/group.h \
+    src/data/composite_food.h \
     src/data/amount.h \
     src/data/single_food.h \
     src/data/nutrient_amount.h \
@@ -32,7 +33,8 @@ FORMS += src/edit_food.ui \
     src/food_search_control.ui \
     src/nutrition_tracker.ui \
     src/nutrition_tracker_main.ui
-SOURCES += src/data/composite_food.cpp \
+SOURCES += src/data/group.cpp \
+    src/data/composite_food.cpp \
     src/data/single_food.cpp \
     src/data/nutrient_amount.cpp \
     src/data/nutrient.cpp \
