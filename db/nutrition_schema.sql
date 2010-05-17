@@ -16,36 +16,36 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `compound_food`
+-- Table structure for table `composite_food`
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `compound_food` (
-  `Compound_Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `composite_food` (
+  `Composite_Id` int(11) NOT NULL AUTO_INCREMENT,
   `User_Id` int(11) NOT NULL,
   `Description` char(200) NOT NULL,
   `Weight_g` decimal(10,4) DEFAULT NULL,
   `Volume_floz` decimal(10,4) DEFAULT NULL,
   `Quantity` decimal(10,4) DEFAULT NULL,
   `Servings` decimal(10,4) DEFAULT NULL,
-  PRIMARY KEY (`Compound_Id`)
+  PRIMARY KEY (`Composite_Id`) USING BTREE
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `compound_food_link`
+-- Table structure for table `composite_food_link`
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `compound_food_link` (
-  `Compound_Id` int(11) NOT NULL,
-  `Contained_Type` enum('Food','CompoundFood') NOT NULL,
+CREATE TABLE `composite_food_link` (
+  `Composite_Id` int(11) NOT NULL,
+  `Contained_Type` enum('Food','CompositeFood') NOT NULL,
   `Contained_Id` int(11) NOT NULL,
   `Magnitude` decimal(10,7) NOT NULL,
   `Unit` char(7) NOT NULL,
-  PRIMARY KEY (`Compound_Id`,`Contained_Id`) USING BTREE
+  PRIMARY KEY (`Composite_Id`,`Contained_Id`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Describes which individual foods are part of each compound f';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -225,11 +225,15 @@ CREATE TABLE `nutrient_data` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `nutrient_definition` (
   `Nutr_No` char(3) NOT NULL,
+  `Category` enum('Energy','Basic','Vitamin','Mineral','Additional','Hidden') NOT NULL DEFAULT 'Hidden',
+  `ShortName` char(32) NOT NULL,
   `Units` char(7) NOT NULL,
   `Tagname` char(20) DEFAULT NULL,
   `NutrDesc` char(60) NOT NULL,
+  `RDI` decimal(10,4) unsigned NOT NULL DEFAULT '0.0000',
   `Num_Dec` char(1) NOT NULL,
   `SR_Order` decimal(6,0) NOT NULL,
+  `Disp_Order` decimal(6,0) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`Nutr_No`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -255,8 +259,8 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `unit_description` (
   `Unit` char(7),
-  `Type` enum('Weight','Volume','Quantity','Serving'),
-  `Description` varchar(26)
+  `Type` enum('Weight','Volume','Quantity','Serving','Energy','IU'),
+  `Description` varchar(34)
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
@@ -268,9 +272,9 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `units` (
   `Unit` char(7) NOT NULL,
-  `Type` enum('Weight','Volume','Quantity','Serving') NOT NULL,
-  `Name` char(16) NOT NULL,
-  `Factor` decimal(10,4) NOT NULL COMMENT 'Multiplication factor to get to grams (for weight) or fluid ounces (for volume)',
+  `Type` enum('Weight','Volume','Quantity','Serving','Energy','IU') NOT NULL,
+  `Name` char(24) NOT NULL,
+  `Factor` decimal(12,6) NOT NULL COMMENT 'Multiplication factor to get to grams (for weight) or fluid ounces (for volume)',
   PRIMARY KEY (`Unit`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -347,4 +351,4 @@ CREATE TABLE `weight` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-05-09 14:32:36
+-- Dump completed on 2010-05-16 21:23:59
