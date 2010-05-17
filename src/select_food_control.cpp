@@ -1,4 +1,5 @@
 #include "select_food_control.h"
+#include "data/unit.h"
 
 SelectFoodControl::SelectFoodControl(QWidget *parent)
     : QWidget(parent)
@@ -7,6 +8,14 @@ SelectFoodControl::SelectFoodControl(QWidget *parent)
 
 	connect(ui.lstResults, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
 	        this, SLOT(updateAddControls(QListWidgetItem*)));
+
+	QVector<QSharedPointer<const Unit> > units = Unit::getAllUnits(Unit::Dimensions::Weight);
+
+	for (QVector<QSharedPointer<const Unit> >::const_iterator i = units.begin();
+	     i != units.end(); ++i)
+	{
+	  ui.cbUnit->addItem((*i)->getNameAndAbbreviation());
+	}
 }
 
 SelectFoodControl::~SelectFoodControl()
