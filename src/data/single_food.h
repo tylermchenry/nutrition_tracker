@@ -10,6 +10,8 @@
 
 #include "food.h"
 #include "unit.h"
+#include <QMap>
+#include <QWeakPointer>
 
 class SingleFood: public Food
 {
@@ -25,9 +27,9 @@ class SingleFood: public Food
       static QString toHumanReadable(EntrySource src);
     };
 
-    static QSharedPointer<const SingleFood> getSingleFood(int id);
+    static QSharedPointer<SingleFood> getSingleFood(int id);
 
-    static QSharedPointer<const SingleFood> createSingleFoodFromQueryResults(QSqlQuery& query);
+    static QSharedPointer<SingleFood> createSingleFoodFromQueryResults(QSqlQuery& query);
 
     virtual ~SingleFood();
 
@@ -36,6 +38,12 @@ class SingleFood: public Food
     inline EntrySources::EntrySource getEntrySource() const { return entrySource; }
 
     virtual QMap<QString, NutrientAmount> getNutrients() const;
+
+  protected:
+
+    virtual QSharedPointer<Food> getCanonicalSharedPointer();
+
+    virtual QSharedPointer<const Food> getCanonicalSharedPointer() const;
 
   private:
 
@@ -50,6 +58,8 @@ class SingleFood: public Food
 
     static QMap<QString, QSharedPointer<const Unit> > createNutrientsFromQueryResults
       (QSqlQuery& query);
+
+    static QMap<int, QWeakPointer<SingleFood> > singleFoodCache;
 };
 
 #endif /* SINGLE_FOOD_H_ */

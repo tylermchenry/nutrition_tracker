@@ -13,7 +13,9 @@
 #include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
 
-QSharedPointer<const SingleFood> SingleFood::getSingleFood(int id)
+QMap<int, QWeakPointer<SingleFood> > SingleFood::singleFoodCache;
+
+QSharedPointer<SingleFood> SingleFood::getSingleFood(int id)
 {
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
@@ -45,11 +47,11 @@ QSharedPointer<const SingleFood> SingleFood::getSingleFood(int id)
     qDebug() << "Executed query: " << query.executedQuery();
     return createSingleFoodFromQueryResults(query);
   } else {
-    return QSharedPointer<const SingleFood>();
+    return QSharedPointer<SingleFood>();
   }
 }
 
-QSharedPointer<const SingleFood> SingleFood::createSingleFoodFromQueryResults(QSqlQuery& query)
+QSharedPointer<SingleFood> SingleFood::createSingleFoodFromQueryResults(QSqlQuery& query)
 {
   QMap<QString, NutrientAmount> nutrients;
 
@@ -64,18 +66,25 @@ QSharedPointer<const SingleFood> SingleFood::createSingleFoodFromQueryResults(QS
 
   if (query.first()) {
     const QSqlRecord& record = query.record();
-    return QSharedPointer<const SingleFood>
-      (new SingleFood(record.field("Food_Id").value().toInt(),
-                      record.field("Long_Desc").value().toString(),
-                      EntrySources::fromHumanReadable(record.field("Entry_Src").value().toString()),
-                      nutrients,
-                      record.field("Weight_g").value().toDouble(),
-                      record.field("Volume_floz").value().toDouble(),
-                      record.field("Quantity").value().toDouble(),
-                      record.field("Servings").value().toDouble()));
+    int id = record.field("Food_Id").value().toInt();
+    if (!singleFoodCache[id]) {
+      QSharedPointer<SingleFood> food
+        (new SingleFood(id,
+                        record.field("Long_Desc").value().toString(),
+                        EntrySources::fromHumanReadable(record.field("Entry_Src").value().toString()),
+                        nutrients,
+                        record.field("Weight_g").value().toDouble(),
+                        record.field("Volume_floz").value().toDouble(),
+                        record.field("Quantity").value().toDouble(),
+                        record.field("Servings").value().toDouble()));
+      singleFoodCache[id] = food;
+      return food;
+    } else {
+      return singleFoodCache[id].toStrongRef();
+    }
 
   } else {
-    return QSharedPointer<const SingleFood>();
+    return QSharedPointer<SingleFood>();
   }
 }
 
@@ -109,6 +118,16 @@ SingleFood::~SingleFood()
 QMap<QString, NutrientAmount> SingleFood::getNutrients() const
 {
   return nutrients;
+}
+
+QSharedPointer<Food> SingleFood::getCanonicalSharedPointer()
+{
+  return singleFoodCache[id].toStrongRef();
+}
+
+QSharedPointer<const Food> SingleFood::getCanonicalSharedPointer() const
+{
+  return singleFoodCache[id].toStrongRef();
 }
 
 SingleFood::EntrySources::EntrySource SingleFood::EntrySources::fromHumanReadable

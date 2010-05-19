@@ -36,7 +36,7 @@ Food::~Food()
 FoodAmount Food::getBaseAmount(Unit::Dimensions::Dimension dimension) const
 {
   if (baseAmounts.contains(dimension)) {
-    return FoodAmount(QSharedPointer<const Food>(this), baseAmounts[dimension],
+    return FoodAmount(getCanonicalSharedPointer(), baseAmounts[dimension],
                        Unit::getPreferredUnit(dimension));
   } else {
     return FoodAmount();

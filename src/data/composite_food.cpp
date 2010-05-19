@@ -16,7 +16,9 @@
 #include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
 
-QSharedPointer<const CompositeFood> CompositeFood::getCompositeFood(int id)
+QMap<int, QWeakPointer<CompositeFood> > CompositeFood::compositeFoodCache;
+
+QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
 {
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
@@ -40,11 +42,11 @@ QSharedPointer<const CompositeFood> CompositeFood::getCompositeFood(int id)
     qDebug() << "Executed query: " << query.executedQuery();
     return createCompositeFoodFromQueryResults(query);
   } else {
-    return QSharedPointer<const CompositeFood>();
+    return QSharedPointer<CompositeFood>();
   }
 }
 
-QSharedPointer<const CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
+QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
   (QSqlQuery& query)
 {
   QVector<FoodAmount> components;
@@ -76,17 +78,23 @@ QSharedPointer<const CompositeFood> CompositeFood::createCompositeFoodFromQueryR
 
    if (query.first()) {
      const QSqlRecord& record = query.record();
-     return QSharedPointer<const CompositeFood>
-       (new CompositeFood(record.field("Composite_Id").value().toInt(),
-                          record.field("Description").value().toString(),
-                          components,
-                          record.field("Weight_g").value().toDouble(),
-                          record.field("Volume_floz").value().toDouble(),
-                          record.field("Quantity").value().toDouble(),
-                          record.field("Servings").value().toDouble()));
-
+     int id = record.field("Composite_Id").value().toInt();
+     if (!compositeFoodCache[id]) {
+       QSharedPointer<CompositeFood> food
+         (new CompositeFood(id,
+                            record.field("Description").value().toString(),
+                            components,
+                            record.field("Weight_g").value().toDouble(),
+                            record.field("Volume_floz").value().toDouble(),
+                            record.field("Quantity").value().toDouble(),
+                            record.field("Servings").value().toDouble()));
+       compositeFoodCache[id] = food;
+       return food;
+     } else {
+       return compositeFoodCache[id].toStrongRef();
+     }
    } else {
-     return QSharedPointer<const CompositeFood>();
+     return QSharedPointer<CompositeFood>();
    }
 }
 
@@ -132,6 +140,16 @@ QMap<QString, NutrientAmount> CompositeFood::getNutrients() const
   }
 
   return nutrients;
+}
+
+QSharedPointer<Food> CompositeFood::getCanonicalSharedPointer()
+{
+  return compositeFoodCache[id].toStrongRef();
+}
+
+QSharedPointer<const Food> CompositeFood::getCanonicalSharedPointer() const
+{
+  return compositeFoodCache[id].toStrongRef();
 }
 
 QMap<QString, NutrientAmount>& CompositeFood::mergeNutrients

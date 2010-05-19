@@ -23,9 +23,9 @@ class CompositeFood: public Food
       static QString toHumanReadable(ContainedType src);
     };
 
-    static QSharedPointer<const CompositeFood> getCompositeFood(int id);
+    static QSharedPointer<CompositeFood> getCompositeFood(int id);
 
-    static QSharedPointer<const CompositeFood> createCompositeFoodFromQueryResults
+    static QSharedPointer<CompositeFood> createCompositeFoodFromQueryResults
       (QSqlQuery& query);
 
     virtual ~CompositeFood();
@@ -33,6 +33,12 @@ class CompositeFood: public Food
     virtual QVector<FoodAmount> getComponents() const;
 
     virtual QMap<QString, NutrientAmount> getNutrients() const;
+
+  protected:
+
+    virtual QSharedPointer<Food> getCanonicalSharedPointer();
+
+    virtual QSharedPointer<const Food> getCanonicalSharedPointer() const;
 
   private:
 
@@ -47,6 +53,8 @@ class CompositeFood: public Food
     static QMap<QString, NutrientAmount>& mergeNutrients
       (QMap<QString, NutrientAmount>& nutrients,
        const QMap<QString, NutrientAmount>& newNutrients);
+
+    static QMap<int, QWeakPointer<CompositeFood> > compositeFoodCache;
 };
 
 #endif /* COMPOUND_FOOD_H_ */

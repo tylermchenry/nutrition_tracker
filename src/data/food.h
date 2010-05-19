@@ -39,6 +39,10 @@ class Food
     Food(const QString& id, const QString& name, double weightAmount,
          double volumeAmount, double quantityAmount, double servingAmount);
 
+    virtual QSharedPointer<Food> getCanonicalSharedPointer() = 0;
+
+    virtual QSharedPointer<const Food> getCanonicalSharedPointer() const = 0;
+
   private:
 
     QString id;
