@@ -43,6 +43,10 @@ QSharedPointer<const Nutrient> Nutrient::getNutrient(const QString& id)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
+  if (nutrientCache[id]) {
+    return nutrientCache[id].toStrongRef();
+  }
+
   query.prepare("SELECT nutrient_definition.Nutr_No, nutrient_definition.Category, "
                 "  nutrient_definition.ShortName, nutrient_definition.RDI, "
                 "  units.Unit, units.Type, units.Name, units.Factor "

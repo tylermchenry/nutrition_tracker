@@ -28,6 +28,10 @@ QSharedPointer<const Group> Group::getGroup(const QString& id)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
+  if (groupCache[id]) {
+    return groupCache[id].toStrongRef();
+  }
+
   query.prepare("SELECT FdGrp_Cd, FdGrp_Desc FROM group_description WHERE FdGrp_cd=:id "
                 "ORDER BY FdGrp_Desc ASC LIMIT 1");
   query.bindValue(":id", id);

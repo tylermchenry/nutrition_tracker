@@ -20,6 +20,10 @@ QSharedPointer<SingleFood> SingleFood::getSingleFood(int id)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
+  if (singleFoodCache[id]) {
+    return singleFoodCache[id].toStrongRef();
+  }
+
   query.prepare("SELECT food_description.Food_Id, food_description.Entry_Src, "
                 "       food_description.Long_Desc, food_description.Weight_g, "
                 "       food_description.Volume_floz, food_description.Quantity, "

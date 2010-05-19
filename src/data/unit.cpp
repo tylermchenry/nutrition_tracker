@@ -26,6 +26,10 @@ QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
+  if (unitCache[abbreviation]) {
+    return unitCache[abbreviation].toStrongRef();
+  }
+
   query.prepare("SELECT Unit, Type, Name, Factor FROM units WHERE Unit=:abbrev "
                 "ORDER BY Name LIMIT 1");
   query.bindValue(":abbrev", abbreviation);

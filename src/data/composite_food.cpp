@@ -23,6 +23,10 @@ QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
+  if (compositeFoodCache[id]) {
+    return compositeFoodCache[id].toStrongRef();
+  }
+
   query.prepare("SELECT composite_food.Composite_Id, composite_food.Description, "
                 "       composite_food.Weight_g, composite_food.Volume_floz, "
                 "       composite_food.Quantity, composite_food.Servings, "
