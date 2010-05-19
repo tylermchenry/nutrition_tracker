@@ -9,16 +9,26 @@ EditFood::EditFood(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	ui.cboNutrientDimensions->addItem("Weight", NutrientAmountDisplay::DisplayModes::Weight);
-	ui.cboNutrientDimensions->addItem("% RDI", NutrientAmountDisplay::DisplayModes::RDI);
+	ui.cboNutrientDimensions->addItem
+      ("Weight", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::Weight));
+	ui.cboNutrientDimensions->addItem
+      ("% RDI", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI));
 	connect(ui.cboNutrientDimensions, SIGNAL(currentIndexChanged(int)),
 	        this, SLOT(basicNutrientsDimensionChanged(int)));
 
-	ui.cboVitaminDimensions->addItem("Weight", NutrientAmountDisplay::DisplayModes::Weight);
-    ui.cboVitaminDimensions->addItem("% RDI", NutrientAmountDisplay::DisplayModes::RDI);
+	ui.cboVitaminDimensions->addItem
+      ("Weight", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::Weight));
+    ui.cboVitaminDimensions->addItem
+      ("% RDI", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI));
+    connect(ui.cboVitaminDimensions, SIGNAL(currentIndexChanged(int)),
+             this, SLOT(vitaminsDimensionChanged(int)));
 
-    ui.cboMineralDimensions->addItem("Weight", NutrientAmountDisplay::DisplayModes::Weight);
-    ui.cboMineralDimensions->addItem("% RDI", NutrientAmountDisplay::DisplayModes::RDI);
+    ui.cboMineralDimensions->addItem
+      ("Weight", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::Weight));
+    ui.cboMineralDimensions->addItem
+      ("% RDI", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI));
+    connect(ui.cboMineralDimensions, SIGNAL(currentIndexChanged(int)),
+             this, SLOT(mineralsDimensionChanged(int)));
 
     ui.cboSource->addItem("Custom");
     ui.cboSource->addItem("Import");
@@ -133,6 +143,10 @@ EditFood::EditFood(QWidget *parent)
       (new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding),
        mineralsLayout.rowCount(), 2);
 
+    // Default to % RDI
+    ui.cboVitaminDimensions->setCurrentIndex(ui.cboVitaminDimensions->count()-1);
+    ui.cboMineralDimensions->setCurrentIndex(ui.cboMineralDimensions->count()-1);
+
 }
 
 EditFood::~EditFood()
@@ -143,8 +157,6 @@ EditFood::~EditFood()
 void EditFood::changeDisplayModes(QVector<NutrientAmountDisplay>& nutrients,
                                      NutrientAmountDisplay::DisplayModes::DisplayMode mode)
 {
-  qDebug() << "Changing display mode to " <<
-              (mode == NutrientAmountDisplay::DisplayModes::Weight ? "Weight" : "% RDI");
   for (QVector<NutrientAmountDisplay>::iterator i = nutrients.begin();
        i != nutrients.end(); ++i)
   {
@@ -154,9 +166,6 @@ void EditFood::changeDisplayModes(QVector<NutrientAmountDisplay>& nutrients,
 
 void EditFood::basicNutrientsDimensionChanged(int newIndex)
 {
-  qDebug() << "Can convert? "
-            << ui.cboNutrientDimensions->itemData(newIndex).canConvert
-                <NutrientAmountDisplay::DisplayModes::DisplayMode>();
   changeDisplayModes
     (basicNutrients, ui.cboNutrientDimensions->itemData(newIndex).value
        <NutrientAmountDisplay::DisplayModes::DisplayMode>());
