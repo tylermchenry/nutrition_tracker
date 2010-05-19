@@ -30,7 +30,8 @@ QSharedPointer<SingleFood> SingleFood::getSingleFood(int id)
                 "       food_description.Servings, nutrient_data.Nutr_Val, "
                 "       nutrient_definition.Nutr_No, nutrient_definition.Category, "
                 "       nutrient_definition.ShortName, nutrient_definition.RDI, "
-                "       units.Unit, units.Type, units.Name, units.Factor "
+                "       units.Unit, units.Type, units.Name, units.Factor,"
+                "       group_description.FdGrp_Cd, group_description.FdGrp_Desc  "
                 "FROM "
                 "       food_description JOIN nutrient_data "
                 "           ON food_description.Food_Id = nutrient_data.Food_Id "
@@ -38,6 +39,8 @@ QSharedPointer<SingleFood> SingleFood::getSingleFood(int id)
                 "           ON nutrient_data.Nutr_No = nutrient_definition.Nutr_No "
                 "   JOIN units "
                 "           ON nutrient_definition.Units = units.Unit "
+                "   JOIN group_description "
+                "           ON food_description.FdGrp_Cd = group_description.FdGrp_Cd "
                 "WHERE "
                 "       nutrient_definition.Category != 'Hidden' "
                 "   AND food_description.Food_Id=:id "
@@ -76,6 +79,7 @@ QSharedPointer<SingleFood> SingleFood::createSingleFoodFromQueryResults(QSqlQuer
         (new SingleFood(id,
                         record.field("Long_Desc").value().toString(),
                         EntrySources::fromHumanReadable(record.field("Entry_Src").value().toString()),
+                        Group::createGroupFromRecord(record),
                         nutrients,
                         record.field("Weight_g").value().toDouble(),
                         record.field("Volume_floz").value().toDouble(),
@@ -93,14 +97,17 @@ QSharedPointer<SingleFood> SingleFood::createSingleFoodFromQueryResults(QSqlQuer
 }
 
 SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource entrySource,
+                        const QSharedPointer<const Group>& group,
                         const QMap<QString, NutrientAmount>& nutrients,
                         double weightAmount, double volumeAmount,
                         double quantityAmount, double servingAmount)
   : Food("SINGLE_" + QString::number(id), name, weightAmount, volumeAmount,
-         quantityAmount, servingAmount), id(id), entrySource(entrySource), nutrients(nutrients)
+         quantityAmount, servingAmount),
+    id(id), entrySource(entrySource), group(group), nutrients(nutrients)
 {
   qDebug() << "Created food ID " << id << " named " << name << " from "
-           << EntrySources::toHumanReadable(entrySource) << " amounts: "
+           << EntrySources::toHumanReadable(entrySource)
+           << " in group: " << group->getName() << " amounts: "
            << weightAmount << " g, " << volumeAmount << " fl oz "
            << quantityAmount << "qty, " << servingAmount << " srv.";
 

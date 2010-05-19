@@ -10,6 +10,7 @@
 
 #include "food.h"
 #include "unit.h"
+#include "group.h"
 #include <QMap>
 #include <QWeakPointer>
 
@@ -37,6 +38,8 @@ class SingleFood: public Food
 
     inline EntrySources::EntrySource getEntrySource() const { return entrySource; }
 
+    inline QSharedPointer<const Group> getGroup() const { return group; }
+
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
   protected:
@@ -48,12 +51,14 @@ class SingleFood: public Food
   private:
 
     SingleFood(int id, const QString& name, EntrySources::EntrySource entrySource,
+                const QSharedPointer<const Group>& group,
                 const QMap<QString, NutrientAmount>& nutrients,
                 double weightAmount, double volumeAmount,
                 double quantityAmount, double servingAmount);
 
     int id;
     EntrySources::EntrySource entrySource;
+    QSharedPointer<const Group> group;
     QMap<QString, NutrientAmount> nutrients;
 
     static QMap<QString, QSharedPointer<const Unit> > createNutrientsFromQueryResults
