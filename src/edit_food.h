@@ -3,6 +3,7 @@
 
 #include <QtGui/QDialog>
 #include "ui_edit_food.h"
+#include "data/single_food.h"
 #include "data/nutrient.h"
 #include "data/nutrient_amount.h"
 
@@ -11,7 +12,8 @@ class EditFood : public QDialog
     Q_OBJECT
 
 public:
-    EditFood(QWidget *parent = 0);
+    EditFood(QWidget *parent = 0,
+              const QSharedPointer<SingleFood>& food = QSharedPointer<SingleFood>());
     ~EditFood();
 
     class NutrientAmountDisplay
@@ -39,6 +41,8 @@ public:
 
         inline const NutrientAmount& getNutrientAmount() const { return nutrientAmount; }
 
+        void setNutrientAmount(const NutrientAmount& newAmount);
+
         void setDisplayMode(DisplayModes::DisplayMode mode);
 
       private:
@@ -56,13 +60,36 @@ public:
         void setDisplayMode(DisplayModes::DisplayMode mode, bool force);
     };
 
-
 private:
     Ui::EditFoodUI ui;
+
+    QSharedPointer<SingleFood> food;
 
     QVector<NutrientAmountDisplay> basicNutrients;
     QVector<NutrientAmountDisplay> vitamins;
     QVector<NutrientAmountDisplay> minerals;
+
+    void populateSourceSelector(QComboBox* cboSource);
+
+    void populateUserSelector(QComboBox* cboOwner);
+
+    void populateGroupSelector(QComboBox* cboGroup);
+
+    void populateUnitSelector(QComboBox* cboUnit, Unit::Dimensions::Dimension dimension);
+
+    void populateDimensionSelector(QComboBox* cboDimension);
+
+    void populateNutrientGroup
+      (QGroupBox* grpNutrients, QVector<NutrientAmountDisplay>& amountDisplays,
+       Nutrient::Categories::Category category);
+
+    void loadAmountInformation(QLineEdit* txtAmount, QComboBox* cboUnit,
+                                   Unit::Dimensions::Dimension dimension);
+
+    void loadNutrientInformation(QVector<NutrientAmountDisplay>& nutrientDisplays,
+                                     const QMap<QString, NutrientAmount>& nutrients);
+
+    void loadFoodInformation();
 
     void changeDisplayModes(QVector<NutrientAmountDisplay>& nutrients,
                                NutrientAmountDisplay::DisplayModes::DisplayMode mode);

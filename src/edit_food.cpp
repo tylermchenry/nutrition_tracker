@@ -3,155 +3,174 @@
 #include <QtGui/QSpacerItem>
 #include "data/unit.h"
 #include "data/group.h"
+#include <cassert>
 
-EditFood::EditFood(QWidget *parent)
-    : QDialog(parent)
+EditFood::EditFood(QWidget *parent, const QSharedPointer<SingleFood>& food)
+    : QDialog(parent), food(food)
 {
 	ui.setupUi(this);
 
-	ui.cboNutrientDimensions->addItem
-      ("Weight", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::Weight));
-	ui.cboNutrientDimensions->addItem
-      ("% RDI", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI));
+    populateGroupSelector(ui.cboCategory);
+    populateSourceSelector(ui.cboSource);
+    populateUserSelector(ui.cboOwner);
+
+    populateUnitSelector(ui.cboWeightUnit, Unit::Dimensions::Weight);
+    populateUnitSelector(ui.cboVolumeUnit, Unit::Dimensions::Volume);
+
+	populateDimensionSelector(ui.cboNutrientDimensions);
 	connect(ui.cboNutrientDimensions, SIGNAL(currentIndexChanged(int)),
 	        this, SLOT(basicNutrientsDimensionChanged(int)));
 
-	ui.cboVitaminDimensions->addItem
-      ("Weight", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::Weight));
-    ui.cboVitaminDimensions->addItem
-      ("% RDI", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI));
+	populateDimensionSelector(ui.cboVitaminDimensions);
     connect(ui.cboVitaminDimensions, SIGNAL(currentIndexChanged(int)),
              this, SLOT(vitaminsDimensionChanged(int)));
 
-    ui.cboMineralDimensions->addItem
-      ("Weight", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::Weight));
-    ui.cboMineralDimensions->addItem
-      ("% RDI", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI));
+    populateDimensionSelector(ui.cboMineralDimensions);
     connect(ui.cboMineralDimensions, SIGNAL(currentIndexChanged(int)),
              this, SLOT(mineralsDimensionChanged(int)));
 
-    ui.cboSource->addItem("Custom");
-    ui.cboSource->addItem("Import");
-    ui.cboSource->addItem("USDA");
+    populateNutrientGroup(ui.grpBasicNutrients, basicNutrients, Nutrient::Categories::Basic);
+    populateNutrientGroup(ui.grpVitamins, vitamins, Nutrient::Categories::Vitamin);
+    populateNutrientGroup(ui.grpMinerals, minerals, Nutrient::Categories::Mineral);
 
-    ui.cboOwner->addItem("User");
+    // Default Vitamin and Mineral dimensions to % RDI
+    // TODO: De-hardcode this once I can figure out a way to have QComboBox::findData work
+    // with a QVariant containing a DisplayMode enumeration.
+    ui.cboVitaminDimensions->setCurrentIndex(1);
+    ui.cboMineralDimensions->setCurrentIndex(1);
 
-    QVector<QSharedPointer<const Unit> > weightUnits =
-        Unit::getAllUnits(Unit::Dimensions::Weight);
-
-    for (QVector<QSharedPointer<const Unit> >::const_iterator i = weightUnits.begin();
-         i != weightUnits.end(); ++i)
-    {
-      ui.cboWeightUnit->addItem((*i)->getNameAndAbbreviation());
-      if (**i == *Unit::getPreferredUnit(Unit::Dimensions::Weight)) {
-          ui.cboWeightUnit->setCurrentIndex(ui.cboWeightUnit->count()-1);
-      }
-    }
-
-    QVector<QSharedPointer<const Unit> > volumeUnits =
-       Unit::getAllUnits(Unit::Dimensions::Volume);
-
-    for (QVector<QSharedPointer<const Unit> >::const_iterator i = volumeUnits.begin();
-         i != volumeUnits.end(); ++i)
-    {
-      ui.cboVolumeUnit->addItem((*i)->getNameAndAbbreviation());
-      if (**i == *Unit::getPreferredUnit(Unit::Dimensions::Volume)) {
-          ui.cboVolumeUnit->setCurrentIndex(ui.cboVolumeUnit->count()-1);
-      }
-    }
-
-    QVector<QSharedPointer<const Group> > groups = Group::getAllGroups();
-
-    for (QVector<QSharedPointer<const Group> >::const_iterator i = groups.begin();
-         i != groups.end(); ++i)
-    {
-      ui.cboCategory->addItem((*i)->getName(), (*i)->getId());
-      if (**i == *Group::getDefaultGroup()) {
-         ui.cboCategory->setCurrentIndex(ui.cboCategory->count()-1);
-      }
-    }
-
-    QGridLayout& basicNutrientsLayout =
-        dynamic_cast<QGridLayout&>(*(ui.grpBasicNutrients->layout()));
-
-    QVector<QSharedPointer<const Nutrient> > allBasicNutrients =
-        Nutrient::getAllNutrients(Nutrient::Categories::Basic);
-
-    for (QVector<QSharedPointer<const Nutrient> >::iterator i = allBasicNutrients.begin();
-          i != allBasicNutrients.end(); ++i)
-    {
-      int row = basicNutrientsLayout.rowCount();
-
-      NutrientAmountDisplay display(ui.grpBasicNutrients, *i, 0);
-
-      basicNutrientsLayout.addWidget(display.getNameWidget(), row, 1);
-      basicNutrientsLayout.addWidget(display.getValueWidget(), row, 2);
-      basicNutrientsLayout.addWidget(display.getUnitWidget(), row, 3);
-
-      basicNutrients.push_back(display);
-    }
-
-    basicNutrientsLayout.addItem
-      (new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding),
-       basicNutrientsLayout.rowCount(), 2);
-
-    QGridLayout& vitaminsLayout =
-        dynamic_cast<QGridLayout&>(*(ui.grpVitamins->layout()));
-
-    QVector<QSharedPointer<const Nutrient> > allVitamins =
-        Nutrient::getAllNutrients(Nutrient::Categories::Vitamin);
-
-    for (QVector<QSharedPointer<const Nutrient> >::iterator i = allVitamins.begin();
-          i != allVitamins.end(); ++i)
-    {
-      int row = vitaminsLayout.rowCount();
-
-      NutrientAmountDisplay display(ui.grpVitamins, *i, 0);
-
-      vitaminsLayout.addWidget(display.getNameWidget(), row, 1);
-      vitaminsLayout.addWidget(display.getValueWidget(), row, 2);
-      vitaminsLayout.addWidget(display.getUnitWidget(), row, 3);
-
-      vitamins.push_back(display);
-    }
-
-    vitaminsLayout.addItem
-      (new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding),
-       vitaminsLayout.rowCount(), 2);
-
-    QGridLayout& mineralsLayout =
-        dynamic_cast<QGridLayout&>(*(ui.grpMinerals->layout()));
-
-    QVector<QSharedPointer<const Nutrient> > allMinerals =
-        Nutrient::getAllNutrients(Nutrient::Categories::Mineral);
-
-    for (QVector<QSharedPointer<const Nutrient> >::iterator i = allMinerals.begin();
-          i != allMinerals.end(); ++i)
-    {
-      int row = mineralsLayout.rowCount();
-
-      NutrientAmountDisplay display(ui.grpMinerals, *i, 0);
-
-      mineralsLayout.addWidget(display.getNameWidget(), row, 1);
-      mineralsLayout.addWidget(display.getValueWidget(), row, 2);
-      mineralsLayout.addWidget(display.getUnitWidget(), row, 3);
-
-      minerals.push_back(display);
-    }
-
-    mineralsLayout.addItem
-      (new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding),
-       mineralsLayout.rowCount(), 2);
-
-    // Default to % RDI
-    ui.cboVitaminDimensions->setCurrentIndex(ui.cboVitaminDimensions->count()-1);
-    ui.cboMineralDimensions->setCurrentIndex(ui.cboMineralDimensions->count()-1);
-
+    if (food != NULL) loadFoodInformation();
 }
 
 EditFood::~EditFood()
 {
 
+}
+
+void EditFood::populateSourceSelector(QComboBox* cboSource)
+{
+  cboSource->addItem("Custom");
+  cboSource->addItem("Import");
+  cboSource->addItem("USDA");
+}
+
+void EditFood::populateUserSelector(QComboBox* cboOwner)
+{
+  cboOwner->addItem("User");
+}
+
+void EditFood::populateGroupSelector(QComboBox* cboGroup)
+{
+  QVector<QSharedPointer<const Group> > groups = Group::getAllGroups();
+
+  for (QVector<QSharedPointer<const Group> >::const_iterator i = groups.begin();
+      i != groups.end(); ++i)
+  {
+    cboGroup->addItem((*i)->getName(), (*i)->getId());
+  }
+
+  cboGroup->setCurrentIndex
+    (cboGroup->findData(Group::getDefaultGroup()->getId()));
+}
+
+void EditFood::populateUnitSelector(QComboBox* cboUnit, Unit::Dimensions::Dimension dimension)
+{
+  QVector<QSharedPointer<const Unit> > units = Unit::getAllUnits(dimension);
+
+  for (QVector<QSharedPointer<const Unit> >::const_iterator i = units.begin();
+      i != units.end(); ++i)
+  {
+    cboUnit->addItem((*i)->getNameAndAbbreviation(), (*i)->getAbbreviation());
+  }
+
+  cboUnit->setCurrentIndex
+    (cboUnit->findData(Unit::getPreferredUnit(dimension)->getAbbreviation()));
+}
+
+void EditFood::populateDimensionSelector(QComboBox* cboDimension)
+{
+  cboDimension->addItem
+    ("Weight", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::Weight));
+  cboDimension->addItem
+    ("% RDI", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI));
+}
+
+void EditFood::populateNutrientGroup
+  (QGroupBox* grpNutrients, QVector<NutrientAmountDisplay>& amountDisplays,
+   Nutrient::Categories::Category category)
+{
+  QGridLayout& layout = dynamic_cast<QGridLayout&>(*(grpNutrients->layout()));
+  QVector<QSharedPointer<const Nutrient> > nutrients = Nutrient::getAllNutrients(category);
+
+  for (QVector<QSharedPointer<const Nutrient> >::iterator i = nutrients.begin();
+      i != nutrients.end(); ++i)
+  {
+    int row = layout.rowCount();
+
+    NutrientAmountDisplay display(grpNutrients, *i, 0);
+
+    layout.addWidget(display.getNameWidget(), row, 1);
+    layout.addWidget(display.getValueWidget(), row, 2);
+    layout.addWidget(display.getUnitWidget(), row, 3);
+
+    amountDisplays.push_back(display);
+  }
+
+  layout.addItem
+    (new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding),
+     layout.rowCount(), 2);
+}
+
+void EditFood::loadAmountInformation(QLineEdit* txtAmount, QComboBox* cboUnit,
+                                          Unit::Dimensions::Dimension dimension)
+{
+  FoodAmount baseAmount = food->getBaseAmount(dimension);
+
+  if (baseAmount.isDefined()) {
+
+    if (txtAmount != NULL) {
+      txtAmount->setText(QString::number(baseAmount.getAmount()));
+    }
+
+    if (cboUnit != NULL) {
+      cboUnit->setCurrentIndex
+      (cboUnit->findData(baseAmount.getUnit()->getAbbreviation()));
+    }
+  }
+}
+
+void EditFood::loadNutrientInformation(QVector<NutrientAmountDisplay>& nutrientDisplays,
+                                             const QMap<QString, NutrientAmount>& nutrients)
+{
+  for (QVector<NutrientAmountDisplay>::iterator i = nutrientDisplays.begin();
+      i != nutrientDisplays.end(); ++i)
+  {
+    QString nutrientId = i->getNutrientAmount().getNutrient()->getId();
+    if (nutrients.contains(nutrientId)) {
+      i->setNutrientAmount(nutrients[nutrientId]);
+    }
+  }
+}
+
+void EditFood::loadFoodInformation()
+{
+  ui.txtName->setText(food->getName());
+
+  loadAmountInformation(ui.txtWeight, ui.cboWeightUnit, Unit::Dimensions::Weight);
+  loadAmountInformation(ui.txtVolume, ui.cboVolumeUnit, Unit::Dimensions::Volume);
+  loadAmountInformation(ui.txtQuantity, NULL, Unit::Dimensions::Quantity);
+  loadAmountInformation(ui.txtServings, NULL, Unit::Dimensions::Serving);
+
+  QMap<QString, NutrientAmount> foodNutrients = food->getNutrients();
+
+  QString caloriesId = Nutrient::getNutrientByName("Calories")->getId();
+  if (foodNutrients.contains(caloriesId)) {
+    ui.txtCalories->setText(QString::number(foodNutrients[caloriesId].getAmount()));
+  }
+
+  loadNutrientInformation(basicNutrients, foodNutrients);
+  loadNutrientInformation(vitamins, foodNutrients);
+  loadNutrientInformation(minerals, foodNutrients);
 }
 
 void EditFood::changeDisplayModes(QVector<NutrientAmountDisplay>& nutrients,
@@ -226,6 +245,21 @@ void EditFood::NutrientAmountDisplay::initialize(QWidget* widgetParent)
   setDisplayMode(displayMode, true);
 }
 
+void EditFood::NutrientAmountDisplay::setNutrientAmount(const NutrientAmount& newAmount)
+{
+  nutrientAmount = newAmount;
+
+  if (nutrientAmount.getNutrient() != NULL) {
+    lblName->setText(nutrientAmount.getNutrient()->getName());
+    supportsRDI = (nutrientAmount.getNutrient()->getRDI() > 0);
+  } else {
+    lblName->setText("");
+    supportsRDI = false;
+  }
+
+  setDisplayMode(displayMode, true);
+}
+
 void EditFood::NutrientAmountDisplay::setDisplayMode(DisplayModes::DisplayMode mode, bool force)
 {
   if (mode != displayMode || force) {
@@ -239,14 +273,19 @@ void EditFood::NutrientAmountDisplay::setDisplayMode(DisplayModes::DisplayMode m
         }
 
         txtValue->setText(QString::number(nutrientAmount.getAmount()));
-        lblUnit->setText(nutrientAmount.getUnit()->getAbbreviation());
+
+        if (nutrientAmount.getNutrient() != NULL) {
+          lblUnit->setText(nutrientAmount.getUnit()->getAbbreviation());
+        } else {
+          lblUnit->setText("");
+        }
 
         break;
 
       case DisplayModes::RDI:
 
         if (supportsRDI) {
-          txtValue->setText(QString::number(nutrientAmount.getAmountAsPercentRDI()));
+          txtValue->setText(QString::number(nutrientAmount.getAmountAsPercentRDI() * 100));
           lblUnit->setText("% RDI");
         } else {
           txtValue->setEnabled(false);
