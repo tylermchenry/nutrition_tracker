@@ -156,6 +156,14 @@ void EditFood::loadFoodInformation()
 {
   ui.txtName->setText(food->getName());
 
+  ui.cboCategory->setCurrentIndex(ui.cboCategory->findData(food->getGroup()->getId()));
+
+  ui.cboSource->setCurrentIndex
+    (ui.cboSource->findText
+      (SingleFood::EntrySources::toHumanReadable(food->getEntrySource())));
+
+  // TODO: Set user when users are supported
+
   loadAmountInformation(ui.txtWeight, ui.cboWeightUnit, Unit::Dimensions::Weight);
   loadAmountInformation(ui.txtVolume, ui.cboVolumeUnit, Unit::Dimensions::Volume);
   loadAmountInformation(ui.txtQuantity, NULL, Unit::Dimensions::Quantity);
