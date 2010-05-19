@@ -16,6 +16,28 @@
 
 QMap<QString, QWeakPointer<const Nutrient> > Nutrient::nutrientCache;
 
+QSharedPointer<const Nutrient> Nutrient::getNutrientByName(const QString& name)
+{
+  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
+  QSqlQuery query(db);
+
+  query.prepare("SELECT nutrient_definition.Nutr_No, nutrient_definition.Category, "
+                "  nutrient_definition.ShortName, nutrient_definition.RDI, "
+                "  units.Unit, units.Type, units.Name, units.Factor "
+                "FROM nutrient_definition JOIN units ON nutrient_definition.Units = units.Unit "
+                "WHERE ShortName=:name "
+                "ORDER BY nutrient_definition.category ASC, nutrient_definition.Disp_Order ASC, "
+                "  nutrient_definition.ShortName ASC "
+                "LIMIT 1");
+  query.bindValue(":name", name);
+
+  if (query.exec() && query.first()) {
+    return createNutrientFromRecord(query.record());
+  } else {
+    return QSharedPointer<const Nutrient>();
+  }
+}
+
 QSharedPointer<const Nutrient> Nutrient::getNutrient(const QString& id)
 {
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");

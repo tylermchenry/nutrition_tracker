@@ -34,6 +34,8 @@ class Nutrient
 
     static QSharedPointer<const Nutrient> getNutrient(const QString& id);
 
+    static QSharedPointer<const Nutrient> getNutrientByName(const QString& name);
+
     static QVector<QSharedPointer<const Nutrient> > getAllNutrients();
 
     static QVector<QSharedPointer<const Nutrient> > getAllNutrients
