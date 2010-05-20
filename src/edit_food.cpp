@@ -3,6 +3,7 @@
 #include <QtGui/QSpacerItem>
 #include "data/unit.h"
 #include "data/group.h"
+#include "model/variant_value_item_model.h"
 #include <cassert>
 
 EditFood::EditFood(QWidget *parent, const QSharedPointer<SingleFood>& food)
@@ -34,10 +35,14 @@ EditFood::EditFood(QWidget *parent, const QSharedPointer<SingleFood>& food)
     populateNutrientGroup(ui.grpMinerals, minerals, Nutrient::Categories::Mineral);
 
     // Default Vitamin and Mineral dimensions to % RDI
-    // TODO: De-hardcode this once I can figure out a way to have QComboBox::findData work
-    // with a QVariant containing a DisplayMode enumeration.
-    ui.cboVitaminDimensions->setCurrentIndex(1);
-    ui.cboMineralDimensions->setCurrentIndex(1);
+
+    ui.cboVitaminDimensions->setCurrentIndex
+      (ui.cboVitaminDimensions->findData
+         (QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI)));
+
+    ui.cboMineralDimensions->setCurrentIndex
+      (ui.cboMineralDimensions->findData
+         (QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI)));
 
     if (food != NULL) loadFoodInformation();
 }
@@ -89,6 +94,9 @@ void EditFood::populateUnitSelector(QComboBox* cboUnit, Unit::Dimensions::Dimens
 
 void EditFood::populateDimensionSelector(QComboBox* cboDimension)
 {
+  cboDimension->setModel
+    (new VariantValueItemModel<NutrientAmountDisplay::DisplayModes::DisplayMode>(cboDimension));
+
   cboDimension->addItem
     ("Weight", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::Weight));
   cboDimension->addItem
