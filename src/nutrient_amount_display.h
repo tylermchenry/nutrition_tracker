@@ -10,13 +10,16 @@
 
 #include "data/nutrient.h"
 #include "data/nutrient_amount.h"
+#include <QObject>
 #include <QVariant>
 #include <QtGui/QWidget>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
 
-class NutrientAmountDisplay
+class NutrientAmountDisplay : public QObject
 {
+    Q_OBJECT
+
   public:
 
     struct DisplayModes {
@@ -32,6 +35,10 @@ class NutrientAmountDisplay
                           double amount,
                           DisplayModes::DisplayMode mode = DisplayModes::Weight);
 
+    NutrientAmountDisplay(const NutrientAmountDisplay& copy);
+
+    virtual ~NutrientAmountDisplay();
+
     inline QWidget* getNameWidget() const { return lblName; }
 
     inline QWidget* getValueWidget() const {return txtValue; }
@@ -43,6 +50,8 @@ class NutrientAmountDisplay
     void setNutrientAmount(const NutrientAmount& newAmount);
 
     void setDisplayMode(DisplayModes::DisplayMode mode);
+
+    NutrientAmountDisplay& operator=(const NutrientAmountDisplay& rhs);
 
   private:
 
@@ -57,6 +66,10 @@ class NutrientAmountDisplay
     void initialize(QWidget* widgetParent);
 
     void setDisplayMode(DisplayModes::DisplayMode mode, bool force);
+
+  private slots:
+
+    void updateValue(const QString& text);
 };
 
 Q_DECLARE_METATYPE(NutrientAmountDisplay::DisplayModes::DisplayMode);

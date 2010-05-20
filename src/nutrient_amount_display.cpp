@@ -7,21 +7,43 @@
 
 #include "nutrient_amount_display.h"
 #include "edit_food.h"
+#include <QDebug>
 
 NutrientAmountDisplay::NutrientAmountDisplay
   (QWidget* widgetParent, const QSharedPointer<const Nutrient>& nutrient,
    double amount, DisplayModes::DisplayMode mode)
-  : nutrientAmount(nutrient, amount), displayMode(mode), supportsRDI(false)
+  : QObject(NULL), nutrientAmount(nutrient, amount), displayMode(mode), supportsRDI(false)
 {
+  qDebug() << "Constructing NAD from Nutrient";
   initialize(widgetParent);
 }
 
 NutrientAmountDisplay::NutrientAmountDisplay
   (QWidget* widgetParent, const NutrientAmount& amount,
    DisplayModes::DisplayMode mode)
-  : nutrientAmount(amount), displayMode(mode), supportsRDI(false)
+  : QObject(NULL), nutrientAmount(amount), displayMode(mode), supportsRDI(false)
 {
+  qDebug() << "Constructing NAD from NutrientAmount";
   initialize(widgetParent);
+}
+
+NutrientAmountDisplay::NutrientAmountDisplay(const NutrientAmountDisplay& copy)
+  : QObject(NULL), nutrientAmount(copy.nutrientAmount), displayMode(copy.displayMode),
+    supportsRDI(copy.supportsRDI)
+{
+  qDebug() << "Constructing NAD from copy";
+
+  lblName = copy.lblName;
+  txtValue = copy.txtValue;
+  lblUnit = copy.lblUnit;
+
+  connect(txtValue, SIGNAL(textEdited(const QString&)), this, SLOT(updateValue(const QString&)));
+
+  setDisplayMode(displayMode, true);
+}
+
+NutrientAmountDisplay::~NutrientAmountDisplay()
+{
 }
 
 void NutrientAmountDisplay::setDisplayMode(DisplayModes::DisplayMode mode)
@@ -48,6 +70,8 @@ void NutrientAmountDisplay::initialize(QWidget* widgetParent)
 
   txtValue->setValidator
     (new QDoubleValidator(0.0, EditFood::MAX_ENTRY, EditFood::MAX_DECIMALS, txtValue));
+
+  connect(txtValue, SIGNAL(textEdited(const QString&)), this, SLOT(updateValue(const QString&)));
 
   setDisplayMode(displayMode, true);
 }
@@ -106,5 +130,30 @@ void NutrientAmountDisplay::setDisplayMode(DisplayModes::DisplayMode mode, bool 
     }
 
     displayMode = mode;
+  }
+}
+
+NutrientAmountDisplay& NutrientAmountDisplay::operator=(const NutrientAmountDisplay& rhs)
+{
+  qDebug() << "Altering NAD through assignment";
+  setNutrientAmount(rhs.nutrientAmount);
+//  lblName->setParent(rhs.lblName->parentWidget());
+//  txtValue->setParent(rhs.txtValue->parentWidget());
+//  lblUnit->setParent(rhs.lblUnit->parentWidget());
+  return *this;
+}
+
+void NutrientAmountDisplay::updateValue(const QString& text)
+{
+  double value = text.toDouble();
+
+  switch (displayMode)
+  {
+    case DisplayModes::Weight:
+      nutrientAmount.setAmount(value);
+      break;
+    case DisplayModes::RDI:
+      nutrientAmount.setAmountFromPercentRDI(value/100);
+      break;
   }
 }
