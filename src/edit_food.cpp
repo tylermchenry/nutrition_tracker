@@ -1,10 +1,17 @@
 #include "edit_food.h"
 #include <QDebug>
+#include <QtGui/QDoubleValidator>
 #include <QtGui/QSpacerItem>
 #include "data/unit.h"
 #include "data/group.h"
 #include "model/variant_value_item_model.h"
 #include <cassert>
+
+// The numeric database fields are DECIMAL(10,4), so 10 digits, 4 of which
+// appear after the decimal point.
+// TODO: Find a more logical place to encode these restrictions
+const double EditFood::MAX_ENTRY = 999999.9999;
+const int EditFood::MAX_DECIMALS = 4;
 
 EditFood::EditFood(QWidget *parent, const QSharedPointer<SingleFood>& food)
     : QDialog(parent), food(food)
@@ -134,6 +141,8 @@ void EditFood::loadAmountInformation(QLineEdit* txtAmount, QComboBox* cboUnit,
 {
   FoodAmount baseAmount = food->getBaseAmount(dimension);
 
+  txtAmount->setValidator(new QDoubleValidator(0.0, MAX_ENTRY, MAX_DECIMALS, txtAmount));
+
   if (baseAmount.isDefined()) {
 
     if (txtAmount != NULL) {
@@ -180,6 +189,7 @@ void EditFood::loadFoodInformation()
   QMap<QString, NutrientAmount> foodNutrients = food->getNutrients();
 
   QString caloriesId = Nutrient::getNutrientByName("Calories")->getId();
+  ui.txtCalories->setValidator(new QDoubleValidator(0.0, MAX_ENTRY, MAX_DECIMALS, ui.txtCalories));
   if (foodNutrients.contains(caloriesId)) {
     ui.txtCalories->setText(QString::number(foodNutrients[caloriesId].getAmount()));
   }
@@ -257,6 +267,8 @@ void EditFood::NutrientAmountDisplay::initialize(QWidget* widgetParent)
   lblName->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   txtValue->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   lblUnit->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+
+  txtValue->setValidator(new QDoubleValidator(0.0, MAX_ENTRY, MAX_DECIMALS, txtValue));
 
   setDisplayMode(displayMode, true);
 }

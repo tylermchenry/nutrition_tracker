@@ -61,6 +61,10 @@ public:
     };
 
 private:
+
+    static const double MAX_ENTRY;
+    static const int MAX_DECIMALS;
+
     Ui::EditFoodUI ui;
 
     QSharedPointer<SingleFood> food;
