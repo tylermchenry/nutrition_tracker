@@ -10,7 +10,8 @@ INCLUDEPATH += . \
     src
 
 # Input
-HEADERS += src/data/group.h \
+HEADERS += src/model/variant_value_item_model.h \
+    src/data/group.h \
     src/data/composite_food.h \
     src/data/amount.h \
     src/data/single_food.h \
