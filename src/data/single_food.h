@@ -13,6 +13,7 @@
 #include "group.h"
 #include <QMap>
 #include <QWeakPointer>
+#include <QSet>
 
 class SingleFood: public Food
 {
@@ -42,6 +43,14 @@ class SingleFood: public Food
 
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
+    void setEntrySource(EntrySources::EntrySource source);
+
+    void setGroup(const QSharedPointer<const Group>& group);
+
+    void setNutrient(const NutrientAmount& nutrientAmount);
+
+    virtual void saveToDatabase();
+
   protected:
 
     virtual QSharedPointer<Food> getCanonicalSharedPointer();
@@ -60,6 +69,7 @@ class SingleFood: public Food
     EntrySources::EntrySource entrySource;
     QSharedPointer<const Group> group;
     QMap<QString, NutrientAmount> nutrients;
+    QSet<QString> modifiedNutrients;
 
     static QMap<QString, QSharedPointer<const Unit> > createNutrientsFromQueryResults
       (QSqlQuery& query);

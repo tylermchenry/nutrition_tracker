@@ -6,6 +6,7 @@
  */
 
 #include "food.h"
+#include <QVariant>
 #include <stdexcept>
 
 Food::Food(const QString& id, const QString& name, double weightAmount,
@@ -52,9 +53,24 @@ void Food::setBaseAmount(double amount, const QSharedPointer<const Unit>& unit)
   }
 }
 
+void Food::setName(const QString& name)
+{
+  this->name = name;
+}
+
 QVector<FoodAmount> Food::getComponents() const
 {
   return QVector<FoodAmount>();
 }
 
+void Food::bindBaseAmount
+  (QSqlQuery& query, const QString& placeholder, Unit::Dimensions::Dimension dimension) const
+{
+  FoodAmount amount = getBaseAmount(dimension);
 
+  if (amount.isDefined()) {
+    query.bindValue(placeholder, amount.getAmount(Unit::getPreferredUnit(dimension)));
+  } else {
+    query.bindValue(placeholder, QVariant(QVariant::Double)); // Binds "NULL"
+  }
+}

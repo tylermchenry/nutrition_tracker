@@ -34,6 +34,8 @@ class CompositeFood: public Food
 
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
+    virtual void saveToDatabase();
+
   protected:
 
     virtual QSharedPointer<Food> getCanonicalSharedPointer();

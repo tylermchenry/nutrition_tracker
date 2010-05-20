@@ -146,6 +146,10 @@ QMap<QString, NutrientAmount> CompositeFood::getNutrients() const
   return nutrients;
 }
 
+void CompositeFood::saveToDatabase()
+{
+}
+
 QSharedPointer<Food> CompositeFood::getCanonicalSharedPointer()
 {
   return compositeFoodCache[id].toStrongRef();

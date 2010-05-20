@@ -34,6 +34,10 @@ class Food
 
     virtual QMap<QString, NutrientAmount> getNutrients() const = 0;
 
+    void setName(const QString& name);
+
+    virtual void saveToDatabase() = 0;
+
   protected:
 
     Food(const QString& id, const QString& name, double weightAmount,
@@ -42,6 +46,9 @@ class Food
     virtual QSharedPointer<Food> getCanonicalSharedPointer() = 0;
 
     virtual QSharedPointer<const Food> getCanonicalSharedPointer() const = 0;
+
+    void bindBaseAmount
+      (QSqlQuery& query, const QString& placeholder, Unit::Dimensions::Dimension dimension) const;
 
   private:
 
