@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QtGui/QDoubleValidator>
 #include <QtGui/QSpacerItem>
+#include <QtGui/QMessageBox>
 #include "data/unit.h"
 #include "data/group.h"
 #include "model/variant_value_item_model.h"
@@ -21,6 +22,8 @@ EditFood::EditFood(QWidget *parent, const QSharedPointer<SingleFood>& food)
     populateGroupSelector(ui.cboCategory);
     populateSourceSelector(ui.cboSource);
     populateUserSelector(ui.cboOwner);
+
+    // TODO: Connect source and owner comboboxes when they are enabled
 
     populateUnitSelector(ui.cboWeightUnit, Unit::Dimensions::Weight);
     populateUnitSelector(ui.cboVolumeUnit, Unit::Dimensions::Volume);
@@ -51,12 +54,63 @@ EditFood::EditFood(QWidget *parent, const QSharedPointer<SingleFood>& food)
       (ui.cboMineralDimensions->findData
          (QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI)));
 
+    connect(ui.btnCancel, SIGNAL(clicked()), this, SLOT(close()));
+    connect(ui.btnSave, SIGNAL(clicked()), this, SLOT(saveFood()));
+    connect(ui.btnSaveAndAdd, SIGNAL(clicked()), this, SLOT(saveFoodAndClear()));
+    connect(ui.btnSaveAndClose, SIGNAL(clicked()), this, SLOT(saveFoodAndClose()));
+
     if (food != NULL) loadFoodInformation();
 }
 
 EditFood::~EditFood()
 {
 
+}
+
+void EditFood::clearFood()
+{
+  food.clear();
+}
+
+bool EditFood::saveFood()
+{
+  try {
+
+    food->setName(ui.txtName->text());
+
+    food->setGroup
+      (Group::getGroup(ui.cboCategory->itemData(ui.cboCategory->currentIndex()).toString()));
+
+    food->setBaseAmount
+      (ui.txtWeight->text().toDouble(),
+         Unit::getUnit(ui.cboWeightUnit->itemData(ui.cboWeightUnit->currentIndex()).toString()));
+
+    food->setBaseAmount
+      (ui.txtVolume->text().toDouble(),
+         Unit::getUnit(ui.cboVolumeUnit->itemData(ui.cboVolumeUnit->currentIndex()).toString()));
+
+    food->setBaseAmount
+      (ui.txtQuantity->text().toDouble(), Unit::getPreferredUnit(Unit::Dimensions::Quantity));
+
+    food->setBaseAmount
+      (ui.txtServings->text().toDouble(), Unit::getPreferredUnit(Unit::Dimensions::Serving));
+
+    food->setNutrient
+      (NutrientAmount(Nutrient::getNutrientByName("Calories"), ui.txtCalories->text().toDouble()));
+
+    saveNutrientInformation(basicNutrients);
+    saveNutrientInformation(vitamins);
+    saveNutrientInformation(minerals);
+
+    food->saveToDatabase();
+
+    return true;
+
+  } catch (std::exception& ex) {
+    QMessageBox::critical(this, "Failed to save",
+                          QString("Unable to save food. Error was: ") + ex.what());
+    return false;
+  }
 }
 
 void EditFood::populateSourceSelector(QComboBox* cboSource)
@@ -81,8 +135,7 @@ void EditFood::populateGroupSelector(QComboBox* cboGroup)
     cboGroup->addItem((*i)->getName(), (*i)->getId());
   }
 
-  cboGroup->setCurrentIndex
-    (cboGroup->findData(Group::getDefaultGroup()->getId()));
+  cboGroup->setCurrentIndex(cboGroup->findData(food->getGroup()->getId()));
 }
 
 void EditFood::populateUnitSelector(QComboBox* cboUnit, Unit::Dimensions::Dimension dimension)
@@ -199,6 +252,15 @@ void EditFood::loadFoodInformation()
   loadNutrientInformation(minerals, foodNutrients);
 }
 
+void EditFood::saveNutrientInformation(const QVector<NutrientAmountDisplay>& nutrientDisplays)
+{
+  for (QVector<NutrientAmountDisplay>::const_iterator i = nutrientDisplays.begin();
+      i != nutrientDisplays.end(); ++i)
+  {
+    food->setNutrient(i->getNutrientAmount());
+  }
+}
+
 void EditFood::changeDisplayModes(QVector<NutrientAmountDisplay>& nutrients,
                                      NutrientAmountDisplay::DisplayModes::DisplayMode mode)
 {
@@ -230,5 +292,18 @@ void EditFood::mineralsDimensionChanged(int newIndex)
        <NutrientAmountDisplay::DisplayModes::DisplayMode>());
 }
 
+void EditFood::saveFoodAndClose()
+{
+  if (saveFood()) {
+    close();
+  }
+}
+
+void EditFood::saveFoodAndClear()
+{
+  if (saveFood()) {
+    clearFood();
+  }
+}
 
 

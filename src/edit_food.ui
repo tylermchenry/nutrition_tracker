@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>581</width>
-    <height>319</height>
+    <width>640</width>
+    <height>323</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -444,7 +444,7 @@ p, li { white-space: pre-wrap; }
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
-      <widget class="QPushButton" name="pushButton_4">
+      <widget class="QPushButton" name="btnCancel">
        <property name="text">
         <string>Cancel</string>
        </property>
@@ -464,7 +464,7 @@ p, li { white-space: pre-wrap; }
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="btnSave">
        <property name="text">
         <string>Save</string>
        </property>
@@ -474,14 +474,14 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="btnSaveAndAdd">
        <property name="text">
         <string>Save and Add Another Food</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="btnSaveAndClose">
        <property name="text">
         <string>Save and Close</string>
        </property>

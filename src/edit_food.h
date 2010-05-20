@@ -21,6 +21,12 @@ public:
 
     ~EditFood();
 
+public slots:
+
+    void clearFood();
+
+    bool saveFood();
+
 private:
 
     Ui::EditFoodUI ui;
@@ -53,14 +59,21 @@ private:
 
     void loadFoodInformation();
 
+    void saveNutrientInformation(const QVector<NutrientAmountDisplay>& nutrientDisplays);
+
     void changeDisplayModes(QVector<NutrientAmountDisplay>& nutrients,
                                NutrientAmountDisplay::DisplayModes::DisplayMode mode);
 
   private slots:
 
+    // TODO: Consolodate these with a signal mapper
+
     void basicNutrientsDimensionChanged(int newIndex);
     void vitaminsDimensionChanged(int newIndex);
     void mineralsDimensionChanged(int newIndex);
+
+    void saveFoodAndClose();
+    void saveFoodAndClear();
 };
 
 #endif // EDIT_FOOD_H
