@@ -116,10 +116,10 @@ double Unit::getConversionFactor(const QSharedPointer<const Unit>& otherUnit) co
 {
   const QSharedPointer<const Unit> basicUnit = getBasicUnit(dimension);
 
-  if ((otherUnit == NULL) || (*otherUnit == *this)) {
-    return 1;
-  } else if (*otherUnit == *basicUnit) {
+  if ((otherUnit == NULL) || (*otherUnit == *basicUnit)) {
     return basicConversionFactor;
+  } else if (*otherUnit == *this) {
+    return 1;
   } else if (*this == *basicUnit) {
     return 1 / otherUnit->basicConversionFactor;
   } else if (otherUnit->getDimension() != dimension) {
