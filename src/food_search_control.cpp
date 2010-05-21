@@ -48,11 +48,11 @@ void FoodSearchControl::performSearch()
       // food_sourceRestrictions = " (Entry_Src != 'Custom' OR User_Id == :userId)";
     }
 
-    QString compound_sourceRestrictions;
+    QString composite_sourceRestrictions;
 
     if (!ui.chkOld->isChecked()) {
       // TODO: Implement when old markin gis implemented
-      // compound_sourceRestrictions = "Old == 0";
+      // composite_sourceRestrictions = "Old == 0";
     }
 
     QString categoryRestrictions;
@@ -68,59 +68,50 @@ void FoodSearchControl::performSearch()
       }
     }
 
+    // For whatever incredibly lame reason, the QMYSQL driver does not seem to
+    // support UNION queries, which this should logically be. If I try that,
+    // it stops returning results after it hits the first result from the
+    // second table in the UNION. Instead, this search is executed as two
+    // separate single-table queries, and then the results are "union'ed"
+    // client-side by inserting them into a std::set, sorted by description.
+    // Note: a QSet was not used because Result is a private inner class and
+    // I did not want to make it public for the purpose of implementing qHash.
+
+    std::set<Result> resultSet;
+
     QString searchQuery =
-        " (SELECT Food_Id AS Id, 'Food' AS Type, Long_Desc AS Description"
-        "   FROM food_description"
-        " WHERE " + categoryRestrictions +
-        "   " + (categoryRestrictions.size() > 0 ? "AND " : "") + food_sourceRestrictions +
-        "   " + (food_sourceRestrictions.size() > 0 ? "AND " : "") + "Long_Desc LIKE "
-        "     CONCAT('%', :terms1, '%')) ";
+        "SELECT Food_Id AS Id, 'Food' AS Type, Long_Desc AS Description"
+        "  FROM food_description "
+        "WHERE " + categoryRestrictions +
+        "  " + (categoryRestrictions.size() > 0 ? "AND " : "") + food_sourceRestrictions +
+        "  " + (food_sourceRestrictions.size() > 0 ? "AND " : "") + "Long_Desc LIKE "
+        "    CONCAT('%', :terms, '%') "
+        "ORDER BY Description ASC LIMIT 500";
+
+    runSearchQuery(searchQuery, resultSet);
 
     if (ui.lstCategories->isItemSelected(ui.lstCategories->item(0))) {
-      searchQuery +=
-          " UNION (SELECT Compound_Id AS Id, 'Compound Food' AS Type, Description"
-          "   FROM compound_food"
-          " WHERE " + compound_sourceRestrictions +
-          "   " + (compound_sourceRestrictions.size() > 0 ? "AND " : "") + "Description LIKE "
-          "    CONCAT('%', :terms2, '%')) ";
+
+      searchQuery =
+          "SELECT Composite_Id AS Id, 'Composite Food' AS Type, Description"
+          "   FROM composite_food "
+          "WHERE " + composite_sourceRestrictions +
+          "  " + (composite_sourceRestrictions.size() > 0 ? "AND " : "") + "Description LIKE "
+          "   CONCAT('%', :terms, '%') "
+          "ORDER BY Description ASC LIMIT 500";
+
+      runSearchQuery(searchQuery, resultSet);
     }
 
-    searchQuery += " ORDER BY Description ASC LIMIT 500;";
-
-    qDebug() << "Composed query: " << searchQuery;
-
-    if (!query.prepare(searchQuery)) {
-      qDebug() << "Prepare failed: " << query.lastError().text();
-      return;
+    for (std::set<Result>::const_iterator i = resultSet.begin(); i != resultSet.end(); ++i) {
+      emit newResult(i->id, i->type, i->description);
     }
-
-    query.bindValue(":terms1", ui.txtTerms->text());
-
-    if (ui.lstCategories->isItemSelected(ui.lstCategories->item(0))) {
-      query.bindValue(":terms2", ui.txtTerms->text());
-    }
-
-    if (!query.exec()) {
-      qDebug() << "Exec failed"  << query.lastError().text();
-      return;
-    }
-
-    qDebug() << "Ran query: " << query.executedQuery();
-
-    int idField = query.record().indexOf("Id");
-    int descField = query.record().indexOf("Description");
-
-    while (query.next()) {
-      emit newResult(query.value(idField).toInt(), "Food",
-                     query.value(descField).toString());
-    }
-
   }
 }
 
 void FoodSearchControl::setDatabase(const QSqlDatabase& db)
 {
-  static const QString COMPOUND_NAME = "(Compound Foods)";
+  static const QString COMPOUND_NAME = "(Composite Foods)";
 
   this->db = db;
 
@@ -143,3 +134,35 @@ void FoodSearchControl::setDatabase(const QSqlDatabase& db)
 
   ui.lstCategories->selectAll();
 }
+
+void FoodSearchControl::runSearchQuery(const QString& queryText, std::set<Result>& results) const
+{
+  QSqlQuery query(db);
+
+  qDebug() << "Query is: " << queryText;
+
+  if (!query.prepare(queryText)) {
+    qDebug() << "Prepare failed: " << query.lastError().text();
+    return;
+  }
+
+  query.bindValue(":terms", ui.txtTerms->text());
+
+  if (!query.exec()) {
+    qDebug() << "Exec failed"  << query.lastError().text();
+    return;
+  }
+
+  qDebug() << "Ran query: " << query.executedQuery();
+
+  int idField = query.record().indexOf("Id");
+  int typeField = query.record().indexOf("Type");
+  int descField = query.record().indexOf("Description");
+
+  while (query.next()) {
+    results.insert(Result(query.value(idField).toInt(),
+                          query.value(typeField).toString(),
+                          query.value(descField).toString()));
+  }
+}
+
