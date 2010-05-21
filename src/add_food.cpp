@@ -8,8 +8,8 @@ AddFood::AddFood(const QSqlDatabase& db, QWidget *parent)
 
 	connect(ui.fscSearch, SIGNAL(beginNewSearch()),
 	        ui.sfcResultsList, SLOT(clearFoodList()));
-	connect(ui.fscSearch, SIGNAL(newResult(int, const QString&, const QString&)),
-	        ui.sfcResultsList, SLOT(addToFoodList(int, const QString&, const QString&)));
+	connect(ui.fscSearch, SIGNAL(newResult(const FoodSearchControl::Result&)),
+	        ui.sfcResultsList, SLOT(addToFoodList(const FoodSearchControl::Result&)));
 }
 
 AddFood::~AddFood()

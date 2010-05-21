@@ -74,11 +74,9 @@ void FoodSearchControl::performSearch()
     // it stops returning results after it hits the first result from the
     // second table in the UNION. Instead, this search is executed as two
     // separate single-table queries, and then the results are "union'ed"
-    // client-side by inserting them into a std::set, sorted by description.
-    // Note: a QSet was not used because Result is a private inner class and
-    // I did not want to make it public for the purpose of implementing qHash.
+    // client-side by inserting them into a QSet, sorted by description.
 
-    std::set<Result> resultSet;
+    QSet<Result> resultSet;
 
     QString searchQuery =
         "SELECT Food_Id AS Id, 'Food' AS Type, Long_Desc AS Description"
@@ -104,8 +102,8 @@ void FoodSearchControl::performSearch()
       runSearchQuery(searchQuery, resultSet);
     }
 
-    for (std::set<Result>::const_iterator i = resultSet.begin(); i != resultSet.end(); ++i) {
-      emit newResult(i->id, i->type, i->description);
+    for (QSet<Result>::const_iterator i = resultSet.begin(); i != resultSet.end(); ++i) {
+      emit newResult(*i);
     }
   }
 }
@@ -134,7 +132,7 @@ void FoodSearchControl::setDatabase(const QSqlDatabase& db)
   ui.lstCategories->selectAll();
 }
 
-void FoodSearchControl::runSearchQuery(const QString& queryText, std::set<Result>& results) const
+void FoodSearchControl::runSearchQuery(const QString& queryText, QSet<Result>& results) const
 {
   QSqlQuery query(db);
 
@@ -165,3 +163,7 @@ void FoodSearchControl::runSearchQuery(const QString& queryText, std::set<Result
   }
 }
 
+uint qHash(const FoodSearchControl::Result& result)
+{
+  return qHash(result.description);
+}

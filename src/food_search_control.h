@@ -4,7 +4,7 @@
 #include <QtGui/QWidget>
 #include <QtSql/QSqlDatabase>
 #include <QMap>
-#include <set>
+#include <QSet>
 #include "ui_food_search_control.h"
 
 class FoodSearchControl : public QWidget
@@ -12,26 +12,6 @@ class FoodSearchControl : public QWidget
     Q_OBJECT
 
 public:
-    FoodSearchControl(QWidget *parent = 0);
-    ~FoodSearchControl();
-
-    void setDatabase(const QSqlDatabase& db);
-
-public slots:
-
-  void performSearch();
-
-signals:
-
-  void beginNewSearch();
-
-  void newResult(int id, const QString& type, const QString& description);
-
-private:
-
-    Ui::FoodSearchControlUI ui;
-    QSqlDatabase db;
-    QMap<QString, QString> categoryToGroupID;
 
     struct Result
     {
@@ -50,7 +30,30 @@ private:
       { return description == rhs.description; }
     };
 
-    void runSearchQuery(const QString& queryText, std::set<Result>& results) const;
+    FoodSearchControl(QWidget *parent = 0);
+    ~FoodSearchControl();
+
+    void setDatabase(const QSqlDatabase& db);
+
+public slots:
+
+  void performSearch();
+
+signals:
+
+  void beginNewSearch();
+
+  void newResult(const FoodSearchControl::Result& result);
+
+private:
+
+    Ui::FoodSearchControlUI ui;
+    QSqlDatabase db;
+    QMap<QString, QString> categoryToGroupID;
+
+    void runSearchQuery(const QString& queryText, QSet<Result>& results) const;
 };
+
+uint qHash(const FoodSearchControl::Result& result);
 
 #endif // FOOD_SEARCH_CONTROL_H
