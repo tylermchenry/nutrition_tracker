@@ -16,6 +16,15 @@
 
 QMap<int, QWeakPointer<SingleFood> > SingleFood::singleFoodCache;
 
+int SingleFood::tempId = -1;
+
+QSharedPointer<SingleFood> SingleFood::createNewFood()
+{
+  QSharedPointer<SingleFood> food(new SingleFood());
+  singleFoodCache[food->getSingleFoodId()] = food;
+  return food;
+}
+
 QSharedPointer<SingleFood> SingleFood::getSingleFood(int id)
 {
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
@@ -123,6 +132,13 @@ SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource en
   }
 }
 
+SingleFood::SingleFood()
+  : Food("SINGLE_" + QString::number(tempId), "", 0, 0, 0, 0),
+    id(tempId--), entrySource(EntrySources::Custom), group(Group::getDefaultGroup())
+{
+  qDebug() << "Created new food with temporary ID " << id;
+}
+
 SingleFood::~SingleFood()
 {
 }
@@ -207,7 +223,11 @@ void SingleFood::saveToDatabase()
   }
 
   if (id < 0) {
-    id = query.lastInsertId().toInt();
+    int newId = query.lastInsertId().toInt();
+    singleFoodCache[newId] = singleFoodCache[id];
+    singleFoodCache.remove(id);
+    qDebug() << "Assigned real ID " << newId << " to food with temp ID " << id;
+    id = newId;
   }
 
   // Only change information for nutrients that have actually been modified

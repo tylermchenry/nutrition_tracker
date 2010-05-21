@@ -29,6 +29,8 @@ class SingleFood: public Food
       static QString toHumanReadable(EntrySource src);
     };
 
+    static QSharedPointer<SingleFood> createNewFood();
+
     static QSharedPointer<SingleFood> getSingleFood(int id);
 
     static QSharedPointer<SingleFood> createSingleFoodFromQueryResults(QSqlQuery& query);
@@ -65,11 +67,15 @@ class SingleFood: public Food
                 double weightAmount, double volumeAmount,
                 double quantityAmount, double servingAmount);
 
+    SingleFood();
+
     int id;
     EntrySources::EntrySource entrySource;
     QSharedPointer<const Group> group;
     QMap<QString, NutrientAmount> nutrients;
     QSet<QString> modifiedNutrients;
+
+    static int tempId;
 
     static QMap<QString, QSharedPointer<const Unit> > createNutrientsFromQueryResults
       (QSqlQuery& query);
