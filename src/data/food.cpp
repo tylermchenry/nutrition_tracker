@@ -35,6 +35,11 @@ Food::~Food()
 {
 }
 
+QList<Unit::Dimensions::Dimension> Food::getValidDimensions() const
+{
+  return baseAmounts.keys();
+}
+
 FoodAmount Food::getBaseAmount(Unit::Dimensions::Dimension dimension) const
 {
   if (baseAmounts.contains(dimension)) {
@@ -48,10 +53,11 @@ FoodAmount Food::getBaseAmount(Unit::Dimensions::Dimension dimension) const
 void Food::setBaseAmount(double amount, const QSharedPointer<const Unit>& unit)
 {
   if (unit != NULL) {
-    qDebug() << "Setting base amount: " << amount << " " << unit->getAbbreviation()
-             << " * " << unit->getConversionFactor() << " = "
-             << amount * unit->getConversionFactor() << Unit::getPreferredUnit(unit->getDimension());
-    baseAmounts[unit->getDimension()] = amount * unit->getConversionFactor();
+    if (amount > 0) {
+      baseAmounts[unit->getDimension()] = amount * unit->getConversionFactor();
+    } else {
+      baseAmounts.remove(unit->getDimension());
+    }
   } else {
     throw std::logic_error("Attempted to set the base amount of a food without a unit.");
   }

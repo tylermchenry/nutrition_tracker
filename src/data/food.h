@@ -25,6 +25,8 @@ class Food
 
     inline QString getName() const { return name; }
 
+    QList<Unit::Dimensions::Dimension> getValidDimensions() const;
+
     FoodAmount getBaseAmount
       (Unit::Dimensions::Dimension dimension = Unit::Dimensions::PREFERRED_DIMENSION) const;
 
