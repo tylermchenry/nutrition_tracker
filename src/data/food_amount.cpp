@@ -67,6 +67,36 @@ QMap<QString, NutrientAmount> FoodAmount::getScaledNutrients() const
   return nutrients;
 }
 
+QVector<FoodAmount> FoodAmount::getScaledComponents() const
+{
+  // See getScaledNutrients for logic description
+
+  if (getFood() == NULL) {
+    throw std::logic_error("Attempted to scale the components of an undefined food.");
+  }
+
+  QVector<FoodAmount> components = getFood()->getComponents();
+
+  const QSharedPointer<const Unit> unit = getUnit();
+  const QSharedPointer<const Food> food = getFood();
+
+  FoodAmount baseAmount = food->getBaseAmount(unit->getDimension());
+
+  if (!baseAmount.isDefined()) {
+    throw std::logic_error("Attempted to scale nutrients based on a dimension for which "
+        "the food does not have a base amount.");
+  }
+
+  double scaleFactor = getAmount() / baseAmount.getAmount(unit);
+
+  for (QVector<FoodAmount>::iterator i = components.begin(); i != components.end(); ++i)
+  {
+    (*i) *= scaleFactor;
+  }
+
+  return components;
+}
+
 QString FoodAmount::getSubstanceName(bool plural) const
 {
   return QString("food") + (plural ? "s" : "");

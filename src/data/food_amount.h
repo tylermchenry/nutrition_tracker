@@ -29,6 +29,8 @@ class FoodAmount : public Amount<Food, FoodAmount>
 
     QMap<QString, NutrientAmount> getScaledNutrients() const;
 
+    QVector<FoodAmount> getScaledComponents() const;
+
   private:
 
     virtual QString getSubstanceName(bool plural) const;
