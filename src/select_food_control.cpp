@@ -1,8 +1,8 @@
 #include "select_food_control.h"
 #include "data/unit.h"
-#include "data/food.h"
 #include "data/single_food.h"
 #include "data/composite_food.h"
+#include <QDebug>
 
 SelectFoodControl::SelectFoodControl(QWidget *parent)
     : QWidget(parent)
@@ -11,6 +11,7 @@ SelectFoodControl::SelectFoodControl(QWidget *parent)
 
 	connect(ui.lstResults, SIGNAL(itemActivated(QListWidgetItem*)),
 	        this, SLOT(updateAddControls(QListWidgetItem*)));
+	connect(ui.btnAdd, SIGNAL(clicked()), this, SLOT(addClicked()));
 }
 
 SelectFoodControl::~SelectFoodControl()
@@ -35,23 +36,24 @@ void SelectFoodControl::addToFoodList(const FoodSearchControl::Result& result)
 
 void SelectFoodControl::updateAddControls(QListWidgetItem* curSelectedItem)
 {
-  QSharedPointer<Food> food;
-
   if (curSelectedItem != NULL) {
+
     const FoodSearchControl::Result& result = itemToResult[ui.lstResults->currentIndex().row()];
 
     if (result.type == "Food") {
-      food = SingleFood::getSingleFood(result.id);
+      selectedFood = SingleFood::getSingleFood(result.id);
     } else {
-      food = CompositeFood::getCompositeFood(result.id);
+      selectedFood = CompositeFood::getCompositeFood(result.id);
     }
+
+  } else {
+    selectedFood.clear();
   }
 
   ui.cbUnit->clear();
 
-  if (food != NULL) {
-
-    QList<Unit::Dimensions::Dimension> validDimensions = food->getValidDimensions();
+  if (selectedFood != NULL) {
+    QList<Unit::Dimensions::Dimension> validDimensions = selectedFood->getValidDimensions();
 
     for (QList<Unit::Dimensions::Dimension>::const_iterator i = validDimensions.begin();
         i != validDimensions.end(); ++i)
@@ -62,15 +64,26 @@ void SelectFoodControl::updateAddControls(QListWidgetItem* curSelectedItem)
       for (QVector<QSharedPointer<const Unit> >::const_iterator i = units.begin();
           i != units.end(); ++i)
       {
-        ui.cbUnit->addItem((*i)->getNameAndAbbreviation());
+        ui.cbUnit->addItem((*i)->getNameAndAbbreviation(), (*i)->getAbbreviation());
       }
     }
   }
 
-  bool enableControls = (food != NULL) && (curSelectedItem != NULL);
+  bool enableControls = (selectedFood != NULL) && (curSelectedItem != NULL);
 
   ui.txtAmount->setEnabled(enableControls);
   ui.cbUnit->setEnabled(enableControls);
   ui.cbMeal->setEnabled(enableControls);
   ui.btnAdd->setEnabled(enableControls);
+}
+
+void SelectFoodControl::addClicked()
+{
+  qDebug() << "Add clicked";
+  if (selectedFood != NULL) {
+    qDebug() << "Emitting amountAdded for " << selectedFood->getName();
+    emit amountAdded
+      (FoodAmount(selectedFood, ui.txtAmount->text().toDouble(),
+                  Unit::getUnit(ui.cbUnit->itemData(ui.cbUnit->currentIndex()).toString())));
+  }
 }
