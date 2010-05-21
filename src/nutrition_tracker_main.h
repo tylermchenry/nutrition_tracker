@@ -16,6 +16,7 @@ public:
 public slots:
   void show();
   void showAddFood();
+  void showCreateFood();
   void showEditFood();
 
 private:

@@ -15,7 +15,7 @@ const double EditFood::MAX_ENTRY = 999999.9999;
 const int EditFood::MAX_DECIMALS = 4;
 
 EditFood::EditFood(QWidget *parent, const QSharedPointer<SingleFood>& food)
-    : QDialog(parent), food(food)
+    : QDialog(parent), food(food != NULL ? food : SingleFood::createNewFood())
 {
 	ui.setupUi(this);
 
@@ -59,7 +59,7 @@ EditFood::EditFood(QWidget *parent, const QSharedPointer<SingleFood>& food)
     connect(ui.btnSaveAndAdd, SIGNAL(clicked()), this, SLOT(saveFoodAndClear()));
     connect(ui.btnSaveAndClose, SIGNAL(clicked()), this, SLOT(saveFoodAndClose()));
 
-    if (food != NULL) loadFoodInformation();
+    loadFoodInformation();
 }
 
 EditFood::~EditFood()
@@ -70,6 +70,7 @@ EditFood::~EditFood()
 void EditFood::clearFood()
 {
   food.clear();
+  loadFoodInformation();
 }
 
 bool EditFood::saveFood()
@@ -224,6 +225,10 @@ void EditFood::loadNutrientInformation(QVector<NutrientAmountDisplay>& nutrientD
 
 void EditFood::loadFoodInformation()
 {
+  if (food == NULL) {
+    food = SingleFood::createNewFood();
+  }
+
   ui.txtName->setText(food->getName());
 
   ui.cboCategory->setCurrentIndex(ui.cboCategory->findData(food->getGroup()->getId()));

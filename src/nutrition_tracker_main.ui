@@ -52,6 +52,7 @@
      <string>Food</string>
     </property>
     <addaction name="actionAdd_new_food"/>
+    <addaction name="actionEdit_existing_food"/>
     <addaction name="actionAdd_new_composite_food"/>
     <addaction name="actionCreate_template"/>
     <addaction name="separator"/>
@@ -198,6 +199,11 @@
   <action name="actionAdd_Food_s_to_Current_Day">
    <property name="text">
     <string>Add Food(s) to Current Day...</string>
+   </property>
+  </action>
+  <action name="actionEdit_existing_food">
+   <property name="text">
+    <string>Edit existing food...</string>
    </property>
   </action>
  </widget>
