@@ -28,10 +28,10 @@ signals:
   void newResult(int id, const QString& type, const QString& description);
 
 private:
+
     Ui::FoodSearchControlUI ui;
     QSqlDatabase db;
     QMap<QString, QString> categoryToGroupID;
-
 
     struct Result
     {

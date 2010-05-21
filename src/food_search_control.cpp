@@ -1,4 +1,5 @@
 #include "food_search_control.h"
+#include "data/group.h"
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>
@@ -121,15 +122,13 @@ void FoodSearchControl::setDatabase(const QSqlDatabase& db)
   ui.lstCategories->addItem(COMPOUND_NAME);
   categoryToGroupID.insert(COMPOUND_NAME, "");
 
-  QSqlQuery catQuery = db.exec("SELECT * FROM group_description ORDER BY FdGrp_Desc ASC;");
+  QVector<QSharedPointer<const Group> > allGroups = Group::getAllGroups();
 
-  int idField = catQuery.record().indexOf("FdGrp_Cd");
-  int nameField = catQuery.record().indexOf("FdGrp_Desc");
-
-  while (catQuery.next()) {
-    ui.lstCategories->addItem(catQuery.value(nameField).toString());
-    categoryToGroupID.insert(catQuery.value(nameField).toString(),
-                             catQuery.value(idField).toString());
+  for (QVector<QSharedPointer<const Group> >::const_iterator i = allGroups.begin();
+       i != allGroups.end(); ++i)
+  {
+    ui.lstCategories->addItem((*i)->getName());
+    categoryToGroupID.insert((*i)->getName(), (*i)->getId());
   }
 
   ui.lstCategories->selectAll();
