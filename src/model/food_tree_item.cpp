@@ -62,7 +62,7 @@ QVariant FoodTreeItem::data(int column) const
 
     } else if (column == 1) {
 
-      return QString::number(foodAmount.getAmount()) + " " + foodAmount.getUnit()->getAbbreviation();
+      return QString::number(foodAmount.getAmount(), 'f', 1) + " " + foodAmount.getUnit()->getAbbreviation();
 
     } else if (column > 1 && column < columnNutrientIds.size()+2) {
 
@@ -73,7 +73,7 @@ QVariant FoodTreeItem::data(int column) const
         NutrientAmount nutrientAmount = scaledNutrients[columnNutrientIds[column-2]];
 
         if (nutrientAmount.isDefined()) {
-          return QString::number(nutrientAmount.getAmount()) + " " + nutrientAmount.getUnit()->getAbbreviation();
+          return QString::number(nutrientAmount.getAmount(), 'f', 1) + " " + nutrientAmount.getUnit()->getAbbreviation();
         }
 
       }
