@@ -70,6 +70,7 @@ class Nutrient
     double rdi; // RDI in terms of standard unit
 
     static QMap<QString, QWeakPointer<const Nutrient> > nutrientCache;
+    static QMap<QString, QString> nameToId;
 };
 
 #endif /* NUTRIENT_H_ */

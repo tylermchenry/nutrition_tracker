@@ -16,23 +16,27 @@
 
 QMap<QString, QWeakPointer<const Nutrient> > Nutrient::nutrientCache;
 
+QMap<QString, QString> Nutrient::nameToId;
+
 QSharedPointer<const Nutrient> Nutrient::getNutrientByName(const QString& name)
 {
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-  QSqlQuery query(db);
+  if (nameToId.empty()) {
 
-  query.prepare("SELECT nutrient_definition.Nutr_No, nutrient_definition.Category, "
-                "  nutrient_definition.ShortName, nutrient_definition.RDI, "
-                "  units.Unit, units.Type, units.Name, units.Factor "
-                "FROM nutrient_definition JOIN units ON nutrient_definition.Units = units.Unit "
-                "WHERE ShortName=:name "
-                "ORDER BY nutrient_definition.category ASC, nutrient_definition.Disp_Order ASC, "
-                "  nutrient_definition.ShortName ASC "
-                "LIMIT 1");
-  query.bindValue(":name", name);
+    QVector<QSharedPointer<const Nutrient> > allNutrients = getAllNutrients();
 
-  if (query.exec() && query.first()) {
-    return createNutrientFromRecord(query.record());
+    for (QVector<QSharedPointer<const Nutrient> >::const_iterator i = allNutrients.begin();
+        i != allNutrients.end(); ++i)
+    {
+      if ((*i)->getName() != "" && (*i)->getId() != "") {
+        qDebug() << "Added to NTI map: " << (*i)->getName() << " -> " << (*i)->getId();
+        nameToId[(*i)->getName()] = (*i)->getId();
+      }
+    }
+
+  }
+
+  if (nameToId.contains(name)) {
+    return getNutrient(nameToId[name]);
   } else {
     return QSharedPointer<const Nutrient>();
   }
@@ -122,6 +126,7 @@ QSharedPointer<const Nutrient> Nutrient::createNutrientFromRecord
                     Categories::fromHumanReadable(record.field("Category").value().toString()),
                     Unit::createUnitFromRecord(record),
                     record.field("RDI").value().toDouble()));
+      qDebug() << "Added nutrient named " << nutrient->getName() << " to cache at ID " << id;
       nutrientCache[id] = nutrient;
       return nutrient;
     } else {
