@@ -17,6 +17,8 @@ AddFood::AddFood(const QSqlDatabase& db, QWidget *parent)
 	        foodTreeModel, SLOT(addFoodAmount(const FoodAmount&)));
 
 	ui.trvFoodsToAdd->setModel(foodTreeModel);
+
+	ui.trvFoodsToAdd->header()->setResizeMode(QHeaderView::ResizeToContents);
 }
 
 AddFood::~AddFood()

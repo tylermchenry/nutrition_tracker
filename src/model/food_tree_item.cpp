@@ -7,6 +7,7 @@
 
 #include "food_tree_item.h"
 #include <QVariant>
+#include <QDebug>
 #include "data/food.h"
 
 FoodTreeItem::FoodTreeItem(const FoodAmount& foodAmount, FoodTreeItem* parentItem)
@@ -18,6 +19,12 @@ FoodTreeItem::FoodTreeItem(const FoodAmount& foodAmount, FoodTreeItem* parentIte
       addChild(*i);
     }
   }
+
+  columnNutrientIds.resize(4);
+  columnNutrientIds[0] = Nutrient::getNutrientByName("Calories")->getId();
+  columnNutrientIds[1] = Nutrient::getNutrientByName("Total Fat")->getId();
+  columnNutrientIds[2] = Nutrient::getNutrientByName("Protein")->getId();
+  columnNutrientIds[3] = Nutrient::getNutrientByName("Total Carbohydrate")->getId();
 }
 
 FoodTreeItem::~FoodTreeItem()
@@ -42,24 +49,36 @@ int FoodTreeItem::childCount() const
 
 int FoodTreeItem::columnCount() const
 {
-  return 3; // Name, amount, and calories, for testing so far
+  return columnNutrientIds.size() + 2;
 }
 
 QVariant FoodTreeItem::data(int column) const
 {
   if (foodAmount.isDefined()) {
+
     if (column == 0) {
+
       return foodAmount.getFood()->getName();
+
     } else if (column == 1) {
+
       return QString::number(foodAmount.getAmount()) + " " + foodAmount.getUnit()->getAbbreviation();
-    } else if (column == 2) {
-      // TODO: Get rid of hard-coded ID when done testing
-      NutrientAmount calorieAmount = foodAmount.getScaledNutrients()["208"];
-      if (calorieAmount.isDefined()) {
-        return QString::number(calorieAmount.getAmount()) + " " + calorieAmount.getUnit()->getAbbreviation();
-      } else {
-        return 0;
+
+    } else if (column > 1 && column < columnNutrientIds.size()+2) {
+
+      QMap<QString, NutrientAmount> scaledNutrients = foodAmount.getScaledNutrients();
+
+      if (scaledNutrients.contains(columnNutrientIds[column-2])) {
+
+        NutrientAmount nutrientAmount = scaledNutrients[columnNutrientIds[column-2]];
+
+        if (nutrientAmount.isDefined()) {
+          return QString::number(nutrientAmount.getAmount()) + " " + nutrientAmount.getUnit()->getAbbreviation();
+        }
+
       }
+
+      return 0;
     }
     return QVariant();
   } else {

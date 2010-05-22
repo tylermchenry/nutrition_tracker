@@ -48,7 +48,14 @@ QVariant FoodTreeModel::headerData(int section, Qt::Orientation orientation, int
       return "Amount";
     } else if (section == 2) {
       return "Calories";
+    } else if (section == 3) {
+      return "Fat";
+    } else if (section == 4) {
+      return "Protein";
+    } else if (section == 5) {
+      return "Carbohydrate";
     }
+
   }
 
   return QVariant();
