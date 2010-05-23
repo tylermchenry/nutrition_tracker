@@ -4,20 +4,30 @@
 #include <QtGui/QDialog>
 #include <QtSql/QSqlDatabase>
 #include "ui_add_food.h"
+#include "data/food_collection.h"
+#include "data/meal.h"
 
 class AddFood : public QDialog
 {
     Q_OBJECT
 
-public:
+  public:
     AddFood(const QSqlDatabase& db, QWidget *parent = 0);
     ~AddFood();
 
-private slots:
+  signals:
 
-   void expandGrouping(const QModelIndex& index);
+    void foodCollectionAdded(const QSharedPointer<const FoodCollection>& foodCollection);
+    void mealsAdded(const QVector<QSharedPointer<const Meal> >& meals);
 
-private:
+  private slots:
+
+    void expandGrouping(const QModelIndex& index);
+    void clearFoods();
+    void commitFoods();
+
+  private:
+
     Ui::AddFoodClass ui;
 
     QSqlDatabase db;

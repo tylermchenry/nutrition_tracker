@@ -34,11 +34,17 @@ void NutritionTrackerMain::show()
   if (!(db = infoPrompt.getDatabase()).isOpen()) {
     close();
   }
+
+  static_cast<NutritionTracker*>(centralWidget())->initialize();
 }
 
 void NutritionTrackerMain::showAddFood()
 {
-  (new AddFood(db, this))->exec();
+  AddFood* addFood = new AddFood(db, this);
+  connect(addFood, SIGNAL(mealsAdded(const QVector<QSharedPointer<const Meal> >&)),
+          static_cast<NutritionTracker*>(centralWidget()),
+          SLOT(addMealsToCurrentDay(const QVector<QSharedPointer<const Meal> >&)));
+  addFood->exec();
 }
 
 void NutritionTrackerMain::showCreateFood()

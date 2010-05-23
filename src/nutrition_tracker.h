@@ -3,17 +3,37 @@
 
 #include <QtGui/QWidget>
 #include "ui_nutrition_tracker.h"
+#include "data/meal.h"
 
 class NutritionTracker : public QWidget
 {
     Q_OBJECT
 
-public:
+  public:
+
     NutritionTracker(QWidget *parent = 0);
     ~NutritionTracker();
 
-private:
+    void initialize();
+
+  public slots:
+
+    void addMealsToCurrentDay(const QVector<QSharedPointer<const Meal> >& meals);
+
+  private slots:
+
+    void changeDay();
+    void expandGrouping(const QModelIndex& index);
+
+  private:
+
     Ui::NutritionTrackerUI ui;
+
+    void addMealsToCurrentDay(const QVector<QSharedPointer<const Meal> >& meals, bool save);
+
+    void loadCurrentDayFoodsFromDatabase();
+    void saveCurrentDayFoodsToDatabase();
+
 };
 
 #endif // NUTRITION_TRACKER_H
