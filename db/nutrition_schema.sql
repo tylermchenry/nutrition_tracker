@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: nutrition
 -- ------------------------------------------------------
--- Server version	5.1.41-3ubuntu12
+-- Server version	5.1.41-3ubuntu12.1-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -43,9 +43,9 @@ CREATE TABLE `composite_food_link` (
   `Composite_Id` int(11) NOT NULL,
   `Contained_Type` enum('Food','CompositeFood') NOT NULL,
   `Contained_Id` int(11) NOT NULL,
-  `Magnitude` decimal(10,7) NOT NULL,
+  `Magnitude` decimal(10,4) NOT NULL,
   `Unit` char(7) NOT NULL,
-  PRIMARY KEY (`Composite_Id`,`Contained_Id`) USING BTREE
+  PRIMARY KEY (`Composite_Id`,`Contained_Type`,`Contained_Id`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Describes which individual foods are part of each compound f';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -144,7 +144,7 @@ CREATE TABLE `food_description` (
   `Quantity` decimal(10,4) unsigned DEFAULT NULL,
   `Servings` decimal(10,4) unsigned DEFAULT NULL,
   PRIMARY KEY (`Food_Id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=7540 DEFAULT CHARSET=latin1 ROW_FORMAT=FIXED;
+) ENGINE=MyISAM AUTO_INCREMENT=7541 DEFAULT CHARSET=latin1 ROW_FORMAT=FIXED;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -183,10 +183,29 @@ CREATE TABLE `group_description` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `meal` (
   `Meal_Id` int(11) NOT NULL AUTO_INCREMENT,
-  `User_Id` int(11) NOT NULL,
+  `CreatorUser_Id` int(11) DEFAULT NULL,
   `Name` char(50) NOT NULL,
-  PRIMARY KEY (`Meal_Id`)
+  PRIMARY KEY (`Meal_Id`) USING BTREE
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `meal_link`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `meal_link` (
+  `Meal_Id` int(11) NOT NULL DEFAULT '0',
+  `User_Id` int(11) NOT NULL,
+  `MealDate` date NOT NULL,
+  `Contained_Type` enum('Food','CompositeFood') NOT NULL,
+  `Contained_Id` int(11) NOT NULL,
+  `Magnitude` decimal(10,4) NOT NULL,
+  `Unit` char(7) NOT NULL,
+  `IntramealOrder` int(11) DEFAULT NULL,
+  PRIMARY KEY (`Meal_Id`,`User_Id`,`MealDate`,`Contained_Type`,`Contained_Id`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -351,4 +370,4 @@ CREATE TABLE `weight` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-05-16 21:23:59
+-- Dump completed on 2010-05-23 10:32:32
