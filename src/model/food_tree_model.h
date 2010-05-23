@@ -10,6 +10,7 @@
 
 #include "food_tree_item.h"
 #include "data/meal.h"
+#include "data/food_collection.h"
 #include <QAbstractItemModel>
 
 class FoodTreeModel : public QAbstractItemModel
@@ -41,9 +42,16 @@ class FoodTreeModel : public QAbstractItemModel
 
     void addFoodAmount(const FoodAmount& foodAmount, int mealId);
 
+  signals:
+
+    void newGroupingCreated(const QModelIndex& index);
+
   private:
 
     FoodTreeItem* rootItem;
+
+    QSharedPointer<FoodCollection> proposedAdditions;
+    FoodTreeItem* proposedAdditionsRoot;
 
     QMap<int, FoodTreeItem*> mealRoots;
     QMap<int, QSharedPointer<Meal> > temporaryMeals;

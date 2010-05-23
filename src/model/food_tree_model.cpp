@@ -9,8 +9,12 @@
 #include <QDebug>
 
 FoodTreeModel::FoodTreeModel(QObject *parent)
-  : QAbstractItemModel(parent), rootItem(new FoodTreeItem(FoodAmount()))
+  : QAbstractItemModel(parent), rootItem(new FoodTreeItem(FoodAmount())),
+    proposedAdditions(FoodCollection::createFoodCollection("Proposed Additions"))
 {
+  beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
+  proposedAdditionsRoot = rootItem->addChild(proposedAdditions->getBaseAmount());
+  endInsertRows();
 }
 
 FoodTreeModel::~FoodTreeModel()
@@ -120,12 +124,20 @@ void FoodTreeModel::addFoodAmount(const FoodAmount& foodAmount, int mealId)
 {
   qDebug() << "Adding food amount to food tree model";
 
-  if (!mealRoots.contains(mealId)) {
-    temporaryMeals[mealId] = Meal::createTemporaryMeal(1, QDate::currentDate(), mealId);
-    beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
-    mealRoots[mealId] = rootItem->addChild(temporaryMeals[mealId]->getBaseAmount());
-    endInsertRows();
+  if (proposedAdditionsRoot->childCount() == 0) {
+    emit newGroupingCreated(createIndex(proposedAdditionsRoot->row(), 0, proposedAdditionsRoot));
+  }
 
+  if (!mealRoots.contains(mealId)) {
+    QSharedPointer<Meal> newMeal = Meal::createTemporaryMeal(1, QDate::currentDate(), mealId);
+    temporaryMeals[mealId] = newMeal;
+    proposedAdditions->addComponent(newMeal->getBaseAmount());
+    beginInsertRows(createIndex(proposedAdditionsRoot->row(), 0, proposedAdditionsRoot),
+                      proposedAdditionsRoot->childCount(),
+                      proposedAdditionsRoot->childCount());
+    mealRoots[mealId] = proposedAdditionsRoot->addChild(newMeal->getBaseAmount());
+    endInsertRows();
+    emit newGroupingCreated(createIndex(mealRoots[mealId]->row(), 0, mealRoots[mealId]));
   }
 
   FoodTreeItem* parentOfNewItem = mealRoots[mealId];

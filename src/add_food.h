@@ -13,6 +13,10 @@ public:
     AddFood(const QSqlDatabase& db, QWidget *parent = 0);
     ~AddFood();
 
+private slots:
+
+   void expandGrouping(const QModelIndex& index);
+
 private:
     Ui::AddFoodClass ui;
 

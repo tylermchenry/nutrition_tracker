@@ -11,7 +11,8 @@
 #include "data/food.h"
 
 FoodTreeItem::FoodTreeItem(const FoodAmount& foodAmount, FoodTreeItem* parentItem)
-  : foodAmount(foodAmount), parentItem(parentItem)
+  : foodAmount(foodAmount), parentItem(parentItem),
+    level(parentItem == NULL ? 0 : parentItem->level + 1)
 {
   if (foodAmount.isDefined()) {
     QVector<FoodAmount> components = foodAmount.getScaledComponents();
@@ -63,7 +64,11 @@ QVariant FoodTreeItem::data(int column) const
 
     } else if (column == 1) {
 
-      return QString::number(foodAmount.getAmount(), 'f', 1) + " " + foodAmount.getUnit()->getAbbreviation();
+      if (level >= 3) {
+        return QString::number(foodAmount.getAmount(), 'f', 1) + " " + foodAmount.getUnit()->getAbbreviation();
+      } else {
+        return QVariant();
+      }
 
     } else if (column > 1 && column < columnNutrientIds.size()+2) {
 

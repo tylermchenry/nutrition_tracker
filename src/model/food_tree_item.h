@@ -17,6 +17,8 @@ class FoodTreeItem
 
     FoodTreeItem(const FoodAmount& foodAmount, FoodTreeItem* parentItem = NULL);
 
+    FoodTreeItem(const QString& heading, FoodTreeItem* parentItem = NULL);
+
     virtual ~FoodTreeItem();
 
     FoodTreeItem* addChild(const FoodAmount& foodAmount);
@@ -35,10 +37,12 @@ class FoodTreeItem
 
   private:
 
+    QString heading;
     FoodAmount foodAmount;
     QVector<QString> columnNutrientIds;
     QList<FoodTreeItem*> childItems;
     FoodTreeItem* parentItem;
+    int level;
 
 };
 

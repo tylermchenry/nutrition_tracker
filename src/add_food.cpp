@@ -16,6 +16,9 @@ AddFood::AddFood(const QSqlDatabase& db, QWidget *parent)
 	connect(ui.sfcResultsList, SIGNAL(amountAdded(const FoodAmount&, int)),
 	        foodTreeModel, SLOT(addFoodAmount(const FoodAmount&, int)));
 
+	connect(foodTreeModel, SIGNAL(newGroupingCreated(const QModelIndex&)),
+	        this, SLOT(expandGrouping(const QModelIndex&)));
+
 	ui.trvFoodsToAdd->setModel(foodTreeModel);
 
 	ui.trvFoodsToAdd->header()->setResizeMode(QHeaderView::ResizeToContents);
@@ -23,4 +26,9 @@ AddFood::AddFood(const QSqlDatabase& db, QWidget *parent)
 
 AddFood::~AddFood()
 {
+}
+
+void AddFood::expandGrouping(const QModelIndex& index)
+{
+  ui.trvFoodsToAdd->setExpanded(index, true);
 }
