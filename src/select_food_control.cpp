@@ -2,12 +2,15 @@
 #include "data/unit.h"
 #include "data/single_food.h"
 #include "data/composite_food.h"
+#include "data/meal.h"
 #include <QDebug>
 
 SelectFoodControl::SelectFoodControl(QWidget *parent)
     : QWidget(parent)
 {
 	ui.setupUi(this);
+
+	populateMealSelector(ui.cbMeal);
 
 	connect(ui.lstResults, SIGNAL(itemActivated(QListWidgetItem*)),
 	        this, SLOT(updateAddControls(QListWidgetItem*)));
@@ -84,6 +87,18 @@ void SelectFoodControl::addClicked()
     qDebug() << "Emitting amountAdded for " << selectedFood->getName();
     emit amountAdded
       (FoodAmount(selectedFood, ui.txtAmount->text().toDouble(),
-                  Unit::getUnit(ui.cbUnit->itemData(ui.cbUnit->currentIndex()).toString())));
+                  Unit::getUnit(ui.cbUnit->itemData(ui.cbUnit->currentIndex()).toString())),
+       ui.cbMeal->itemData(ui.cbMeal->currentIndex()).toInt());
+  }
+}
+
+void SelectFoodControl::populateMealSelector(QComboBox* cbMeals)
+{
+  qDebug() << "Populating meal selector...";
+  QMap<int, QString> mealNames = Meal::getAllMealNames();
+
+  for (QMap<int, QString>::const_iterator i = mealNames.begin(); i != mealNames.end(); ++i)
+  {
+    cbMeals->addItem(i.value(), i.key());
   }
 }

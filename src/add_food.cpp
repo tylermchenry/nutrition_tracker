@@ -13,8 +13,8 @@ AddFood::AddFood(const QSqlDatabase& db, QWidget *parent)
 	        ui.sfcResultsList, SLOT(clearFoodList()));
 	connect(ui.fscSearch, SIGNAL(newResult(const FoodSearchControl::Result&)),
 	        ui.sfcResultsList, SLOT(addToFoodList(const FoodSearchControl::Result&)));
-	connect(ui.sfcResultsList, SIGNAL(amountAdded(const FoodAmount&)),
-	        foodTreeModel, SLOT(addFoodAmount(const FoodAmount&)));
+	connect(ui.sfcResultsList, SIGNAL(amountAdded(const FoodAmount&, int)),
+	        foodTreeModel, SLOT(addFoodAmount(const FoodAmount&, int)));
 
 	ui.trvFoodsToAdd->setModel(foodTreeModel);
 

@@ -116,9 +116,10 @@ int FoodTreeModel::columnCount(const QModelIndex &parent) const
     return rootItem->columnCount();
 }
 
-void FoodTreeModel::addFoodAmount(const FoodAmount& foodAmount)
+void FoodTreeModel::addFoodAmount(const FoodAmount& foodAmount, int mealId)
 {
   qDebug() << "Adding food amount to food tree model";
+
   beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
   rootItem->addChild(foodAmount);
   endInsertRows();

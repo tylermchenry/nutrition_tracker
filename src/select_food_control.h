@@ -16,7 +16,7 @@ public:
 
 signals:
 
-    void amountAdded(const FoodAmount& foodAmount);
+    void amountAdded(const FoodAmount& foodAmount, int mealId);
 
 public slots:
 
@@ -34,6 +34,8 @@ private:
 
     QMap<int, FoodSearchControl::Result> itemToResult;
     QSharedPointer<Food> selectedFood;
+
+    void populateMealSelector(QComboBox* cbMeals);
 
 };
 

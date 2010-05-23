@@ -38,11 +38,13 @@ class FoodTreeModel : public QAbstractItemModel
 
   public slots:
 
-    void addFoodAmount(const FoodAmount& foodAmount);
+    void addFoodAmount(const FoodAmount& foodAmount, int mealId);
 
   private:
 
-    FoodTreeItem *rootItem;
+    FoodTreeItem* rootItem;
+
+    QMap<int, FoodTreeItem*> mealRoots;
 
 };
 
