@@ -7,9 +7,12 @@
 
 #include "food_tree_model.h"
 #include <QDebug>
+#include <QtGui/QFont>
+#include <QtGui/QTreeView>
 
-FoodTreeModel::FoodTreeModel(QObject *parent)
-  : QAbstractItemModel(parent), rootItem(new FoodTreeItem(FoodAmount())),
+FoodTreeModel::FoodTreeModel(QTreeView *treeView)
+  : QAbstractItemModel(treeView), treeView(treeView),
+    rootItem(new FoodTreeItem(FoodAmount())),
     proposedAdditions(FoodCollection::createFoodCollection("Proposed Additions"))
 {
   beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
@@ -27,12 +30,44 @@ QVariant FoodTreeModel::data(const QModelIndex &index, int role) const
   if (!index.isValid())
     return QVariant();
 
-  if (role != Qt::DisplayRole)
-    return QVariant();
-
   FoodTreeItem *item = static_cast<FoodTreeItem*>(index.internalPointer());
 
-  return item->data(index.column());
+  if (role == Qt::DisplayRole) {
+
+    // Hide amounts for depths of 1 and 2 (summaries)
+    if (index.column() != 1 || item->depth() >= 3) {
+      return item->data(index.column());
+    }
+
+  } else if (role == Qt::FontRole) {
+
+    QFont font;
+    int depth = item->depth();
+
+    if (depth < 2) {
+      font.setItalic(true);
+    }
+
+    if (depth < 3) {
+      font.setBold(true);
+    } else if (item->childCount() > 0) {
+      if (treeView && treeView->isExpanded(createIndex(index.row(), 0, index.internalPointer()))) {
+        font.setItalic(true);
+      }
+    }
+
+    return font;
+
+  } else if (role == Qt::TextAlignmentRole) {
+
+    if (index.column() == 0) {
+      return Qt::AlignLeft;
+    } else {
+      return Qt::AlignRight;
+    }
+  }
+
+  return QVariant();
 }
 
 Qt::ItemFlags FoodTreeModel::flags(const QModelIndex &index) const
@@ -57,7 +92,7 @@ QVariant FoodTreeModel::headerData(int section, Qt::Orientation orientation, int
     } else if (section == 4) {
       return "Protein";
     } else if (section == 5) {
-      return "Carbohydrate";
+      return "Carbs";
     }
 
   }
@@ -115,9 +150,9 @@ int FoodTreeModel::rowCount(const QModelIndex &parent) const
 int FoodTreeModel::columnCount(const QModelIndex &parent) const
 {
   if (parent.isValid())
-    return static_cast<FoodTreeItem*>(parent.internalPointer())->columnCount();
+    return static_cast<FoodTreeItem*>(parent.internalPointer())->columnCount() + 1;
   else
-    return rootItem->columnCount();
+    return rootItem->columnCount() + 1;
 }
 
 void FoodTreeModel::addFoodAmount(const FoodAmount& foodAmount, int mealId)

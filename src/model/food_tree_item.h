@@ -33,6 +33,8 @@ class FoodTreeItem
 
     int row() const;
 
+    int depth() const;
+
     FoodTreeItem *parent();
 
   private:
@@ -42,7 +44,6 @@ class FoodTreeItem
     QVector<QString> columnNutrientIds;
     QList<FoodTreeItem*> childItems;
     FoodTreeItem* parentItem;
-    int level;
 
 };
 

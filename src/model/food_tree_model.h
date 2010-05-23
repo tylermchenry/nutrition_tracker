@@ -12,6 +12,7 @@
 #include "data/meal.h"
 #include "data/food_collection.h"
 #include <QAbstractItemModel>
+#include <QtGui/QTreeView>
 
 class FoodTreeModel : public QAbstractItemModel
 {
@@ -19,7 +20,7 @@ class FoodTreeModel : public QAbstractItemModel
 
   public:
 
-    explicit FoodTreeModel(QObject *parent = 0);
+    explicit FoodTreeModel(QTreeView *parent);
     ~FoodTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const;
@@ -47,6 +48,8 @@ class FoodTreeModel : public QAbstractItemModel
     void newGroupingCreated(const QModelIndex& index);
 
   private:
+
+    QTreeView* treeView;
 
     FoodTreeItem* rootItem;
 

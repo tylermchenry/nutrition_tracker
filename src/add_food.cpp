@@ -7,7 +7,7 @@ AddFood::AddFood(const QSqlDatabase& db, QWidget *parent)
 	ui.setupUi(this);
 	ui.fscSearch->setDatabase(db);
 
-	FoodTreeModel* foodTreeModel = new FoodTreeModel();
+	FoodTreeModel* foodTreeModel = new FoodTreeModel(ui.trvFoodsToAdd);
 
 	connect(ui.fscSearch, SIGNAL(beginNewSearch()),
 	        ui.sfcResultsList, SLOT(clearFoodList()));
