@@ -13,6 +13,7 @@
 #include "data/food_collection.h"
 #include <QAbstractItemModel>
 #include <QtGui/QTreeView>
+#include "data/food_collection.h"
 
 class FoodTreeModel : public QAbstractItemModel
 {
@@ -20,7 +21,7 @@ class FoodTreeModel : public QAbstractItemModel
 
   public:
 
-    explicit FoodTreeModel(QTreeView *parent);
+    explicit FoodTreeModel(QTreeView *parent, const QString& allFoodsTitle = "All Foods");
     ~FoodTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const;
@@ -39,9 +40,16 @@ class FoodTreeModel : public QAbstractItemModel
 
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
+    inline QSharedPointer<const FoodCollection> getAllFoods() const
+      { return allFoods; }
+
+    QVector<QSharedPointer<const Meal> > getAllMeals() const;
+
   public slots:
 
     void addFoodAmount(const FoodAmount& foodAmount, int mealId);
+
+    void addMeal(const QSharedPointer<const Meal>& meal);
 
   signals:
 
@@ -53,12 +61,13 @@ class FoodTreeModel : public QAbstractItemModel
 
     FoodTreeItem* rootItem;
 
-    QSharedPointer<FoodCollection> proposedAdditions;
-    FoodTreeItem* proposedAdditionsRoot;
+    QSharedPointer<FoodCollection> allFoods;
+    FoodTreeItem* allFoodsRoot;
 
     QMap<int, FoodTreeItem*> mealRoots;
     QMap<int, QSharedPointer<Meal> > temporaryMeals;
 
+    void ensureMealRootExists(int mealId);
 };
 
 #endif /* FOOD_TREE_MODEL_H_ */

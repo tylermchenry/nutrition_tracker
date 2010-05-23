@@ -10,13 +10,13 @@
 #include <QtGui/QFont>
 #include <QtGui/QTreeView>
 
-FoodTreeModel::FoodTreeModel(QTreeView *treeView)
+FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QString& allFoodsTitle)
   : QAbstractItemModel(treeView), treeView(treeView),
     rootItem(new FoodTreeItem(FoodAmount())),
-    proposedAdditions(FoodCollection::createFoodCollection("Proposed Additions"))
+    allFoods(FoodCollection::createFoodCollection(allFoodsTitle))
 {
   beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
-  proposedAdditionsRoot = rootItem->addChild(proposedAdditions->getBaseAmount());
+  allFoodsRoot = rootItem->addChild(allFoods->getBaseAmount());
   endInsertRows();
 }
 
@@ -155,25 +155,26 @@ int FoodTreeModel::columnCount(const QModelIndex &parent) const
     return rootItem->columnCount() + 1;
 }
 
+QVector<QSharedPointer<const Meal> > FoodTreeModel::getAllMeals() const
+{
+  QVector<QSharedPointer<const Meal> > constMeals;
+  QList<QSharedPointer<Meal> > meals = temporaryMeals.values();
+
+  // TODO: There has to be a more elegant way to convert from a collection
+  // of T to a collection of const T
+
+  for (QList<QSharedPointer<Meal> >::const_iterator i = meals.begin(); i != meals.end(); ++i) {
+    constMeals.push_back(*i);
+  }
+
+  return constMeals;
+}
+
 void FoodTreeModel::addFoodAmount(const FoodAmount& foodAmount, int mealId)
 {
   qDebug() << "Adding food amount to food tree model";
 
-  if (proposedAdditionsRoot->childCount() == 0) {
-    emit newGroupingCreated(createIndex(proposedAdditionsRoot->row(), 0, proposedAdditionsRoot));
-  }
-
-  if (!mealRoots.contains(mealId)) {
-    QSharedPointer<Meal> newMeal = Meal::createTemporaryMeal(1, QDate::currentDate(), mealId);
-    temporaryMeals[mealId] = newMeal;
-    proposedAdditions->addComponent(newMeal->getBaseAmount());
-    beginInsertRows(createIndex(proposedAdditionsRoot->row(), 0, proposedAdditionsRoot),
-                      proposedAdditionsRoot->childCount(),
-                      proposedAdditionsRoot->childCount());
-    mealRoots[mealId] = proposedAdditionsRoot->addChild(newMeal->getBaseAmount());
-    endInsertRows();
-    emit newGroupingCreated(createIndex(mealRoots[mealId]->row(), 0, mealRoots[mealId]));
-  }
+  ensureMealRootExists(mealId);
 
   FoodTreeItem* parentOfNewItem = mealRoots[mealId];
 
@@ -182,4 +183,47 @@ void FoodTreeModel::addFoodAmount(const FoodAmount& foodAmount, int mealId)
                   parentOfNewItem->childCount(), parentOfNewItem->childCount());
   parentOfNewItem->addChild(foodAmount);
   endInsertRows();
+}
+
+void FoodTreeModel::addMeal(const QSharedPointer<const Meal>& meal)
+{
+  int mealId = meal->getMealId();
+
+  ensureMealRootExists(mealId);
+
+  FoodTreeItem* parentOfNewItem = mealRoots[mealId];
+
+  temporaryMeals[mealId]->mergeMeal(meal);
+
+  QVector<FoodAmount> components = meal->getComponents();
+
+  beginInsertRows(createIndex(parentOfNewItem->row(), 0, parentOfNewItem),
+                    parentOfNewItem->childCount(), parentOfNewItem->childCount()+components.size()-1);
+
+  for (QVector<FoodAmount>::const_iterator i = components.begin();
+      i != components.end(); ++i)
+  {
+    parentOfNewItem->addChild(*i);
+  }
+
+  endInsertRows();
+}
+
+void FoodTreeModel::ensureMealRootExists(int mealId)
+{
+  if (allFoodsRoot->childCount() == 0) {
+     emit newGroupingCreated(createIndex(allFoodsRoot->row(), 0, allFoodsRoot));
+   }
+
+   if (!mealRoots.contains(mealId)) {
+     QSharedPointer<Meal> newMeal = Meal::createTemporaryMeal(1, QDate::currentDate(), mealId);
+     temporaryMeals[mealId] = newMeal;
+     allFoods->addComponent(newMeal->getBaseAmount());
+     beginInsertRows(createIndex(allFoodsRoot->row(), 0, allFoodsRoot),
+                       allFoodsRoot->childCount(),
+                       allFoodsRoot->childCount());
+     mealRoots[mealId] = allFoodsRoot->addChild(newMeal->getBaseAmount());
+     endInsertRows();
+     emit newGroupingCreated(createIndex(mealRoots[mealId]->row(), 0, mealRoots[mealId]));
+   }
 }
