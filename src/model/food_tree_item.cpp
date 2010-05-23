@@ -74,7 +74,17 @@ QVariant FoodTreeItem::data(int column) const
         NutrientAmount nutrientAmount = scaledNutrients[columnNutrientIds[column-2]];
 
         if (nutrientAmount.isDefined()) {
-          return QString::number(nutrientAmount.getAmount(), 'f', 1) + " " + nutrientAmount.getUnit()->getAbbreviation();
+
+          int decimalPlaces;
+
+          if (nutrientAmount.getNutrient() == Nutrient::getNutrientByName("Calories")) {
+            decimalPlaces = 0;
+          } else {
+            decimalPlaces = 1;
+          }
+
+          return QString::number(nutrientAmount.getAmount(), 'f', decimalPlaces) + " " +
+            nutrientAmount.getUnit()->getAbbreviation();
         }
 
       }
