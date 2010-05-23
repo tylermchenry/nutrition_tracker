@@ -21,6 +21,8 @@ class CompositeFood: public FoodCollection
 
     virtual ~CompositeFood();
 
+    inline int getCompositeFoodId() const { return id; }
+
     virtual void saveToDatabase();
 
   protected:
