@@ -32,9 +32,10 @@ FoodTreeItem::~FoodTreeItem()
   qDeleteAll(childItems);
 }
 
-void FoodTreeItem::addChild(const FoodAmount& foodAmount)
+FoodTreeItem* FoodTreeItem::addChild(const FoodAmount& foodAmount)
 {
   childItems.append(new FoodTreeItem(foodAmount, this));
+  return childItems[childItems.size()-1];
 }
 
 FoodTreeItem* FoodTreeItem::child(int row)

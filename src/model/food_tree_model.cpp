@@ -120,7 +120,19 @@ void FoodTreeModel::addFoodAmount(const FoodAmount& foodAmount, int mealId)
 {
   qDebug() << "Adding food amount to food tree model";
 
-  beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
-  rootItem->addChild(foodAmount);
+  if (!mealRoots.contains(mealId)) {
+    temporaryMeals[mealId] = Meal::createTemporaryMeal(1, QDate::currentDate(), mealId);
+    beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
+    mealRoots[mealId] = rootItem->addChild(temporaryMeals[mealId]->getBaseAmount());
+    endInsertRows();
+
+  }
+
+  FoodTreeItem* parentOfNewItem = mealRoots[mealId];
+
+  temporaryMeals[mealId]->addComponent(foodAmount);
+  beginInsertRows(createIndex(parentOfNewItem->row(), 0, parentOfNewItem),
+                  parentOfNewItem->childCount(), parentOfNewItem->childCount());
+  parentOfNewItem->addChild(foodAmount);
   endInsertRows();
 }

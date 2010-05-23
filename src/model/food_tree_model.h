@@ -9,6 +9,7 @@
 #define FOOD_TREE_MODEL_H_
 
 #include "food_tree_item.h"
+#include "data/meal.h"
 #include <QAbstractItemModel>
 
 class FoodTreeModel : public QAbstractItemModel
@@ -45,6 +46,7 @@ class FoodTreeModel : public QAbstractItemModel
     FoodTreeItem* rootItem;
 
     QMap<int, FoodTreeItem*> mealRoots;
+    QMap<int, QSharedPointer<Meal> > temporaryMeals;
 
 };
 

@@ -19,7 +19,7 @@ class FoodTreeItem
 
     virtual ~FoodTreeItem();
 
-    void addChild(const FoodAmount& foodAmount);
+    FoodTreeItem* addChild(const FoodAmount& foodAmount);
 
     FoodTreeItem* child(int row);
 
