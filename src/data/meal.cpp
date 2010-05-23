@@ -12,6 +12,8 @@
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
+#include "data/single_food.h"
+#include "data/composite_food.h"
 
 QMap<int, QMap<QDate, QMap<int, QWeakPointer<Meal> > > > Meal::mealCache;
 
@@ -77,11 +79,12 @@ QSharedPointer<Meal> Meal::getOrCreateMeal(int userId, const QDate& date, int me
   QSharedPointer<Meal> meal = getMeal(userId, date, mealId);
 
   if (meal == NULL) {
-    QSharedPointer<Meal> meal
+    QSharedPointer<Meal> newMeal
       (new Meal(mealId, userId,
                 getAllMealNames()[mealId],
                 userId, date, QVector<FoodAmount>()));
-    mealCache[userId][date][mealId] = meal;
+    mealCache[userId][date][mealId] = newMeal;
+    meal = newMeal;
   }
 
   return meal;
@@ -109,7 +112,8 @@ QSharedPointer<Meal> Meal::getMeal(int userId, const QDate& date, int mealId)
                 "        ON meal_link.Unit = units.Unit "
                 "WHERE meal_link.User_Id = :userId "
                 "  AND meal_link.MealDate = :date "
-                "  AND meal_link.Meal_Id = :mealId ");
+                "  AND meal_link.Meal_Id = :mealId "
+                "ORDER BY IntramealOrder ASC");
 
   query.bindValue(":userId", userId);
   query.bindValue(":date", date);
@@ -117,6 +121,7 @@ QSharedPointer<Meal> Meal::getMeal(int userId, const QDate& date, int mealId)
 
   if (query.exec()) {
     qDebug() << "Executed query: " << query.executedQuery();
+    qDebug() << "There are " << query.size() << " foods in this meal";
     return createMealFromQueryResults(query);
   } else {
     return QSharedPointer<Meal>();
@@ -128,7 +133,7 @@ QVector<QSharedPointer<Meal> > Meal::getMealsForDay(int userId, const QDate& dat
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  query.prepare("SELECT meal_link.Meal_Id "
+  query.prepare("SELECT DISTINCT meal_link.Meal_Id "
                 "FROM meal_link "
                 "WHERE meal_link.User_Id = :userId "
                 "  AND meal_link.MealDate = :date ");
@@ -191,7 +196,7 @@ Meal::Meal(int id, int creatorUserId, const QString& name, int userId,
   : FoodCollection((temporaryId >= 0 ? "TMPMEAL_" : "MEAL_") + QString::number(id) + "_" +
                    QString::number(userId) + "_" + date.toString(Qt::ISODate),
                    name, components, 0, 0, 0, 1),
-    id(id), creatorUserId(creatorUserId), userId(userId), temporaryId(temporaryId)
+    id(id), creatorUserId(creatorUserId), userId(userId), date(date), temporaryId(temporaryId)
 {
 }
 
@@ -206,6 +211,70 @@ void Meal::saveToDatabase()
 {
   if (temporaryId >= 0) {
     throw std::logic_error("Attempted to save a temporary meal to the database.");
+  }
+
+  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
+  QSqlQuery query(db);
+
+  // This needs to work either for a new food or an update to an existing food
+
+  query.prepare("DELETE FROM meal_link WHERE "
+                "Meal_Id=:id AND User_Id=:userId AND MealDate=:mealDate");
+
+  query.bindValue(":id", id);
+  query.bindValue(":userId", userId);
+  query.bindValue(":mealDate", date);
+
+  if (!query.exec()) {
+    qDebug() << "Failed to delete old meal items: " << query.lastError();
+    return;
+  }
+
+  int order = 0;
+
+  QVector<FoodAmount> components = getComponents();
+  for (QVector<FoodAmount>::const_iterator i = components.begin(); i != components.end(); ++i)
+  {
+    query.prepare("INSERT INTO meal_link "
+                   "  (Meal_Id, User_Id, MealDate, Contained_Type, "
+                   "   Contained_Id, Magnitude, Unit, IntramealOrder) "
+                   "VALUES "
+                   "  (:id, :userId, :mealDate, :containedType, "
+                   "   :containedId, :magnitude, :unit, :order)");
+
+    query.bindValue(":id", id);
+    query.bindValue(":userId", userId);
+    query.bindValue(":mealDate", date);
+
+    if (!i->isDefined()) continue;
+
+    QSharedPointer<const Food> food = i->getFood();
+
+    QSharedPointer<const SingleFood> singleFood;
+    QSharedPointer<const CompositeFood> compositeFood;
+
+    FoodCollection::ContainedTypes::ContainedType containedType;
+    int containedId;
+
+    if ((singleFood = food.dynamicCast<const SingleFood>()) != NULL) {
+      containedType = FoodCollection::ContainedTypes::SingleFood;
+      containedId = singleFood->getSingleFoodId();
+    } else if ((compositeFood = food.dynamicCast<const CompositeFood>()) != NULL) {
+      containedType = FoodCollection::ContainedTypes::CompositeFood;
+      containedId = compositeFood->getCompositeFoodId();
+    } else {
+      continue;
+    }
+
+    query.bindValue(":containedType", FoodCollection::ContainedTypes::toHumanReadable(containedType));
+    query.bindValue(":containedId", containedId);
+    query.bindValue(":magnitude", i->getAmount());
+    query.bindValue(":unit", i->getUnit()->getAbbreviation());
+    query.bindValue(":order", order++);
+
+    if (!query.exec()) {
+      qDebug() << "Failed to save " << food->getName() << " to meal: " << query.lastError();
+    }
   }
 }
 

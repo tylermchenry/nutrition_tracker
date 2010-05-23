@@ -34,6 +34,10 @@ class Meal : public FoodCollection
 
     inline int getMealId() const { return id; }
 
+    inline int getCreatorUserId() const { return creatorUserId; }
+
+    inline int getUserId() const { return userId; }
+
     inline QDate getDate() const { return date; }
 
     virtual void mergeMeal(const QSharedPointer<const Meal>& meal);
