@@ -37,6 +37,8 @@ class FoodCollection: public Food
 
     virtual void addComponents(const QVector<FoodAmount>& components);
 
+    virtual void clearComponents();
+
     virtual void saveToDatabase();
 
   protected:

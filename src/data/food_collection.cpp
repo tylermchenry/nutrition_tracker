@@ -81,6 +81,11 @@ void FoodCollection::addComponents(const QVector<FoodAmount>& components)
   this->components += components;
 }
 
+void FoodCollection::clearComponents()
+{
+  components.clear();
+}
+
 void FoodCollection::saveToDatabase()
 {
   throw std::logic_error("Attempted to save a bare food collection to the database.");
