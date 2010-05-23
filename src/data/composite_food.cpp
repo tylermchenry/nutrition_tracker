@@ -53,53 +53,37 @@ QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
 QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
   (QSqlQuery& query)
 {
-  QVector<FoodAmount> components;
+  QVector<FoodAmount> components = createComponentsFromQueryResults(query);
 
-   while (query.next()) {
+  if (query.first()) {
+    const QSqlRecord& record = query.record();
+    int id = record.field("Composite_Id").value().toInt();
+    if (!compositeFoodCache[id]) {
+      QSharedPointer<CompositeFood> food
+      (new CompositeFood(id,
+                         record.field("Description").value().toString(),
+                         components,
+                         record.field("Weight_g").value().toDouble(),
+                         record.field("Volume_floz").value().toDouble(),
+                         record.field("Quantity").value().toDouble(),
+                         record.field("Servings").value().toDouble()));
+      compositeFoodCache[id] = food;
+      return food;
+    } else {
+      return compositeFoodCache[id].toStrongRef();
+    }
+  } else {
+    return QSharedPointer<CompositeFood>();
+  }
+}
 
-     const QSqlRecord& record = query.record();
-
-     int containedId = record.field("Contained_Id").value().toInt();
-
-     ContainedTypes::ContainedType type =
-       ContainedTypes::fromHumanReadable(record.field("Contained_Type").value().toString());
-
-     QSharedPointer<const Food> containedFood;
-
-     if (type == ContainedTypes::SingleFood) {
-       containedFood = SingleFood::getSingleFood(containedId);
-     } else if (type == ContainedTypes::CompositeFood) {
-       // TODO: Check for infinite recursion and throw exception
-       containedFood = CompositeFood::getCompositeFood(containedId);
-     }
-
-     if (containedFood != NULL) {
-       components.push_back(FoodAmount
-         (containedFood, record.field("Magnitude").value().toDouble(),
-          Unit::createUnitFromRecord(record)));
-     }
-   }
-
-   if (query.first()) {
-     const QSqlRecord& record = query.record();
-     int id = record.field("Composite_Id").value().toInt();
-     if (!compositeFoodCache[id]) {
-       QSharedPointer<CompositeFood> food
-         (new CompositeFood(id,
-                            record.field("Description").value().toString(),
-                            components,
-                            record.field("Weight_g").value().toDouble(),
-                            record.field("Volume_floz").value().toDouble(),
-                            record.field("Quantity").value().toDouble(),
-                            record.field("Servings").value().toDouble()));
-       compositeFoodCache[id] = food;
-       return food;
-     } else {
-       return compositeFoodCache[id].toStrongRef();
-     }
-   } else {
-     return QSharedPointer<CompositeFood>();
-   }
+CompositeFood::CompositeFood(const QString& id, const QString& name,
+                             const QVector<FoodAmount>& components,
+                             double weightAmount, double volumeAmount,
+                             double quantityAmount, double servingAmount)
+  : Food(id, name, weightAmount, volumeAmount,
+         quantityAmount, servingAmount), id(-1), components(components)
+{
 }
 
 CompositeFood::CompositeFood(int id, const QString& name,
@@ -158,6 +142,39 @@ QSharedPointer<Food> CompositeFood::getCanonicalSharedPointer()
 QSharedPointer<const Food> CompositeFood::getCanonicalSharedPointer() const
 {
   return compositeFoodCache[id].toStrongRef();
+}
+
+QVector<FoodAmount> CompositeFood::createComponentsFromQueryResults
+  (QSqlQuery& query)
+{
+  QVector<FoodAmount> components;
+
+  while (query.next()) {
+
+    const QSqlRecord& record = query.record();
+
+    int containedId = record.field("Contained_Id").value().toInt();
+
+    ContainedTypes::ContainedType type =
+      ContainedTypes::fromHumanReadable(record.field("Contained_Type").value().toString());
+
+    QSharedPointer<const Food> containedFood;
+
+    if (type == ContainedTypes::SingleFood) {
+      containedFood = SingleFood::getSingleFood(containedId);
+    } else if (type == ContainedTypes::CompositeFood) {
+      // TODO: Check for infinite recursion and throw exception
+      containedFood = CompositeFood::getCompositeFood(containedId);
+    }
+
+    if (containedFood != NULL) {
+      components.push_back(FoodAmount
+        (containedFood, record.field("Magnitude").value().toDouble(),
+         Unit::createUnitFromRecord(record)));
+    }
+  }
+
+  return components;
 }
 
 QMap<QString, NutrientAmount>& CompositeFood::mergeNutrients

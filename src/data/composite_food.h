@@ -38,9 +38,17 @@ class CompositeFood: public Food
 
   protected:
 
+    CompositeFood(const QString& id, const QString& name,
+                    const QVector<FoodAmount>& components,
+                    double weightAmount, double volumeAmount,
+                    double quantityAmount, double servingAmount);
+
     virtual QSharedPointer<Food> getCanonicalSharedPointer();
 
     virtual QSharedPointer<const Food> getCanonicalSharedPointer() const;
+
+    static QVector<FoodAmount> createComponentsFromQueryResults
+      (QSqlQuery& query);
 
   private:
 
