@@ -34,6 +34,10 @@ class CompositeFood: public Food
 
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
+    virtual void addComponent(const FoodAmount& foodAmount);
+
+    virtual void addComponents(const QVector<FoodAmount>& components);
+
     virtual void saveToDatabase();
 
   protected:

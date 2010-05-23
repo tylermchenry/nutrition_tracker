@@ -15,6 +15,10 @@
 
 QMap<int, QMap<QDate, QMap<int, QWeakPointer<Meal> > > > Meal::mealCache;
 
+int Meal::nextTemporaryId = 0;
+
+QMap<int, QWeakPointer<Meal> > Meal::temporaryMealCache;
+
 QMap<int, QString> Meal::getAllMealNames(int creatorUserId, bool includeGenerics)
 {
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
@@ -56,6 +60,31 @@ QMap<int, QString> Meal::getAllMealNames(int creatorUserId, bool includeGenerics
    }
 
    return mealNames;
+}
+
+QSharedPointer<Meal> Meal::createTemporaryMeal(int userId, const QDate& date, int mealId)
+{
+  QSharedPointer<Meal> meal
+    (new Meal(mealId, userId,
+              getAllMealNames()[mealId],
+              userId, date, QVector<FoodAmount>(), nextTemporaryId++));
+  temporaryMealCache[meal->temporaryId] = meal;
+  return meal;
+}
+
+QSharedPointer<Meal> Meal::getOrCreateMeal(int userId, const QDate& date, int mealId)
+{
+  QSharedPointer<Meal> meal = getMeal(userId, date, mealId);
+
+  if (meal == NULL) {
+    QSharedPointer<Meal> meal
+      (new Meal(mealId, userId,
+                getAllMealNames()[mealId],
+                userId, date, QVector<FoodAmount>()));
+    mealCache[userId][date][mealId] = meal;
+  }
+
+  return meal;
 }
 
 QSharedPointer<Meal> Meal::getMeal(int userId, const QDate& date, int mealId)
@@ -157,25 +186,44 @@ Meal::~Meal()
 }
 
 Meal::Meal(int id, int creatorUserId, const QString& name, int userId,
-           const QDate& date, const QVector<FoodAmount>& components)
-  : CompositeFood("MEAL_" + QString::number(id) + "_" +
+           const QDate& date, const QVector<FoodAmount>& components,
+           int temporaryId)
+  : CompositeFood((temporaryId >= 0 ? "TMPMEAL_" : "MEAL_") + QString::number(id) + "_" +
                   QString::number(userId) + "_" + date.toString(Qt::ISODate),
                   name, components, 0, 0, 0, 1),
-    id(id), creatorUserId(creatorUserId), userId(userId)
+    id(id), creatorUserId(creatorUserId), userId(userId), temporaryId(temporaryId)
 {
+}
+
+void Meal::mergeMeal(const QSharedPointer<const Meal>& meal)
+{
+  if (meal != NULL) {
+    addComponents(meal->getComponents());
+  }
 }
 
 void Meal::saveToDatabase()
 {
+  if (temporaryId >= 0) {
+    throw std::logic_error("Attempted to save a temporary meal to the database.");
+  }
 }
 
 QSharedPointer<Food> Meal::getCanonicalSharedPointer()
 {
-  return mealCache[userId][date][id].toStrongRef();
+  if (temporaryId >= 0) {
+    return temporaryMealCache[temporaryId].toStrongRef();
+  } else {
+    return mealCache[userId][date][id].toStrongRef();
+  }
 }
 
 QSharedPointer<const Food> Meal::getCanonicalSharedPointer() const
 {
-  return mealCache[userId][date][id].toStrongRef();
+  if (temporaryId >= 0) {
+    return temporaryMealCache[temporaryId].toStrongRef();
+  } else {
+    return mealCache[userId][date][id].toStrongRef();
+  }
 }
 

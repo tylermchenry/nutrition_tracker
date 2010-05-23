@@ -20,6 +20,10 @@ class Meal : public CompositeFood
     static QMap<int, QString> getAllMealNames
       (int creatorUserId = -1, bool includeGenerics = true);
 
+    static QSharedPointer<Meal> createTemporaryMeal(int userId, const QDate& date, int mealId);
+
+    static QSharedPointer<Meal> getOrCreateMeal(int userId, const QDate& date, int mealId);
+
     static QSharedPointer<Meal> getMeal(int userId, const QDate& date, int mealId);
 
     static QVector<QSharedPointer<Meal> > getMealsForDay(int userId, const QDate& date);
@@ -32,6 +36,8 @@ class Meal : public CompositeFood
 
     inline QDate getDate() { return date; }
 
+    virtual void mergeMeal(const QSharedPointer<const Meal>& meal);
+
     virtual void saveToDatabase();
 
   protected:
@@ -43,14 +49,22 @@ class Meal : public CompositeFood
   private:
 
     Meal(int id, int creatorUserId, const QString& name, int userId,
-         const QDate& date, const QVector<FoodAmount>& components);
+         const QDate& date, const QVector<FoodAmount>& components,
+         int temporaryId = -1);
 
     int id;
     int creatorUserId; // TODO: Replace with user object when created
     int userId;        // TODO: Replace with user object when created
     QDate date;
+    int temporaryId;   // If >= 0, then temporary and not backed by database
 
     static QMap<int, QMap<QDate, QMap<int, QWeakPointer<Meal> > > > mealCache;
+
+    static int nextTemporaryId;
+
+    // Even though they are not backed by the database, a cache is needed for
+    // temporary meals because they still require canonical pointers
+    static QMap<int, QWeakPointer<Meal> > temporaryMealCache;
 
 };
 

@@ -130,6 +130,16 @@ QMap<QString, NutrientAmount> CompositeFood::getNutrients() const
   return nutrients;
 }
 
+void CompositeFood::addComponent(const FoodAmount& foodAmount)
+{
+  components.push_back(foodAmount);
+}
+
+void CompositeFood::addComponents(const QVector<FoodAmount>& components)
+{
+  this->components += components;
+}
+
 void CompositeFood::saveToDatabase()
 {
 }
