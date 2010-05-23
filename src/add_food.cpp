@@ -2,8 +2,8 @@
 #include "model/food_tree_model.h"
 #include <QDebug>
 
-AddFood::AddFood(const QSqlDatabase& db, QWidget *parent)
-    : QDialog(parent), db(db)
+AddFood::AddFood(const QSqlDatabase& db, const QDate& date, QWidget *parent)
+    : QDialog(parent), date(date), db(db)
 {
 	ui.setupUi(this);
 	ui.fscSearch->setDatabase(db);
@@ -34,7 +34,7 @@ void AddFood::expandGrouping(const QModelIndex& index)
 void AddFood::clearFoods()
 {
   qDebug() << "Clearing foods...";
-  FoodTreeModel* foodTreeModel = new FoodTreeModel(ui.trvFoodsToAdd, "Proposed Additions");
+  FoodTreeModel* foodTreeModel = new FoodTreeModel(ui.trvFoodsToAdd, date, "Proposed Additions");
 
   connect(ui.sfcResultsList, SIGNAL(amountAdded(const FoodAmount&, int)),
           foodTreeModel, SLOT(addFoodAmount(const FoodAmount&, int)));

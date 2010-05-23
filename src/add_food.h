@@ -3,6 +3,7 @@
 
 #include <QtGui/QDialog>
 #include <QtSql/QSqlDatabase>
+#include <QDate>
 #include "ui_add_food.h"
 #include "data/food_collection.h"
 #include "data/meal.h"
@@ -12,7 +13,7 @@ class AddFood : public QDialog
     Q_OBJECT
 
   public:
-    AddFood(const QSqlDatabase& db, QWidget *parent = 0);
+    AddFood(const QSqlDatabase& db, const QDate& date, QWidget *parent = 0);
     ~AddFood();
 
   signals:
@@ -30,6 +31,7 @@ class AddFood : public QDialog
 
     Ui::AddFoodClass ui;
 
+    QDate date;
     QSqlDatabase db;
 };
 

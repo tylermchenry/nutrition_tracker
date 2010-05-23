@@ -40,10 +40,10 @@ void NutritionTrackerMain::show()
 
 void NutritionTrackerMain::showAddFood()
 {
-  AddFood* addFood = new AddFood(db, this);
+  NutritionTracker* nutritionTracker = static_cast<NutritionTracker*>(centralWidget());
+  AddFood* addFood = new AddFood(db, nutritionTracker->getSelectedDate(), this);
   connect(addFood, SIGNAL(mealsAdded(const QVector<QSharedPointer<const Meal> >&)),
-          static_cast<NutritionTracker*>(centralWidget()),
-          SLOT(addMealsToCurrentDay(const QVector<QSharedPointer<const Meal> >&)));
+          nutritionTracker, SLOT(addMealsToCurrentDay(const QVector<QSharedPointer<const Meal> >&)));
   addFood->exec();
 }
 
