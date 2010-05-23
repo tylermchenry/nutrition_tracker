@@ -188,9 +188,9 @@ Meal::~Meal()
 Meal::Meal(int id, int creatorUserId, const QString& name, int userId,
            const QDate& date, const QVector<FoodAmount>& components,
            int temporaryId)
-  : CompositeFood((temporaryId >= 0 ? "TMPMEAL_" : "MEAL_") + QString::number(id) + "_" +
-                  QString::number(userId) + "_" + date.toString(Qt::ISODate),
-                  name, components, 0, 0, 0, 1),
+  : FoodCollection((temporaryId >= 0 ? "TMPMEAL_" : "MEAL_") + QString::number(id) + "_" +
+                   QString::number(userId) + "_" + date.toString(Qt::ISODate),
+                   name, components, 0, 0, 0, 1),
     id(id), creatorUserId(creatorUserId), userId(userId), temporaryId(temporaryId)
 {
 }

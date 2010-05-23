@@ -9,11 +9,11 @@
 #ifndef MEAL_H_
 #define MEAL_H_
 
-#include "composite_food.h"
+#include "food_collection.h"
 #include <QDate>
 #include <QMap>
 
-class Meal : public CompositeFood
+class Meal : public FoodCollection
 {
   public:
 
