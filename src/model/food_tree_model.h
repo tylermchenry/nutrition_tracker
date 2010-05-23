@@ -12,6 +12,7 @@
 #include "data/meal.h"
 #include "data/food_collection.h"
 #include <QAbstractItemModel>
+#include <QDate>
 #include <QtGui/QTreeView>
 #include "data/food_collection.h"
 
@@ -22,6 +23,10 @@ class FoodTreeModel : public QAbstractItemModel
   public:
 
     explicit FoodTreeModel(QTreeView *parent, const QString& allFoodsTitle = "All Foods");
+
+    FoodTreeModel(QTreeView *parent, const QDate& mealsDate,
+                    const QString& allFoodsTitle = "All Foods");
+
     ~FoodTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const;
@@ -64,6 +69,7 @@ class FoodTreeModel : public QAbstractItemModel
     QSharedPointer<FoodCollection> allFoods;
     FoodTreeItem* allFoodsRoot;
 
+    QDate mealsDate;
     QMap<int, FoodTreeItem*> mealRoots;
     QMap<int, QSharedPointer<Meal> > temporaryMeals;
 

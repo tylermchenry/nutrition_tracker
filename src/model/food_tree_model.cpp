@@ -13,7 +13,19 @@
 FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QString& allFoodsTitle)
   : QAbstractItemModel(treeView), treeView(treeView),
     rootItem(new FoodTreeItem(FoodAmount())),
-    allFoods(FoodCollection::createFoodCollection(allFoodsTitle))
+    allFoods(FoodCollection::createFoodCollection(allFoodsTitle)),
+    mealsDate(QDate::currentDate())
+{
+  beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
+  allFoodsRoot = rootItem->addChild(allFoods->getBaseAmount());
+  endInsertRows();
+}
+
+FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QDate& mealsDate, const QString& allFoodsTitle)
+  : QAbstractItemModel(treeView), treeView(treeView),
+    rootItem(new FoodTreeItem(FoodAmount())),
+    allFoods(FoodCollection::createFoodCollection(allFoodsTitle)),
+    mealsDate(mealsDate)
 {
   beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
   allFoodsRoot = rootItem->addChild(allFoods->getBaseAmount());
@@ -216,7 +228,7 @@ void FoodTreeModel::ensureMealRootExists(int mealId)
    }
 
    if (!mealRoots.contains(mealId)) {
-     QSharedPointer<Meal> newMeal = Meal::createTemporaryMeal(1, QDate::currentDate(), mealId);
+     QSharedPointer<Meal> newMeal = Meal::createTemporaryMeal(1, mealsDate, mealId);
      temporaryMeals[mealId] = newMeal;
      allFoods->addComponent(newMeal->getBaseAmount());
      beginInsertRows(createIndex(allFoodsRoot->row(), 0, allFoodsRoot),
