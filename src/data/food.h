@@ -27,8 +27,9 @@ class Food
 
     QList<Unit::Dimensions::Dimension> getValidDimensions() const;
 
-    FoodAmount getBaseAmount
-      (Unit::Dimensions::Dimension dimension = Unit::Dimensions::PREFERRED_DIMENSION) const;
+    FoodAmount getBaseAmount() const;
+
+    FoodAmount getBaseAmount(Unit::Dimensions::Dimension dimension) const;
 
     void setBaseAmount(double amount, const QSharedPointer<const Unit>& unit);
 

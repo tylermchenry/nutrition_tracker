@@ -40,6 +40,19 @@ QList<Unit::Dimensions::Dimension> Food::getValidDimensions() const
   return baseAmounts.keys();
 }
 
+FoodAmount Food::getBaseAmount() const
+{
+  for (QVector<Unit::Dimensions::Dimension>::const_iterator i = Unit::Dimensions::getAllDimensions().begin();
+      i != Unit::Dimensions::getAllDimensions().end(); ++i)
+  {
+    if (baseAmounts.contains(*i)) {
+      return getBaseAmount(*i);
+    }
+  }
+
+  return FoodAmount();
+}
+
 FoodAmount Food::getBaseAmount(Unit::Dimensions::Dimension dimension) const
 {
   if (baseAmounts.contains(dimension)) {

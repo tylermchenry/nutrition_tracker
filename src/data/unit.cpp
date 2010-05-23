@@ -164,6 +164,26 @@ QSharedPointer<const Unit> Unit::getBasicUnit(Dimensions::Dimension dimension)
   }
 }
 
+const QVector<Unit::Dimensions::Dimension>& Unit::Dimensions::getAllDimensions()
+{
+  static QVector<Dimension> allDimensions;
+
+  // Order is significant here. Food amounts that can be expressed in multiple
+  // dimensions will prefer the dimension that is highest in this list if no
+  // other contextual information causes another dimension to be more preferred.
+
+  if (allDimensions.empty()) {
+    allDimensions.push_back(Dimensions::Weight);
+    allDimensions.push_back(Dimensions::Volume);
+    allDimensions.push_back(Dimensions::Quantity);
+    allDimensions.push_back(Dimensions::Serving);
+    allDimensions.push_back(Dimensions::Energy);
+    allDimensions.push_back(Dimensions::IU);
+  }
+
+  return allDimensions;
+}
+
 Unit::Dimensions::Dimension Unit::Dimensions::fromHumanReadable(const QString& str)
 {
   QString lowerStr = str.toLower();

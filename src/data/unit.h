@@ -28,6 +28,7 @@ class Unit
           IU
       };
       static const Dimension PREFERRED_DIMENSION = Dimensions::Weight;
+      static const QVector<Dimension>& getAllDimensions();
       static Dimension fromHumanReadable(const QString& str);
       static QString toHumanReadable(Dimension dim);
     };
