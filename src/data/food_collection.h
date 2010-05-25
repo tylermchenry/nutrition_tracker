@@ -31,11 +31,15 @@ class FoodCollection: public Food
 
     virtual QVector<FoodAmount> getComponents() const;
 
+    virtual QMap<int, FoodAmount> getComponentsWithIndices() const;
+
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
     virtual void addComponent(const FoodAmount& foodAmount);
 
     virtual void addComponents(const QVector<FoodAmount>& components);
+
+    virtual void removeComponent(int index);
 
     virtual void clearComponents();
 
@@ -63,7 +67,8 @@ class FoodCollection: public Food
                     double quantityAmount, double servingAmount);
 
     int id;
-    QVector<FoodAmount> components;
+    QMap<int, FoodAmount> components;
+    int nextIndex;
 
     static QMap<QString, NutrientAmount>& mergeNutrients
       (QMap<QString, NutrientAmount>& nutrients,

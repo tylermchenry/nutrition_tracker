@@ -34,8 +34,9 @@ FoodCollection::FoodCollection(const QString& id, const QString& name,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount)
   : Food(id, name, weightAmount, volumeAmount,
-         quantityAmount, servingAmount), id(-1), components(components)
+         quantityAmount, servingAmount), id(-1), nextIndex(0)
 {
+  addComponents(components);
 }
 
 FoodCollection::FoodCollection(int id, const QString& name,
@@ -43,8 +44,9 @@ FoodCollection::FoodCollection(int id, const QString& name,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount)
   : Food("COLLECTION_" + QString::number(id), name, weightAmount, volumeAmount,
-         quantityAmount, servingAmount), id(id), components(components)
+         quantityAmount, servingAmount), id(id), nextIndex(0)
 {
+  addComponents(components);
 }
 
 FoodCollection::~FoodCollection()
@@ -52,6 +54,11 @@ FoodCollection::~FoodCollection()
 }
 
 QVector<FoodAmount> FoodCollection::getComponents() const
+{
+  return components.values().toVector();
+}
+
+QMap<int, FoodAmount> FoodCollection::getComponentsWithIndices() const
 {
   return components;
 }
@@ -62,10 +69,10 @@ QMap<QString, NutrientAmount> FoodCollection::getNutrients() const
 
   QMap<QString, NutrientAmount> nutrients;
 
-  for (QVector<FoodAmount>::const_iterator i = components.begin();
+  for (QMap<int, FoodAmount>::const_iterator i = components.begin();
        i != components.end(); ++i)
   {
-    mergeNutrients(nutrients, i->getScaledNutrients());
+    mergeNutrients(nutrients, i.value().getScaledNutrients());
   }
 
   return nutrients;
@@ -73,12 +80,20 @@ QMap<QString, NutrientAmount> FoodCollection::getNutrients() const
 
 void FoodCollection::addComponent(const FoodAmount& foodAmount)
 {
-  components.push_back(foodAmount);
+  components.insert(nextIndex++, foodAmount);
 }
 
 void FoodCollection::addComponents(const QVector<FoodAmount>& components)
 {
-  this->components += components;
+  for (QVector<FoodAmount>::const_iterator i = components.begin(); i != components.end(); ++i)
+  {
+    addComponent(*i);
+  }
+}
+
+void FoodCollection::removeComponent(int index)
+{
+  components.remove(index);
 }
 
 void FoodCollection::clearComponents()
