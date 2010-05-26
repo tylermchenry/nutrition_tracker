@@ -113,6 +113,10 @@ void FoodCollection::removeComponent(const FoodComponent& component)
       removedIds.insert(component.getId());
     }
     components.remove(component);
+  } else if (newIds.contains(component.getId())) {
+    removeComponent
+      (FoodComponent(newIds[component.getId()], component.getFoodAmount(), component.getOrder()));
+    newIds.remove(component.getId());
   }
 }
 
@@ -126,6 +130,7 @@ void FoodCollection::clearComponents()
   }
 
   components.clear();
+  newIds.clear();
 }
 
 void FoodCollection::saveToDatabase()
