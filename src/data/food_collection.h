@@ -36,9 +36,9 @@ class FoodCollection: public Food
 
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
-    virtual void addComponent(const FoodAmount& foodAmount);
+    virtual FoodComponent addComponent(const FoodAmount& foodAmount);
 
-    virtual void addComponents(const QVector<FoodAmount>& components);
+    virtual QVector<FoodComponent> addComponents(const QVector<FoodAmount>& components);
 
     virtual void removeComponent(const FoodComponent& component);
 

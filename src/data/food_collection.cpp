@@ -86,7 +86,7 @@ QMap<QString, NutrientAmount> FoodCollection::getNutrients() const
   return nutrients;
 }
 
-void FoodCollection::addComponent(const FoodAmount& foodAmount)
+FoodComponent FoodCollection::addComponent(const FoodAmount& foodAmount)
 {
   int order = 0;
 
@@ -95,15 +95,21 @@ void FoodCollection::addComponent(const FoodAmount& foodAmount)
     order = components.toList().last().getOrder()+1;
   }
 
-  components.insert(FoodComponent(nextTemporaryId--, foodAmount, order));
+  FoodComponent component(nextTemporaryId--, foodAmount, order);
+  components.insert(component);
+  return component;
 }
 
-void FoodCollection::addComponents(const QVector<FoodAmount>& components)
+QVector<FoodComponent> FoodCollection::addComponents(const QVector<FoodAmount>& components)
 {
+  QVector<FoodComponent> addedComponents;
+
   for (QVector<FoodAmount>::const_iterator i = components.begin(); i != components.end(); ++i)
   {
-    addComponent(*i);
+    addedComponents.push_back(addComponent(*i));
   }
+
+  return addedComponents;
 }
 
 void FoodCollection::removeComponent(const FoodComponent& component)
