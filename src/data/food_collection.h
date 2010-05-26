@@ -10,6 +10,7 @@
 #define FOOD_COLLECTION_H_
 
 #include "food.h"
+#include "food_component.h"
 
 class FoodCollection: public Food
 {
@@ -29,9 +30,9 @@ class FoodCollection: public Food
 
     virtual ~FoodCollection();
 
-    virtual QVector<FoodAmount> getComponents() const;
+    virtual QVector<FoodAmount> getComponentAmounts() const;
 
-    virtual QMap<int, FoodAmount> getComponentsWithIndices() const;
+    virtual QSet<FoodComponent> getComponents() const;
 
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
@@ -39,7 +40,7 @@ class FoodCollection: public Food
 
     virtual void addComponents(const QVector<FoodAmount>& components);
 
-    virtual void removeComponent(int index);
+    virtual void removeComponent(const FoodComponent& component);
 
     virtual void clearComponents();
 
@@ -48,27 +49,45 @@ class FoodCollection: public Food
   protected:
 
     FoodCollection(const QString& id, const QString& name,
-                    const QVector<FoodAmount>& components,
+                    const QSet<FoodComponent>& components,
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount);
+
+    // Derived classes call to replace a component that has been newly
+    // saved to the database with one that has the DB-assigned ID.
+    void replaceComponent(const FoodComponent& oldComponent,
+                             const FoodComponent& newComponent);
+
+    inline const QSet<int>& getRemovedIds() const { return removedIds; }
+
+    inline void clearRemovedIds() { removedIds.clear(); }
 
     virtual QSharedPointer<Food> getCanonicalSharedPointer();
 
     virtual QSharedPointer<const Food> getCanonicalSharedPointer() const;
 
-    static QVector<FoodAmount> createComponentsFromQueryResults
-      (QSqlQuery& query);
+    static QSet<FoodComponent> createComponentsFromQueryResults
+      (QSqlQuery& query, const QString& componentIdField,
+       const QString& componentOrderField = "Order");
 
   private:
 
     FoodCollection(int id, const QString& name,
-                    const QVector<FoodAmount>& components,
+                    const QSet<FoodComponent>& components,
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount);
 
     int id;
-    QMap<int, FoodAmount> components;
-    int nextIndex;
+    QSet<FoodComponent> components;
+
+    // Temporary IDs for components not yet saved to the database
+    int nextTemporaryId;
+
+    // Maps DB-assigned IDs to old temporary IDs, in case removeComponent is passed
+    // and old temporary ID after saving to the DB
+    QMap<int, int> newIds;
+
+    QSet<int> removedIds;
 
     static QMap<QString, NutrientAmount>& mergeNutrients
       (QMap<QString, NutrientAmount>& nutrients,

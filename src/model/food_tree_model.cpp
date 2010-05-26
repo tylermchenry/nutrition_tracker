@@ -207,7 +207,7 @@ void FoodTreeModel::addMeal(const QSharedPointer<const Meal>& meal)
 
   temporaryMeals[mealId]->mergeMeal(meal);
 
-  QVector<FoodAmount> components = meal->getComponents();
+  QVector<FoodAmount> components = meal->getComponentAmounts();
 
   beginInsertRows(createIndex(parentOfNewItem->row(), 0, parentOfNewItem),
                     parentOfNewItem->childCount(), parentOfNewItem->childCount()+components.size()-1);

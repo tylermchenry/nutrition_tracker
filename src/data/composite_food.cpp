@@ -30,8 +30,10 @@ QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
   query.prepare("SELECT composite_food.Composite_Id, composite_food.Description, "
                 "       composite_food.Weight_g, composite_food.Volume_floz, "
                 "       composite_food.Quantity, composite_food.Servings, "
-                "       composite_food_link.Contained_Type, composite_food_link.Contained_Id, "
-                "       composite_food_link.Magnitude, units.Unit, units.Type, "
+                "       composite_food_link.CompositeLink_Id, composite_food_link.Contained_Type, "
+                "       composite_food_link.Contained_Id, composite_food_link.Magnitude, "
+                "       composite_food_link.IntrafoodOrder, "
+                "       units.Unit, units.Type, "
                 "       units.Name, units.Factor "
                 "FROM"
                 "        composite_food "
@@ -39,13 +41,16 @@ QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
                 "        ON composite_food.Composite_Id = composite_food_link.Composite_Id "
                 "   JOIN units "
                 "        ON composite_food_link.Unit = units.Unit "
-                "WHERE composite_food.Composite_Id = :id");
+                "WHERE composite_food.Composite_Id = :id "
+                "ORDER BY composite_food_link.IntrafoodOrder ASC");
+
   query.bindValue(":id", id);
 
   if (query.exec()) {
     qDebug() << "Executed query: " << query.executedQuery();
     return createCompositeFoodFromQueryResults(query);
   } else {
+    qDebug() << "Query failed: " << query.lastError();
     return QSharedPointer<CompositeFood>();
   }
 }
@@ -53,7 +58,8 @@ QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
 QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
   (QSqlQuery& query)
 {
-  QVector<FoodAmount> components = createComponentsFromQueryResults(query);
+  QSet<FoodComponent> components = createComponentsFromQueryResults
+    (query, "CompositeLink_Id", "Intrafood_Order");
 
   if (query.first()) {
     const QSqlRecord& record = query.record();
@@ -78,7 +84,7 @@ QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
 }
 
 CompositeFood::CompositeFood(int id, const QString& name,
-                             const QVector<FoodAmount>& components,
+                             const QSet<FoodComponent>& components,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount)
   : FoodCollection("COMPOSITE_" + QString::number(id), name, components,

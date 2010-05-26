@@ -69,7 +69,7 @@ QSharedPointer<Meal> Meal::createTemporaryMeal(int userId, const QDate& date, in
   QSharedPointer<Meal> meal
     (new Meal(mealId, userId,
               getAllMealNames()[mealId],
-              userId, date, QVector<FoodAmount>(), nextTemporaryId++));
+              userId, date, QSet<FoodComponent>(), nextTemporaryId++));
   temporaryMealCache[meal->temporaryId] = meal;
   return meal;
 }
@@ -82,7 +82,7 @@ QSharedPointer<Meal> Meal::getOrCreateMeal(int userId, const QDate& date, int me
     QSharedPointer<Meal> newMeal
       (new Meal(mealId, userId,
                 getAllMealNames()[mealId],
-                userId, date, QVector<FoodAmount>()));
+                userId, date, QSet<FoodComponent>()));
     mealCache[userId][date][mealId] = newMeal;
     meal = newMeal;
   }
@@ -100,9 +100,10 @@ QSharedPointer<Meal> Meal::getMeal(int userId, const QDate& date, int mealId)
   }
 
   query.prepare("SELECT meal.Meal_Id, meal.CreatorUser_Id, meal.Name, "
-                "       meal_link.User_Id, meal_link.MealDate, "
+                "       meal_link.MealLink_Id, meal_link.User_Id, meal_link.MealDate, "
                 "       meal_link.Contained_Type, meal_link.Contained_Id, "
-                "       meal_link.Magnitude, units.Unit, units.Type, "
+                "       meal_link.Magnitude, meal_link.IntramealOrder, "
+                "       units.Unit, units.Type, "
                 "       units.Name, units.Factor "
                 "FROM"
                 "        meal "
@@ -124,6 +125,7 @@ QSharedPointer<Meal> Meal::getMeal(int userId, const QDate& date, int mealId)
     qDebug() << "There are " << query.size() << " foods in this meal";
     return createMealFromQueryResults(query);
   } else {
+    qDebug() << "Query failed: " << query.lastError();
     return QSharedPointer<Meal>();
   }
 }
@@ -155,7 +157,8 @@ QVector<QSharedPointer<Meal> > Meal::getMealsForDay(int userId, const QDate& dat
 
 QSharedPointer<Meal> Meal::createMealFromQueryResults(QSqlQuery& query)
 {
-  QVector<FoodAmount> components = createComponentsFromQueryResults(query);
+  QSet<FoodComponent> components = createComponentsFromQueryResults
+      (query, "MealLink_Id", "IntramealOrder");
 
   if (query.first()) {
 
@@ -191,7 +194,7 @@ Meal::~Meal()
 }
 
 Meal::Meal(int id, int creatorUserId, const QString& name, int userId,
-           const QDate& date, const QVector<FoodAmount>& components,
+           const QDate& date, const QSet<FoodComponent>& components,
            int temporaryId)
   : FoodCollection((temporaryId >= 0 ? "TMPMEAL_" : "MEAL_") + QString::number(id) + "_" +
                    QString::number(userId) + "_" + date.toString(Qt::ISODate),
@@ -203,7 +206,7 @@ Meal::Meal(int id, int creatorUserId, const QString& name, int userId,
 void Meal::mergeMeal(const QSharedPointer<const Meal>& meal)
 {
   if (meal != NULL) {
-    addComponents(meal->getComponents());
+    addComponents(meal->getComponentAmounts());
   }
 }
 
@@ -218,37 +221,41 @@ void Meal::saveToDatabase()
 
   // This needs to work either for a new food or an update to an existing food
 
-  query.prepare("DELETE FROM meal_link WHERE "
-                "Meal_Id=:id AND User_Id=:userId AND MealDate=:mealDate");
+  QSet<int> removedLinkIds = getRemovedIds();
 
-  query.bindValue(":id", id);
-  query.bindValue(":userId", userId);
-  query.bindValue(":mealDate", date);
+  for (QSet<int>::const_iterator i = removedLinkIds.begin(); i != removedLinkIds.end(); ++i)
+  {
+    query.prepare("DELETE FROM meal_link WHERE MealLink_Id=:linkId");
 
-  if (!query.exec()) {
-    qDebug() << "Failed to delete old meal items: " << query.lastError();
-    return;
+    query.bindValue(":linkId", *i);
+
+    if (!query.exec()) {
+      qDebug() << "Failed to delete removed meal item: " << query.lastError();
+      return;
+    }
   }
 
-  int order = 0;
-
-  QVector<FoodAmount> components = getComponents();
-  for (QVector<FoodAmount>::const_iterator i = components.begin(); i != components.end(); ++i)
+  QSet<FoodComponent> components = getComponents();
+  for (QSet<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
   {
     query.prepare("INSERT INTO meal_link "
-                   "  (Meal_Id, User_Id, MealDate, Contained_Type, "
+                   "  (MealLink_Id, Meal_Id, User_Id, MealDate, Contained_Type, "
                    "   Contained_Id, Magnitude, Unit, IntramealOrder) "
                    "VALUES "
-                   "  (:id, :userId, :mealDate, :containedType, "
-                   "   :containedId, :magnitude, :unit, :order)");
+                   "  (:linkId, :mealId, :userId, :mealDate, :containedType, "
+                   "   :containedId, :magnitude, :unit, :order) "
+                   "ON DUPLICATE KEY UPDATE "
+                   "  Magnitude=:magnitude2, Unit=:unit2, Order=:order2");
 
-    query.bindValue(":id", id);
+    query.bindValue(":linkId", i->getId() >= 0 ? QVariant(i->getId()) : QVariant());
+
+    query.bindValue(":mealId", id);
     query.bindValue(":userId", userId);
     query.bindValue(":mealDate", date);
 
-    if (!i->isDefined()) continue;
+    if (!i->getFoodAmount().isDefined()) continue;
 
-    QSharedPointer<const Food> food = i->getFood();
+    QSharedPointer<const Food> food = i->getFoodAmount().getFood();
 
     QSharedPointer<const SingleFood> singleFood;
     QSharedPointer<const CompositeFood> compositeFood;
@@ -268,9 +275,14 @@ void Meal::saveToDatabase()
 
     query.bindValue(":containedType", FoodCollection::ContainedTypes::toHumanReadable(containedType));
     query.bindValue(":containedId", containedId);
-    query.bindValue(":magnitude", i->getAmount());
-    query.bindValue(":unit", i->getUnit()->getAbbreviation());
-    query.bindValue(":order", order++);
+
+    query.bindValue(":magnitude", i->getFoodAmount().getAmount());
+    query.bindValue(":unit", i->getFoodAmount().getUnit()->getAbbreviation());
+    query.bindValue(":order", i->getOrder());
+
+    query.bindValue(":magnitude2", i->getFoodAmount().getAmount());
+    query.bindValue(":unit2", i->getFoodAmount().getUnit()->getAbbreviation());
+    query.bindValue(":order2", i->getOrder());
 
     if (!query.exec()) {
       qDebug() << "Failed to save " << food->getName() << " to meal: " << query.lastError();

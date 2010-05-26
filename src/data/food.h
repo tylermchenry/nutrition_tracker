@@ -10,10 +10,13 @@
 
 #include <QVector>
 #include <QMap>
+#include <QSet>
 #include <QString>
 #include <QSharedPointer>
 #include "data/food_amount.h"
 #include "data/unit.h"
+
+class FoodComponent; // Forward decl
 
 class Food
 {
@@ -33,7 +36,9 @@ class Food
 
     void setBaseAmount(double amount, const QSharedPointer<const Unit>& unit);
 
-    virtual QVector<FoodAmount> getComponents() const;
+    virtual QSet<FoodComponent> getComponents() const;
+
+    virtual QVector<FoodAmount> getComponentAmounts() const;
 
     virtual QMap<QString, NutrientAmount> getNutrients() const = 0;
 

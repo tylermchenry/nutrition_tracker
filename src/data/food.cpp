@@ -6,6 +6,7 @@
  */
 
 #include "food.h"
+#include "food_component.h"
 #include <QVariant>
 #include <QDebug>
 #include <stdexcept>
@@ -81,7 +82,12 @@ void Food::setName(const QString& name)
   this->name = name;
 }
 
-QVector<FoodAmount> Food::getComponents() const
+QSet<FoodComponent> Food::getComponents() const
+{
+  return QSet<FoodComponent>();
+}
+
+QVector<FoodAmount> Food::getComponentAmounts() const
 {
   return QVector<FoodAmount>();
 }

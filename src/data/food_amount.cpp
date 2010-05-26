@@ -75,7 +75,7 @@ QVector<FoodAmount> FoodAmount::getScaledComponents() const
     throw std::logic_error("Attempted to scale the components of an undefined food.");
   }
 
-  QVector<FoodAmount> components = getFood()->getComponents();
+  QVector<FoodAmount> components = getFood()->getComponentAmounts();
 
   const QSharedPointer<const Unit> unit = getUnit();
   const QSharedPointer<const Food> food = getFood();

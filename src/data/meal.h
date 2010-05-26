@@ -53,7 +53,7 @@ class Meal : public FoodCollection
   private:
 
     Meal(int id, int creatorUserId, const QString& name, int userId,
-         const QDate& date, const QVector<FoodAmount>& components,
+         const QDate& date, const QSet<FoodComponent>& components,
          int temporaryId = -1);
 
     int id;
