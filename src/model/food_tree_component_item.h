@@ -19,6 +19,8 @@ class FoodTreeComponentItem : public FoodTreeItem
 
     virtual ~FoodTreeComponentItem();
 
+    virtual FoodContextMenu* getContextMenu();
+
   protected:
 
     virtual FoodAmount getFoodAmount() const;

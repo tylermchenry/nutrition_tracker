@@ -7,6 +7,7 @@
 
 #include "food_tree_component_item.h"
 #include "food_tree_amount_item.h"
+#include "food_context_menu.h"
 #include "data/food.h"
 
 FoodTreeComponentItem::FoodTreeComponentItem(const FoodComponent& component, FoodTreeItem* parent)
@@ -24,6 +25,11 @@ FoodTreeComponentItem::FoodTreeComponentItem(const FoodComponent& component, Foo
 
 FoodTreeComponentItem::~FoodTreeComponentItem()
 {
+}
+
+FoodContextMenu* FoodTreeComponentItem::getContextMenu()
+{
+  return new FoodContextMenu(&component);
 }
 
 FoodAmount FoodTreeComponentItem::getFoodAmount() const

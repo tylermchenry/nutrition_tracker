@@ -11,12 +11,12 @@
 #include "food_tree_item.h"
 #include "food_tree_collection_item.h"
 #include "food_tree_meal_item.h"
+#include "food_context_menu.h"
 #include "data/meal.h"
 #include "data/food_collection.h"
 #include <QAbstractItemModel>
 #include <QDate>
 #include <QtGui/QTreeView>
-#include "data/food_collection.h"
 
 class FoodTreeModel : public QAbstractItemModel
 {
@@ -52,7 +52,7 @@ class FoodTreeModel : public QAbstractItemModel
 
     QVector<QSharedPointer<const Meal> > getAllMeals() const;
 
-    QMenu* getContextMenu(const QModelIndex& index) const;
+    FoodContextMenu* getContextMenu(const QModelIndex& index) const;
 
   public slots:
 

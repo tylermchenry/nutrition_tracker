@@ -182,7 +182,7 @@ QVector<QSharedPointer<const Meal> > FoodTreeModel::getAllMeals() const
   return constMeals;
 }
 
-QMenu* FoodTreeModel::getContextMenu(const QModelIndex& index) const
+FoodContextMenu* FoodTreeModel::getContextMenu(const QModelIndex& index) const
 {
   FoodTreeItem *item = static_cast<FoodTreeItem*>(index.internalPointer());
 

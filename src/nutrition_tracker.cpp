@@ -1,6 +1,8 @@
 #include "nutrition_tracker.h"
+#include "food_context_menu.h"
 #include "model/food_tree_model.h"
 #include <QDebug>
+#include <QtGui/QCursor>
 
 NutritionTracker::NutritionTracker(QWidget *parent)
     : QWidget(parent)
@@ -10,6 +12,8 @@ NutritionTracker::NutritionTracker(QWidget *parent)
 	connect(ui.calCurrentDay, SIGNAL(selectionChanged()), this, SLOT(changeDay()));
 
 	ui.trvFoodsForDay->header()->setResizeMode(QHeaderView::ResizeToContents);
+
+	ui.trvFoodsForDay->setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
 NutritionTracker::~NutritionTracker()
@@ -42,6 +46,9 @@ void NutritionTracker::changeDay()
 
   ui.trvFoodsForDay->setModel(foodTreeModel);
 
+  connect(ui.trvFoodsForDay, SIGNAL(customContextMenuRequested(const QPoint&)),
+           this, SLOT(showContextMenu(const QPoint&)));
+
   loadCurrentDayFoodsFromDatabase();
 }
 
@@ -58,6 +65,23 @@ void NutritionTracker::addMealsToCurrentDay
   }
 
   if (save) saveCurrentDayFoodsToDatabase();
+}
+
+void NutritionTracker::showContextMenu(const QPoint& point)
+{
+  FoodContextMenu* contextMenu =
+    (static_cast<FoodTreeModel*>(ui.trvFoodsForDay->model())->getContextMenu
+      (ui.trvFoodsForDay->indexAt(point)));
+
+  if (contextMenu) {
+    qDebug() << "Showing context menu";
+    connect(contextMenu, SIGNAL(remove(FoodComponent*)), this, SLOT(removeComponent(FoodComponent*)));
+    contextMenu->exec(ui.trvFoodsForDay->viewport()->mapToGlobal(point));
+  }
+}
+
+void NutritionTracker::removeComponent(FoodComponent* component)
+{
 }
 
 void NutritionTracker::loadCurrentDayFoodsFromDatabase()
