@@ -286,7 +286,16 @@ void Meal::saveToDatabase()
 
     if (!query.exec()) {
       qDebug() << "Failed to save " << food->getName() << " to meal: " << query.lastError();
+    } else {
+      if (i->getId() < 0) {
+        int newId = query.lastInsertId().toInt();
+        qDebug() << "Assigned real ID " << newId
+                  << " to food component with temp ID " << i->getId();
+        replaceComponent(*i, FoodComponent(newId, i->getFoodAmount(), i->getOrder()));
+      }
     }
+
+
   }
 }
 
