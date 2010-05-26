@@ -10,18 +10,15 @@
 
 #include "data/food_amount.h"
 #include <QList>
+#include <QtGui/QMenu>
 
 class FoodTreeItem
 {
   public:
 
-    FoodTreeItem(const FoodAmount& foodAmount, FoodTreeItem* parentItem = NULL);
-
-    FoodTreeItem(const QString& heading, FoodTreeItem* parentItem = NULL);
+    explicit FoodTreeItem(FoodTreeItem* parentItem = NULL);
 
     virtual ~FoodTreeItem();
-
-    FoodTreeItem* addChild(const FoodAmount& foodAmount);
 
     FoodTreeItem* child(int row);
 
@@ -37,14 +34,27 @@ class FoodTreeItem
 
     FoodTreeItem *parent();
 
+    virtual QMenu* getContextMenu() const { return NULL; }
+
+  protected:
+
+    virtual FoodAmount getFoodAmount() const = 0;
+
+    virtual QString getName() const = 0;
+
+    virtual bool showName() const { return true; }
+
+    virtual bool showAmount() const { return true; }
+
+    virtual bool showNutrients() const { return true; }
+
+    FoodTreeItem* addChild(FoodTreeItem* item);
+
   private:
 
-    QString heading;
-    FoodAmount foodAmount;
     QVector<QString> columnNutrientIds;
     QList<FoodTreeItem*> childItems;
     FoodTreeItem* parentItem;
-
 };
 
 #endif /* FOOD_TREE_ITEM_H_ */

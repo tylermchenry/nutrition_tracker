@@ -9,17 +9,11 @@
 #include <QVariant>
 #include <QDebug>
 #include "data/food.h"
+#include "food_context_menu.h"
 
-FoodTreeItem::FoodTreeItem(const FoodAmount& foodAmount, FoodTreeItem* parentItem)
-  : foodAmount(foodAmount), parentItem(parentItem)
+FoodTreeItem::FoodTreeItem(FoodTreeItem* parentItem)
+  : parentItem(parentItem)
 {
-  if (foodAmount.isDefined()) {
-    QVector<FoodAmount> components = foodAmount.getScaledComponents();
-    for (QVector<FoodAmount>::const_iterator i = components.begin(); i != components.end(); ++i) {
-      addChild(*i);
-    }
-  }
-
   columnNutrientIds.resize(4);
   columnNutrientIds[0] = Nutrient::getNutrientByName("Calories")->getId();
   columnNutrientIds[1] = Nutrient::getNutrientByName("Total Fat")->getId();
@@ -30,12 +24,6 @@ FoodTreeItem::FoodTreeItem(const FoodAmount& foodAmount, FoodTreeItem* parentIte
 FoodTreeItem::~FoodTreeItem()
 {
   qDeleteAll(childItems);
-}
-
-FoodTreeItem* FoodTreeItem::addChild(const FoodAmount& foodAmount)
-{
-  childItems.append(new FoodTreeItem(foodAmount, this));
-  return childItems[childItems.size()-1];
 }
 
 FoodTreeItem* FoodTreeItem::child(int row)
@@ -55,49 +43,47 @@ int FoodTreeItem::columnCount() const
 
 QVariant FoodTreeItem::data(int column) const
 {
-  if (foodAmount.isDefined()) {
+  if (column == 0 && showName()) {
 
-    if (column == 0) {
+    return getName();
 
-      return foodAmount.getFood()->getName();
-
-    } else if (column == 1) {
-
-      return QString::number(foodAmount.getAmount(), 'f', 1) + " " + foodAmount.getUnit()->getAbbreviation();
-
-    } else if (column > 1 && column < columnNutrientIds.size()+2) {
-
-      QMap<QString, NutrientAmount> scaledNutrients = foodAmount.getScaledNutrients();
-
-      if (scaledNutrients.contains(columnNutrientIds[column-2])) {
-
-        NutrientAmount nutrientAmount = scaledNutrients[columnNutrientIds[column-2]];
-
-        if (nutrientAmount.isDefined()) {
-
-          int decimalPlaces;
-
-          if (nutrientAmount.getNutrient() == Nutrient::getNutrientByName("Calories")) {
-            decimalPlaces = 0;
-          } else {
-            decimalPlaces = 1;
-          }
-
-          return QString::number(nutrientAmount.getAmount(), 'f', decimalPlaces) + " " +
-            nutrientAmount.getUnit()->getAbbreviation();
-        }
-
-      }
-
-      return 0;
-    }
-    return QVariant();
   } else {
-    if (column == 0) {
-      return "(Undefined)";
+
+    FoodAmount foodAmount = getFoodAmount();
+
+    if (foodAmount.isDefined()) {
+
+      if (column == 1 && showAmount()) {
+
+        return QString::number(foodAmount.getAmount(), 'f', 1) + " " + foodAmount.getUnit()->getAbbreviation();
+
+      } else if (column > 1 && column < columnNutrientIds.size()+2 && showNutrients()) {
+
+        QMap<QString, NutrientAmount> scaledNutrients = foodAmount.getScaledNutrients();
+
+        if (scaledNutrients.contains(columnNutrientIds[column-2])) {
+
+          NutrientAmount nutrientAmount = scaledNutrients[columnNutrientIds[column-2]];
+
+          if (nutrientAmount.isDefined()) {
+
+            int decimalPlaces;
+
+            if (nutrientAmount.getNutrient() == Nutrient::getNutrientByName("Calories")) {
+              decimalPlaces = 0;
+            } else {
+              decimalPlaces = 1;
+            }
+
+            return QString::number(nutrientAmount.getAmount(), 'f', decimalPlaces) + " " +
+                nutrientAmount.getUnit()->getAbbreviation();
+          }
+        }
+      }
     }
-    return QVariant();
   }
+
+  return QVariant();
 }
 
 int FoodTreeItem::row() const
@@ -121,4 +107,10 @@ int FoodTreeItem::depth() const
 FoodTreeItem* FoodTreeItem::parent()
 {
   return parentItem;
+}
+
+FoodTreeItem* FoodTreeItem::addChild(FoodTreeItem* item)
+{
+  childItems.append(item);
+  return item;
 }

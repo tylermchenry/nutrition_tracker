@@ -9,6 +9,8 @@
 #define FOOD_TREE_MODEL_H_
 
 #include "food_tree_item.h"
+#include "food_tree_collection_item.h"
+#include "food_tree_meal_item.h"
 #include "data/meal.h"
 #include "data/food_collection.h"
 #include <QAbstractItemModel>
@@ -50,6 +52,8 @@ class FoodTreeModel : public QAbstractItemModel
 
     QVector<QSharedPointer<const Meal> > getAllMeals() const;
 
+    QMenu* getContextMenu(const QModelIndex& index) const;
+
   public slots:
 
     void addFoodAmount(const FoodAmount& foodAmount, int mealId);
@@ -64,13 +68,13 @@ class FoodTreeModel : public QAbstractItemModel
 
     QTreeView* treeView;
 
-    FoodTreeItem* rootItem;
+    FoodTreeCollectionItem* rootItem;
 
     QSharedPointer<FoodCollection> allFoods;
-    FoodTreeItem* allFoodsRoot;
+    FoodTreeCollectionItem* allFoodsRoot;
 
     QDate mealsDate;
-    QMap<int, FoodTreeItem*> mealRoots;
+    QMap<int, FoodTreeMealItem*> mealRoots;
     QMap<int, QSharedPointer<Meal> > temporaryMeals;
 
     void ensureMealRootExists(int mealId);
