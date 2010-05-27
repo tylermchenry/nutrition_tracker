@@ -264,7 +264,7 @@ void Meal::saveToDatabase()
                    "  (:linkId, :mealId, :userId, :mealDate, :containedType, "
                    "   :containedId, :magnitude, :unit, :order) "
                    "ON DUPLICATE KEY UPDATE "
-                   "  Magnitude=:magnitude2, Unit=:unit2, Order=:order2");
+                   "  Magnitude=:magnitude2, Unit=:unit2, IntramealOrder=:order2");
 
     query.bindValue(":linkId", i->getId() >= 0 ? QVariant(i->getId()) : QVariant());
 
