@@ -7,6 +7,7 @@
 
 #include "food.h"
 #include "food_component.h"
+#include "data/food_collection.h"
 #include <QVariant>
 #include <QDebug>
 #include <stdexcept>

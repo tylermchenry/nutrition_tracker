@@ -7,6 +7,7 @@
 
 #include "food_context_menu.h"
 #include "data/food.h"
+#include "data/food_collection.h"
 #include "data/meal.h"
 #include <stdexcept>
 #include <QDebug>
