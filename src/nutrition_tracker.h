@@ -22,14 +22,9 @@ class NutritionTracker : public QWidget
 
     void addMealsToCurrentDay(const QVector<QSharedPointer<const Meal> >& meals);
 
-    void showContextMenu(const QPoint& point);
-
-    void removeComponent(const QModelIndex& index, FoodComponent* component);
-
   private slots:
 
     void changeDay();
-    void expandGrouping(const QModelIndex& index);
 
   private:
 

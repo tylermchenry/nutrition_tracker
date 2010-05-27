@@ -11,13 +11,6 @@ NutritionTracker::NutritionTracker(QWidget *parent)
 	ui.setupUi(this);
 
 	connect(ui.calCurrentDay, SIGNAL(selectionChanged()), this, SLOT(changeDay()));
-
-	ui.trvFoodsForDay->header()->setResizeMode(QHeaderView::ResizeToContents);
-
-	ui.trvFoodsForDay->setContextMenuPolicy(Qt::CustomContextMenu);
-
-	connect(ui.trvFoodsForDay, SIGNAL(customContextMenuRequested(const QPoint&)),
-	        this, SLOT(showContextMenu(const QPoint&)));
 }
 
 NutritionTracker::~NutritionTracker()
@@ -26,6 +19,7 @@ NutritionTracker::~NutritionTracker()
 
 void NutritionTracker::initialize()
 {
+  ui.ftFoodsForDay->initialize();
   changeDay();
 }
 
@@ -42,49 +36,21 @@ void NutritionTracker::addMealsToCurrentDay
 
 void NutritionTracker::changeDay()
 {
-  FoodTreeModel* foodTreeModel =
-     new FoodTreeModel(ui.trvFoodsForDay, getSelectedDate(), getSelectedDate().toString());
+  QDate date = getSelectedDate();
 
-  connect(foodTreeModel, SIGNAL(newGroupingCreated(const QModelIndex&)),
-          this, SLOT(expandGrouping(const QModelIndex&)));
-
-  ui.trvFoodsForDay->setModel(foodTreeModel);
+  ui.ftFoodsForDay->setDate(date);
+  ui.ftFoodsForDay->setRootName(date.toString());
+  ui.ftFoodsForDay->clear();
 
   loadCurrentDayFoodsFromDatabase();
-}
-
-void NutritionTracker::expandGrouping(const QModelIndex& index)
-{
-  ui.trvFoodsForDay->setExpanded(index, true);
 }
 
 void NutritionTracker::addMealsToCurrentDay
   (const QVector<QSharedPointer<const Meal> >& meals, bool save)
 {
-  for (QVector<QSharedPointer<const Meal> >::const_iterator i = meals.begin(); i != meals.end(); ++i) {
-    static_cast<FoodTreeModel*>(ui.trvFoodsForDay->model())->addMeal(*i);
-  }
+  ui.ftFoodsForDay->addMeals(meals);
 
   if (save) saveCurrentDayFoodsToDatabase();
-}
-
-void NutritionTracker::showContextMenu(const QPoint& point)
-{
-  FoodContextMenu* contextMenu =
-    (static_cast<FoodTreeModel*>(ui.trvFoodsForDay->model())->getContextMenu
-      (ui.trvFoodsForDay->indexAt(point)));
-
-  if (contextMenu) {
-    qDebug() << "Showing context menu";
-    connect(contextMenu, SIGNAL(remove(const QModelIndex&, FoodComponent*)),
-            this, SLOT(removeComponent(const QModelIndex&, FoodComponent*)));
-    contextMenu->popup(ui.trvFoodsForDay->viewport()->mapToGlobal(point));
-  }
-}
-
-void NutritionTracker::removeComponent(const QModelIndex& index, FoodComponent*)
-{
-  static_cast<FoodTreeModel*>(ui.trvFoodsForDay->model())->removeItem(index);
 }
 
 void NutritionTracker::loadCurrentDayFoodsFromDatabase()
@@ -93,15 +59,12 @@ void NutritionTracker::loadCurrentDayFoodsFromDatabase()
 
   qDebug() << "Got " << meals.size() << " meals for day " << getSelectedDate();
 
-  for (QVector<QSharedPointer<Meal> >::const_iterator i = meals.begin(); i != meals.end(); ++i) {
-    static_cast<FoodTreeModel*>(ui.trvFoodsForDay->model())->addMeal(*i);
-  }
+  ui.ftFoodsForDay->addMeals(meals);
 }
 
 void NutritionTracker::saveCurrentDayFoodsToDatabase()
 {
-  QVector<QSharedPointer<const Meal> > meals =
-    static_cast<FoodTreeModel*>(ui.trvFoodsForDay->model())->getAllMeals();
+  QVector<QSharedPointer<const Meal> > meals = ui.ftFoodsForDay->getAllMeals();
 
   qDebug() << "Selected date is " << getSelectedDate();
 
