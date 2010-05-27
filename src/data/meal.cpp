@@ -222,16 +222,16 @@ Meal::Meal(int id, int creatorUserId, const QString& name, int userId,
 {
 }
 
-void Meal::mergeMeal(const QSharedPointer<const Meal>& meal)
+QSharedPointer<Meal> Meal::getTemporaryClone() const
 {
-  if (meal != NULL) {
-    addComponents(meal->getComponentAmounts());
-  }
+  QSharedPointer<Meal> tempClone = Meal::createTemporaryMeal(getUserId(), getDate(), getMealId());
+  tempClone->replaceWith(getCanonicalSharedPointerToCollection());
+  return tempClone;
 }
 
 void Meal::saveToDatabase()
 {
-  if (temporaryId >= 0) {
+  if (isTemporary()) {
     throw std::logic_error("Attempted to save a temporary meal to the database.");
   }
 
@@ -315,14 +315,12 @@ void Meal::saveToDatabase()
                              newId, i->getFoodAmount(), i->getOrder()));
       }
     }
-
-
   }
 }
 
 QSharedPointer<Food> Meal::getCanonicalSharedPointer()
 {
-  if (temporaryId >= 0) {
+  if (isTemporary()) {
     return temporaryMealCache[temporaryId].toStrongRef();
   } else {
     return mealCache[userId][date][id].toStrongRef();
@@ -331,7 +329,7 @@ QSharedPointer<Food> Meal::getCanonicalSharedPointer()
 
 QSharedPointer<const Food> Meal::getCanonicalSharedPointer() const
 {
-  if (temporaryId >= 0) {
+  if (isTemporary()) {
     return temporaryMealCache[temporaryId].toStrongRef();
   } else {
     return mealCache[userId][date][id].toStrongRef();

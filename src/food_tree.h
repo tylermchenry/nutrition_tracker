@@ -36,6 +36,10 @@ class FoodTree : public QWidget
 
     QVector<QSharedPointer<const Meal> > getAllMeals() const;
 
+  signals:
+
+    void mealModified(const QSharedPointer<Meal>& meal);
+
   public slots:
 
     void clear();

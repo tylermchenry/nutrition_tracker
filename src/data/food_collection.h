@@ -44,6 +44,10 @@ class FoodCollection: public Food
 
     virtual void clearComponents();
 
+    virtual void merge(const QSharedPointer<const FoodCollection>& otherFC);
+
+    virtual void replaceWith(const QSharedPointer<const FoodCollection>& otherFC);
+
     virtual void saveToDatabase();
 
   protected:

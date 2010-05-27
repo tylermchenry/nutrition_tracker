@@ -32,6 +32,8 @@ class Meal : public FoodCollection
 
     virtual ~Meal();
 
+    inline bool isTemporary() const { return (temporaryId >= 0); }
+
     inline int getMealId() const { return id; }
 
     inline int getCreatorUserId() const { return creatorUserId; }
@@ -40,7 +42,7 @@ class Meal : public FoodCollection
 
     inline QDate getDate() const { return date; }
 
-    virtual void mergeMeal(const QSharedPointer<const Meal>& meal);
+    virtual QSharedPointer<Meal> getTemporaryClone() const;
 
     virtual void saveToDatabase();
 

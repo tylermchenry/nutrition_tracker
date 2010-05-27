@@ -149,6 +149,40 @@ void FoodCollection::clearComponents()
   newIds.clear();
 }
 
+void FoodCollection::merge(const QSharedPointer<const FoodCollection>& otherFC)
+{
+  if (otherFC != NULL) {
+    addComponents(otherFC->getComponentAmounts());
+  }
+}
+
+void FoodCollection::replaceWith(const QSharedPointer<const FoodCollection>& otherFC)
+{
+  // This is kind of like an assignment operator, but not really. It replaces
+  // the components of this object with components from the other object, but
+  // the component objects "rebased" to have this object as their containing
+  // collection. It also copies over the newIds and removedIds data from the
+  // old class. It's not an assignment operator because it only operates on
+  // the collection level. The ID of this collection is not modified, and
+  // derived classes may have futher information that is not overwritten by
+  // this call.
+
+  if (otherFC == NULL) return;
+
+  components.clear();
+
+  for (QSet<FoodComponent>::const_iterator i = otherFC->components.begin(); i != otherFC->components.end(); ++i)
+  {
+    components.insert(FoodComponent(getCanonicalSharedPointerToCollection(),
+                                    i->getId(), i->getFoodAmount(), i->getOrder()));
+  }
+
+  newIds = otherFC->newIds;
+  removedIds = otherFC->removedIds;
+  nextTemporaryId = otherFC->nextTemporaryId;
+}
+
+
 void FoodCollection::saveToDatabase()
 {
   throw std::logic_error("Attempted to save a bare food collection to the database.");

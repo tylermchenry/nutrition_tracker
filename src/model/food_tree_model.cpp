@@ -241,7 +241,7 @@ void FoodTreeModel::addMeal(const QSharedPointer<const Meal>& meal)
 
   FoodTreeMealItem* parentOfNewItem = mealRoots[mealId];
 
-  temporaryMeals[mealId]->mergeMeal(meal);
+  temporaryMeals[mealId]->merge(meal);
 
   QSet<FoodComponent> components = meal->getComponents();
 

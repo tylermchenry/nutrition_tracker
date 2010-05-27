@@ -73,8 +73,7 @@ void NutritionTracker::saveCurrentDayFoodsToDatabase()
     QSharedPointer<Meal> savedMeal =
       Meal::getOrCreateMeal((*i)->getUserId(), getSelectedDate(), (*i)->getMealId());
 
-    savedMeal->clearComponents();
-    savedMeal->mergeMeal(*i);
+    savedMeal->replaceWith(*i);
     savedMeal->saveToDatabase();
   }
 }
