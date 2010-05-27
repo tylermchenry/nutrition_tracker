@@ -14,6 +14,9 @@ NutritionTracker::NutritionTracker(QWidget *parent)
 	ui.trvFoodsForDay->header()->setResizeMode(QHeaderView::ResizeToContents);
 
 	ui.trvFoodsForDay->setContextMenuPolicy(Qt::CustomContextMenu);
+
+	connect(ui.trvFoodsForDay, SIGNAL(customContextMenuRequested(const QPoint&)),
+	        this, SLOT(showContextMenu(const QPoint&)));
 }
 
 NutritionTracker::~NutritionTracker()
@@ -46,9 +49,6 @@ void NutritionTracker::changeDay()
 
   ui.trvFoodsForDay->setModel(foodTreeModel);
 
-  connect(ui.trvFoodsForDay, SIGNAL(customContextMenuRequested(const QPoint&)),
-           this, SLOT(showContextMenu(const QPoint&)));
-
   loadCurrentDayFoodsFromDatabase();
 }
 
@@ -76,7 +76,7 @@ void NutritionTracker::showContextMenu(const QPoint& point)
   if (contextMenu) {
     qDebug() << "Showing context menu";
     connect(contextMenu, SIGNAL(remove(FoodComponent*)), this, SLOT(removeComponent(FoodComponent*)));
-    contextMenu->exec(ui.trvFoodsForDay->viewport()->mapToGlobal(point));
+    contextMenu->popup(ui.trvFoodsForDay->viewport()->mapToGlobal(point));
   }
 }
 
