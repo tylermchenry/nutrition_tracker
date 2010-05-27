@@ -189,7 +189,7 @@ QSharedPointer<Meal> Meal::createMealFromQueryResults(QSqlQuery& query)
   if (meal && query.isActive()) {
     query.seek(-1); // Reset to before first record
     meal->setComponents
-      (createComponentsFromQueryResults(query, "MealLink_Id", "IntramealOrder"));
+      (createComponentsFromQueryResults(query, meal, "MealLink_Id", "IntramealOrder"));
   } else if (!meal) {
     qDebug() << "Meal was not created!";
   } else {
@@ -310,7 +310,9 @@ void Meal::saveToDatabase()
         int newId = query.lastInsertId().toInt();
         qDebug() << "Assigned real ID " << newId
                   << " to food component with temp ID " << i->getId();
-        replaceComponent(*i, FoodComponent(newId, i->getFoodAmount(), i->getOrder()));
+        replaceComponent
+          (*i, FoodComponent(getCanonicalSharedPointerToCollection(),
+                             newId, i->getFoodAmount(), i->getOrder()));
       }
     }
 

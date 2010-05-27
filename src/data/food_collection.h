@@ -79,8 +79,8 @@ class FoodCollection: public Food
     virtual QSharedPointer<const FoodCollection> getCanonicalSharedPointerToCollection() const;
 
     static QSet<FoodComponent> createComponentsFromQueryResults
-      (QSqlQuery& query, const QString& componentIdField,
-       const QString& componentOrderField = "Order");
+      (QSqlQuery& query, const QSharedPointer<FoodCollection>& containingCollection,
+       const QString& componentIdField, const QString& componentOrderField = "Order");
 
   private:
 

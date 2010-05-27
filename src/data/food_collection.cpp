@@ -103,7 +103,8 @@ FoodComponent FoodCollection::addComponent(const FoodAmount& foodAmount)
     order = components.toList().last().getOrder()+1;
   }
 
-  FoodComponent component(nextTemporaryId--, foodAmount, order);
+  FoodComponent component(getCanonicalSharedPointerToCollection(),
+                          nextTemporaryId--, foodAmount, order);
   components.insert(component);
   return component;
 }
@@ -129,7 +130,8 @@ void FoodCollection::removeComponent(const FoodComponent& component)
     components.remove(component);
   } else if (newIds.contains(component.getId())) {
     removeComponent
-      (FoodComponent(newIds[component.getId()], component.getFoodAmount(), component.getOrder()));
+      (FoodComponent(getCanonicalSharedPointerToCollection(),
+                     newIds[component.getId()], component.getFoodAmount(), component.getOrder()));
     newIds.remove(component.getId());
   }
 }
@@ -199,15 +201,12 @@ QSharedPointer<const FoodCollection>
 }
 
 QSet<FoodComponent> FoodCollection::createComponentsFromQueryResults
-  (QSqlQuery& query, const QString& componentIdField, const QString& componentOrderField)
+  (QSqlQuery& query, const QSharedPointer<FoodCollection>& containingCollection,
+   const QString& componentIdField, const QString& componentOrderField)
 {
   QSet<FoodComponent> components;
 
-  qDebug() << "Creating components";
-
   while (query.next()) {
-
-    qDebug() << "Creating component";
 
     const QSqlRecord& record = query.record();
 
@@ -235,7 +234,8 @@ QSet<FoodComponent> FoodCollection::createComponentsFromQueryResults
     if (containedFood != NULL) {
       components.insert
         (FoodComponent
-          (record.field(componentIdField).value().toInt(),
+          (containingCollection,
+           record.field(componentIdField).value().toInt(),
            FoodAmount(containedFood, record.field("Magnitude").value().toDouble(),
                       Unit::createUnitFromRecord(record)),
            order));

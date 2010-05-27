@@ -86,7 +86,7 @@ QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
     query.seek(-1); // Reset to before first record
     food->setComponents
       (createComponentsFromQueryResults
-         (query, "CompositeLink_Id", "Intrafood_Order"));
+         (query, food, "CompositeLink_Id", "Intrafood_Order"));
   }
 
   return food;

@@ -11,15 +11,24 @@
 
 #include "food_amount.h"
 
+class FoodCollection; // Forward decl
+
 class FoodComponent
 {
   public:
 
     FoodComponent();
 
-    FoodComponent(int id, const FoodAmount& foodAmount, int order = 0);
+    FoodComponent(const QSharedPointer<FoodCollection>& containingCollection,
+                    int id, const FoodAmount& foodAmount, int order = 0);
 
     virtual ~FoodComponent();
+
+    inline QSharedPointer<FoodCollection> getContainingCollection()
+      { return containingCollection; }
+
+    inline QSharedPointer<const FoodCollection> getContainingCollection() const
+      { return containingCollection; }
 
     int getId() const { return id; }
 
@@ -32,6 +41,8 @@ class FoodComponent
     bool operator== (const FoodComponent& rhs) const;
 
   private:
+
+    QSharedPointer<FoodCollection> containingCollection;
 
     int id;
     FoodAmount foodAmount;
