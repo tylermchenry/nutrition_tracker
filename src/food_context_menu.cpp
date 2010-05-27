@@ -12,8 +12,9 @@
 #include <QDebug>
 #include <QtGui/QMessageBox>
 
-FoodContextMenu::FoodContextMenu(FoodComponent* component, QWidget* parent)
-  : QMenu("Food", parent)
+FoodContextMenu::FoodContextMenu
+  (const QModelIndex& index, FoodComponent* component, QWidget* parent)
+  : QMenu("Food", parent), index(index), component(component)
 {
   if (!component || !component->getFoodAmount().isDefined()) {
     throw std::logic_error("Attempted to create a context menu for an undefined food component.");
@@ -72,19 +73,19 @@ FoodContextMenu::~FoodContextMenu()
 void FoodContextMenu::actionTriggered(QAction* action)
 {
   if (action == actViewNutritionInfo) {
-    emit viewNutritionInformation(component);
+    emit viewNutritionInformation(index, component);
   } else if (action == actChangeAmount) {
-    emit changeAmount(component);
+    emit changeAmount(index, component);
   } else if (actChangeUnit.contains(action)) {
-    emit changeUnit(component, actChangeUnit[action]);
+    emit changeUnit(index, component, actChangeUnit[action]);
   } else if (action == actEdit) {
-    emit edit(component);
+    emit edit(index, component);
   } else if (action == actDuplicate) {
-    emit duplicate(component);
+    emit duplicate(index, component);
   } else if (actMoveToMeal.contains(action)) {
-    emit moveToMeal(component, actMoveToMeal[action]);
+    emit moveToMeal(index, component, actMoveToMeal[action]);
   } else if (action == actRemove) {
-    emit remove(component);
+    emit remove(index, component);
   }
 }
 

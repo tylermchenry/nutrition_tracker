@@ -75,12 +75,13 @@ void NutritionTracker::showContextMenu(const QPoint& point)
 
   if (contextMenu) {
     qDebug() << "Showing context menu";
-    connect(contextMenu, SIGNAL(remove(FoodComponent*)), this, SLOT(removeComponent(FoodComponent*)));
+    connect(contextMenu, SIGNAL(remove(const QModelIndex&, FoodComponent*)),
+            this, SLOT(removeComponent(const QModelIndex&, FoodComponent*)));
     contextMenu->popup(ui.trvFoodsForDay->viewport()->mapToGlobal(point));
   }
 }
 
-void NutritionTracker::removeComponent(FoodComponent* component)
+void NutritionTracker::removeComponent(const QModelIndex& index, FoodComponent* component)
 {
 }
 

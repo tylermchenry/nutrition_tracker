@@ -17,7 +17,7 @@ class FoodTreeItem
 {
   public:
 
-    explicit FoodTreeItem(FoodTreeItem* parentItem = NULL);
+    explicit FoodTreeItem(const QAbstractItemModel* model, FoodTreeItem* parentItem = NULL);
 
     virtual ~FoodTreeItem();
 
@@ -51,7 +51,13 @@ class FoodTreeItem
 
     FoodTreeItem* addChild(FoodTreeItem* item);
 
+    inline const QAbstractItemModel* getModel() const { return model; }
+
+    QModelIndex getIndex() const;
+
   private:
+
+    const QAbstractItemModel* model;
 
     QVector<QString> columnNutrientIds;
     QList<FoodTreeItem*> childItems;

@@ -15,7 +15,9 @@ class FoodTreeComponentItem : public FoodTreeItem
 {
   public:
 
-    explicit FoodTreeComponentItem(const FoodComponent& component, FoodTreeItem* parent = NULL);
+    FoodTreeComponentItem(const QAbstractItemModel* model,
+                            const FoodComponent& component,
+                            FoodTreeItem* parent = NULL);
 
     virtual ~FoodTreeComponentItem();
 

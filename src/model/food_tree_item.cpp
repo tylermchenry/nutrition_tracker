@@ -9,10 +9,11 @@
 #include <QVariant>
 #include <QDebug>
 #include "data/food.h"
+#include "data/food_collection.h"
 #include "food_context_menu.h"
 
-FoodTreeItem::FoodTreeItem(FoodTreeItem* parentItem)
-  : parentItem(parentItem)
+FoodTreeItem::FoodTreeItem(const QAbstractItemModel* model, FoodTreeItem* parentItem)
+  : model(model), parentItem(parentItem)
 {
   columnNutrientIds.resize(4);
   columnNutrientIds[0] = Nutrient::getNutrientByName("Calories")->getId();
@@ -113,4 +114,13 @@ FoodTreeItem* FoodTreeItem::addChild(FoodTreeItem* item)
 {
   childItems.append(item);
   return item;
+}
+
+QModelIndex FoodTreeItem::getIndex() const
+{
+  if (model) {
+    return model->index(row(), 0, parentItem ? parentItem->getIndex() : QModelIndex());
+  } else {
+    return QModelIndex();
+  }
 }

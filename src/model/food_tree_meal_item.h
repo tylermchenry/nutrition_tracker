@@ -16,7 +16,9 @@ class FoodTreeMealItem : public FoodTreeItem
 {
   public:
 
-    explicit FoodTreeMealItem(const QSharedPointer<Meal>& meal, FoodTreeItem* parent = NULL);
+    FoodTreeMealItem(const QAbstractItemModel* model,
+                       const QSharedPointer<Meal>& meal,
+                       FoodTreeItem* parent = NULL);
 
     virtual ~FoodTreeMealItem();
 

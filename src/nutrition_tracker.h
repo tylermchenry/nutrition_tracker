@@ -24,7 +24,7 @@ class NutritionTracker : public QWidget
 
     void showContextMenu(const QPoint& point);
 
-    void removeComponent(FoodComponent* component);
+    void removeComponent(const QModelIndex& index, FoodComponent* component);
 
   private slots:
 

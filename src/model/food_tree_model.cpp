@@ -12,7 +12,7 @@
 
 FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QString& allFoodsTitle)
   : QAbstractItemModel(treeView), treeView(treeView),
-    rootItem(new FoodTreeCollectionItem(QSharedPointer<FoodCollection>())),
+    rootItem(new FoodTreeCollectionItem(this, QSharedPointer<FoodCollection>())),
     allFoods(FoodCollection::createFoodCollection(allFoodsTitle)),
     mealsDate(QDate::currentDate())
 {
@@ -23,7 +23,7 @@ FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QString& allFoodsTitle)
 
 FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QDate& mealsDate, const QString& allFoodsTitle)
   : QAbstractItemModel(treeView), treeView(treeView),
-    rootItem(new FoodTreeCollectionItem(QSharedPointer<FoodCollection>())),
+    rootItem(new FoodTreeCollectionItem(this, QSharedPointer<FoodCollection>())),
     allFoods(FoodCollection::createFoodCollection(allFoodsTitle)),
     mealsDate(mealsDate)
 {

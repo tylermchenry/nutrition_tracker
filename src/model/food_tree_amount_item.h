@@ -14,7 +14,9 @@ class FoodTreeAmountItem : public FoodTreeItem
 {
   public:
 
-    explicit FoodTreeAmountItem(const FoodAmount& foodAmount, FoodTreeItem* parent = NULL);
+    FoodTreeAmountItem(const QAbstractItemModel* model,
+                         const FoodAmount& foodAmount,
+                         FoodTreeItem* parent = NULL);
 
     virtual ~FoodTreeAmountItem();
 

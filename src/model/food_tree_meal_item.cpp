@@ -8,8 +8,9 @@
 #include "food_tree_meal_item.h"
 #include "food_tree_component_item.h"
 
-FoodTreeMealItem::FoodTreeMealItem(const QSharedPointer<Meal>& meal, FoodTreeItem* parent)
-  : FoodTreeItem(parent), meal(meal)
+FoodTreeMealItem::FoodTreeMealItem
+  (const QAbstractItemModel* model, const QSharedPointer<Meal>& meal, FoodTreeItem* parent)
+  : FoodTreeItem(model, parent), meal(meal)
 {
   if (meal) {
     QSet<FoodComponent> components = meal->getComponents();
@@ -25,7 +26,7 @@ FoodTreeMealItem::~FoodTreeMealItem()
 
 FoodTreeComponentItem* FoodTreeMealItem::addComponent(const FoodComponent& component)
 {
-  FoodTreeComponentItem* item = new FoodTreeComponentItem(component, this);
+  FoodTreeComponentItem* item = new FoodTreeComponentItem(getModel(), component, this);
   addChild(item);
   return item;
 }

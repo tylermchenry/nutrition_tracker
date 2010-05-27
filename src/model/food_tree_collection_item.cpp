@@ -7,9 +7,10 @@
 
 #include "food_tree_collection_item.h"
 
-FoodTreeCollectionItem::FoodTreeCollectionItem(const QSharedPointer<FoodCollection>& collection,
-                                                      FoodTreeItem* parent)
-  : FoodTreeItem(parent), collection(collection)
+FoodTreeCollectionItem::FoodTreeCollectionItem
+  (const QAbstractItemModel* model, const QSharedPointer<FoodCollection>& collection,
+   FoodTreeItem* parent)
+  : FoodTreeItem(model, parent), collection(collection)
 {
   if (collection) {
     QSet<FoodComponent> components = collection->getComponents();
@@ -25,21 +26,21 @@ FoodTreeCollectionItem::~FoodTreeCollectionItem()
 
 FoodTreeCollectionItem* FoodTreeCollectionItem::addCollection(const QSharedPointer<FoodCollection>& collection)
 {
-  FoodTreeCollectionItem* item = new FoodTreeCollectionItem(collection, this);
+  FoodTreeCollectionItem* item = new FoodTreeCollectionItem(getModel(), collection, this);
   addChild(item);
   return item;
 }
 
 FoodTreeMealItem* FoodTreeCollectionItem::addMeal(const QSharedPointer<Meal>& meal)
 {
-  FoodTreeMealItem* item = new FoodTreeMealItem(meal, this);
+  FoodTreeMealItem* item = new FoodTreeMealItem(getModel(), meal, this);
   addChild(item);
   return item;
 }
 
 FoodTreeComponentItem* FoodTreeCollectionItem::addComponent(const FoodComponent& component)
 {
-  FoodTreeComponentItem* item = new FoodTreeComponentItem(component, this);
+  FoodTreeComponentItem* item = new FoodTreeComponentItem(getModel(), component, this);
   addChild(item);
   return item;
 }

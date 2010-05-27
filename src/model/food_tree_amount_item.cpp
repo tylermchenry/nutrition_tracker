@@ -7,16 +7,18 @@
 
 #include "food_tree_amount_item.h"
 #include "data/food.h"
+#include "data/food_collection.h"
 
-FoodTreeAmountItem::FoodTreeAmountItem(const FoodAmount& foodAmount, FoodTreeItem* parent)
-  : FoodTreeItem(parent), foodAmount(foodAmount)
+FoodTreeAmountItem::FoodTreeAmountItem
+  (const QAbstractItemModel* model, const FoodAmount& foodAmount, FoodTreeItem* parent)
+  : FoodTreeItem(model, parent), foodAmount(foodAmount)
 {
   if (foodAmount.isDefined()) {
     QVector<FoodAmount> scaledComponentAmounts = foodAmount.getScaledComponents();
     for (QVector<FoodAmount>::const_iterator i = scaledComponentAmounts.begin();
         i != scaledComponentAmounts.end(); ++i)
     {
-      addChild(new FoodTreeAmountItem(*i, this));
+      addChild(new FoodTreeAmountItem(model, *i, this));
     }
   }
 }

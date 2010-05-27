@@ -9,16 +9,18 @@
 #include "food_tree_amount_item.h"
 #include "food_context_menu.h"
 #include "data/food.h"
+#include "data/food_collection.h"
 
-FoodTreeComponentItem::FoodTreeComponentItem(const FoodComponent& component, FoodTreeItem* parent)
-  : FoodTreeItem(parent), component(component)
+FoodTreeComponentItem::FoodTreeComponentItem
+  (const QAbstractItemModel* model, const FoodComponent& component, FoodTreeItem* parent)
+  : FoodTreeItem(model, parent), component(component)
 {
   if (component.getFoodAmount().isDefined()) {
     QVector<FoodAmount> scaledComponentAmounts = component.getFoodAmount().getScaledComponents();
     for (QVector<FoodAmount>::const_iterator i = scaledComponentAmounts.begin();
         i != scaledComponentAmounts.end(); ++i)
     {
-      addChild(new FoodTreeAmountItem(*i, this));
+      addChild(new FoodTreeAmountItem(model, *i, this));
     }
   }
 }
@@ -29,7 +31,7 @@ FoodTreeComponentItem::~FoodTreeComponentItem()
 
 FoodContextMenu* FoodTreeComponentItem::getContextMenu()
 {
-  return new FoodContextMenu(&component);
+  return new FoodContextMenu(getIndex(), &component);
 }
 
 FoodAmount FoodTreeComponentItem::getFoodAmount() const

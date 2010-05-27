@@ -9,7 +9,7 @@
 #define FOOD_CONTEXT_MENU_H_
 
 #include <QtGui/QMenu>
-#include <QSignalMapper>
+#include <QModelIndex>
 #include "data/food_component.h"
 
 class FoodContextMenu : public QMenu
@@ -18,19 +18,19 @@ class FoodContextMenu : public QMenu
 
   public:
 
-    explicit FoodContextMenu(FoodComponent* component, QWidget* parent = 0);
+    FoodContextMenu(const QModelIndex& index, FoodComponent* component, QWidget* parent = 0);
 
     virtual ~FoodContextMenu();
 
   signals:
 
-    void viewNutritionInformation(FoodComponent* component);
-    void changeAmount(FoodComponent* component);
-    void changeUnit(FoodComponent* component, const QSharedPointer<const Unit>& unit);
-    void edit(FoodComponent* component);
-    void duplicate(FoodComponent* component);
-    void moveToMeal(FoodComponent* component, int mealId);
-    void remove(FoodComponent* component);
+    void viewNutritionInformation(const QModelIndex& index, FoodComponent* component);
+    void changeAmount(const QModelIndex& index, FoodComponent* component);
+    void changeUnit(const QModelIndex& index, FoodComponent* component, const QSharedPointer<const Unit>& unit);
+    void edit(const QModelIndex& index, FoodComponent* component);
+    void duplicate(const QModelIndex& index, FoodComponent* component);
+    void moveToMeal(const QModelIndex& index, FoodComponent* component, int mealId);
+    void remove(const QModelIndex& index, FoodComponent* component);
 
   private slots:
 
@@ -38,6 +38,7 @@ class FoodContextMenu : public QMenu
 
   private:
 
+    QModelIndex index;
     FoodComponent* component;
 
     QAction* actViewNutritionInfo;
