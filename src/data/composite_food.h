@@ -38,6 +38,10 @@ class CompositeFood: public FoodCollection
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount);
 
+    CompositeFood(int id, const QString& name,
+                    double weightAmount, double volumeAmount,
+                    double quantityAmount, double servingAmount);
+
     int id;
 
     static QMap<int, QWeakPointer<CompositeFood> > compositeFoodCache;

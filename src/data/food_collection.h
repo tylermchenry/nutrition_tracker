@@ -53,6 +53,14 @@ class FoodCollection: public Food
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount);
 
+    FoodCollection(const QString& id, const QString& name,
+                   double weightAmount, double volumeAmount,
+                   double quantityAmount, double servingAmount);
+
+    // If the subclass chooses not to pass components to the constructor,
+    // they can be set later through this method
+    void setComponents(const QSet<FoodComponent>& components);
+
     // Derived classes call to replace a component that has been newly
     // saved to the database with one that has the DB-assigned ID.
     void replaceComponent(const FoodComponent& oldComponent,
@@ -65,6 +73,10 @@ class FoodCollection: public Food
     virtual QSharedPointer<Food> getCanonicalSharedPointer();
 
     virtual QSharedPointer<const Food> getCanonicalSharedPointer() const;
+
+    virtual QSharedPointer<FoodCollection> getCanonicalSharedPointerToCollection();
+
+    virtual QSharedPointer<const FoodCollection> getCanonicalSharedPointerToCollection() const;
 
     static QSet<FoodComponent> createComponentsFromQueryResults
       (QSqlQuery& query, const QString& componentIdField,

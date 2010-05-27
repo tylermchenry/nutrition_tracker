@@ -58,29 +58,38 @@ QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
 QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
   (QSqlQuery& query)
 {
-  QSet<FoodComponent> components = createComponentsFromQueryResults
-    (query, "CompositeLink_Id", "Intrafood_Order");
+  QSharedPointer<CompositeFood> food;
 
   if (query.first()) {
+
     const QSqlRecord& record = query.record();
     int id = record.field("Composite_Id").value().toInt();
+
     if (!compositeFoodCache[id]) {
-      QSharedPointer<CompositeFood> food
-      (new CompositeFood(id,
-                         record.field("Description").value().toString(),
-                         components,
-                         record.field("Weight_g").value().toDouble(),
-                         record.field("Volume_floz").value().toDouble(),
-                         record.field("Quantity").value().toDouble(),
-                         record.field("Servings").value().toDouble()));
+
+      food = QSharedPointer<CompositeFood>
+        (new CompositeFood(id,
+                           record.field("Description").value().toString(),
+                           record.field("Weight_g").value().toDouble(),
+                           record.field("Volume_floz").value().toDouble(),
+                           record.field("Quantity").value().toDouble(),
+                           record.field("Servings").value().toDouble()));
+
       compositeFoodCache[id] = food;
-      return food;
+
     } else {
       return compositeFoodCache[id].toStrongRef();
     }
-  } else {
-    return QSharedPointer<CompositeFood>();
   }
+
+  if (food && query.isActive()) {
+    query.seek(-1); // Reset to before first record
+    food->setComponents
+      (createComponentsFromQueryResults
+         (query, "CompositeLink_Id", "Intrafood_Order"));
+  }
+
+  return food;
 }
 
 CompositeFood::CompositeFood(int id, const QString& name,
@@ -88,6 +97,15 @@ CompositeFood::CompositeFood(int id, const QString& name,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount)
   : FoodCollection("COMPOSITE_" + QString::number(id), name, components,
+                   weightAmount, volumeAmount, quantityAmount, servingAmount),
+    id(id)
+{
+}
+
+CompositeFood::CompositeFood(int id, const QString& name,
+                             double weightAmount, double volumeAmount,
+                             double quantityAmount, double servingAmount)
+  : FoodCollection("COMPOSITE_" + QString::number(id), name,
                    weightAmount, volumeAmount, quantityAmount, servingAmount),
     id(id)
 {

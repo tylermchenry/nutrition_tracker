@@ -157,8 +157,7 @@ QVector<QSharedPointer<Meal> > Meal::getMealsForDay(int userId, const QDate& dat
 
 QSharedPointer<Meal> Meal::createMealFromQueryResults(QSqlQuery& query)
 {
-  QSet<FoodComponent> components = createComponentsFromQueryResults
-      (query, "MealLink_Id", "IntramealOrder");
+  QSharedPointer<Meal> meal;
 
   if (query.first()) {
 
@@ -175,18 +174,29 @@ QSharedPointer<Meal> Meal::createMealFromQueryResults(QSqlQuery& query)
         creatorUserId = record.field("CreatorUser_Id").value().toInt();
       }
 
-      QSharedPointer<Meal> meal
+      meal = QSharedPointer<Meal>
         (new Meal(id, creatorUserId,
                   record.field("Name").value().toString(),
-                  userId, date, components));
+                  userId, date));
+
       mealCache[userId][date][id] = meal;
-      return meal;
+
     } else {
       return mealCache[userId][date][id].toStrongRef();
     }
-  } else {
-    return QSharedPointer<Meal>();
   }
+
+  if (meal && query.isActive()) {
+    query.seek(-1); // Reset to before first record
+    meal->setComponents
+      (createComponentsFromQueryResults(query, "MealLink_Id", "IntramealOrder"));
+  } else if (!meal) {
+    qDebug() << "Meal was not created!";
+  } else {
+    qDebug() << "Could not rewind query!";
+  }
+
+  return meal;
 }
 
 Meal::~Meal()
@@ -199,6 +209,15 @@ Meal::Meal(int id, int creatorUserId, const QString& name, int userId,
   : FoodCollection((temporaryId >= 0 ? "TMPMEAL_" : "MEAL_") + QString::number(id) + "_" +
                    QString::number(userId) + "_" + date.toString(Qt::ISODate),
                    name, components, 0, 0, 0, 1),
+    id(id), creatorUserId(creatorUserId), userId(userId), date(date), temporaryId(temporaryId)
+{
+}
+
+Meal::Meal(int id, int creatorUserId, const QString& name, int userId,
+           const QDate& date, int temporaryId)
+  : FoodCollection((temporaryId >= 0 ? "TMPMEAL_" : "MEAL_") + QString::number(id) + "_" +
+                   QString::number(userId) + "_" + date.toString(Qt::ISODate),
+                   name, 0, 0, 0, 1),
     id(id), creatorUserId(creatorUserId), userId(userId), date(date), temporaryId(temporaryId)
 {
 }

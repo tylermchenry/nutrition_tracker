@@ -56,6 +56,9 @@ class Meal : public FoodCollection
          const QDate& date, const QSet<FoodComponent>& components,
          int temporaryId = -1);
 
+    Meal(int id, int creatorUserId, const QString& name, int userId,
+         const QDate& date, int temporaryId = -1);
+
     int id;
     int creatorUserId; // TODO: Replace with user object when created
     int userId;        // TODO: Replace with user object when created

@@ -39,6 +39,14 @@ FoodCollection::FoodCollection(const QString& id, const QString& name,
 {
 }
 
+FoodCollection::FoodCollection(const QString& id, const QString& name,
+                             double weightAmount, double volumeAmount,
+                             double quantityAmount, double servingAmount)
+  : Food(id, name, weightAmount, volumeAmount,
+         quantityAmount, servingAmount), id(-1), nextTemporaryId(-1)
+{
+}
+
 FoodCollection::FoodCollection(int id, const QString& name,
                              const QSet<FoodComponent>& components,
                              double weightAmount, double volumeAmount,
@@ -144,6 +152,14 @@ void FoodCollection::saveToDatabase()
   throw std::logic_error("Attempted to save a bare food collection to the database.");
 }
 
+void FoodCollection::setComponents(const QSet<FoodComponent>& components)
+{
+  qDebug() << "Setting components of " << this->getName() << " to a set of "
+           << components.size() << " components";
+  clearComponents();
+  this->components = components;
+}
+
 void FoodCollection::replaceComponent(const FoodComponent& oldComponent,
                                            const FoodComponent& newComponent)
 {
@@ -171,12 +187,27 @@ QSharedPointer<const Food> FoodCollection::getCanonicalSharedPointer() const
   return foodCollectionCache[id].toStrongRef();
 }
 
+QSharedPointer<FoodCollection> FoodCollection::getCanonicalSharedPointerToCollection()
+{
+  return getCanonicalSharedPointer().dynamicCast<FoodCollection>();
+}
+
+QSharedPointer<const FoodCollection>
+  FoodCollection::getCanonicalSharedPointerToCollection() const
+{
+  return getCanonicalSharedPointer().dynamicCast<const FoodCollection>();
+}
+
 QSet<FoodComponent> FoodCollection::createComponentsFromQueryResults
   (QSqlQuery& query, const QString& componentIdField, const QString& componentOrderField)
 {
   QSet<FoodComponent> components;
 
+  qDebug() << "Creating components";
+
   while (query.next()) {
+
+    qDebug() << "Creating component";
 
     const QSqlRecord& record = query.record();
 
