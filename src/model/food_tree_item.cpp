@@ -141,9 +141,14 @@ FoodTreeItem* FoodTreeItem::addChild(FoodTreeItem* item)
 QModelIndex FoodTreeItem::getIndex() const
 {
   if (model) {
-    QModelIndex index = model->index(row(), 0, parentItem ? parentItem->getIndex() : QModelIndex());
-    qDebug() << "Index of " << getName() << " is " << index;
-    return index;
+    if (parentItem) {
+      QModelIndex index = model->index(row(), 0, parentItem->getIndex());
+      qDebug() << "Index of " << getName() << " is " << index;
+      return index;
+    } else {
+      qDebug() << getName() << " is the root";
+      return QModelIndex();
+    }
   } else {
     return QModelIndex();
   }
