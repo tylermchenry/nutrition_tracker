@@ -1,6 +1,7 @@
 #include "nutrition_tracker.h"
 #include "food_context_menu.h"
 #include "model/food_tree_model.h"
+#include "data/food_collection.h"
 #include <QDebug>
 #include <QtGui/QCursor>
 
@@ -81,8 +82,9 @@ void NutritionTracker::showContextMenu(const QPoint& point)
   }
 }
 
-void NutritionTracker::removeComponent(const QModelIndex& index, FoodComponent* component)
+void NutritionTracker::removeComponent(const QModelIndex& index, FoodComponent*)
 {
+  static_cast<FoodTreeModel*>(ui.trvFoodsForDay->model())->removeItem(index);
 }
 
 void NutritionTracker::loadCurrentDayFoodsFromDatabase()

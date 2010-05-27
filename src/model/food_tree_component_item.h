@@ -29,6 +29,8 @@ class FoodTreeComponentItem : public FoodTreeItem
 
     virtual QString getName() const;
 
+    virtual void remove();
+
   private:
 
     FoodComponent component;

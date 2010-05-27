@@ -10,6 +10,7 @@
 #include "food_context_menu.h"
 #include "data/food.h"
 #include "data/food_collection.h"
+#include <QDebug>
 
 FoodTreeComponentItem::FoodTreeComponentItem
   (const QAbstractItemModel* model, const FoodComponent& component, FoodTreeItem* parent)
@@ -46,4 +47,12 @@ QString FoodTreeComponentItem::getName() const
   } else {
     return "(Undefined Component)";
   }
+}
+
+void FoodTreeComponentItem::remove()
+{
+  qDebug() << "Removing component " << component.getFoodAmount().getFood()->getName()
+           << " from " << component.getContainingCollection()->getName();
+  component.getContainingCollection()->removeComponent(component);
+  component.getContainingCollection()->saveToDatabase();
 }

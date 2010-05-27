@@ -114,8 +114,10 @@ QVariant FoodTreeModel::headerData(int section, Qt::Orientation orientation, int
 
 QModelIndex FoodTreeModel::index(int row, int column, const QModelIndex &parent) const
 {
-  if (!hasIndex(row, column, parent))
+  if (!hasIndex(row, column, parent)) {
+    qDebug() << "hasIndex() returned false";
     return QModelIndex();
+  }
 
   FoodTreeItem *parentItem;
 
@@ -127,8 +129,11 @@ QModelIndex FoodTreeModel::index(int row, int column, const QModelIndex &parent)
   FoodTreeItem *childItem = parentItem->child(row);
   if (childItem)
     return createIndex(row, column, childItem);
-  else
+  else {
+    qDebug() << "child() returned NULL";
     return QModelIndex();
+  }
+
 }
 
 QModelIndex FoodTreeModel::parent(const QModelIndex &index) const
@@ -193,6 +198,24 @@ FoodContextMenu* FoodTreeModel::getContextMenu(const QModelIndex& index) const
   }
 }
 
+void FoodTreeModel::removeItem(const QModelIndex& index)
+{
+  FoodTreeItem* item = static_cast<FoodTreeItem*>(index.internalPointer());
+
+  if (!item) return;
+
+  FoodTreeItem* parent = item->parent();
+
+  qDebug() << "Attempting to remove item at " << index;
+
+  removeAllChildren(index);
+
+  beginRemoveRows(createIndex(parent->row(), 0, parent),
+                    item->row(), item->row());
+  parent->removeChild(item);
+  endRemoveRows();
+}
+
 void FoodTreeModel::addFoodAmount(const FoodAmount& foodAmount, int mealId)
 {
   qDebug() << "Adding food amount to food tree model";
@@ -252,3 +275,29 @@ void FoodTreeModel::ensureMealRootExists(int mealId)
      emit newGroupingCreated(createIndex(mealRoots[mealId]->row(), 0, mealRoots[mealId]));
    }
 }
+
+void FoodTreeModel::removeAllChildren(const QModelIndex& index)
+{
+  FoodTreeItem* item = static_cast<FoodTreeItem*>(index.internalPointer());
+
+  qDebug() << "Attempting to remove all children of item at " << index;
+
+  if (item->childCount() > 0) {
+
+    qDebug() << "Step 1: Item has " << item->childCount() << " children";
+
+    for (int i = 0; i < item->childCount(); ++i) {
+      removeAllChildren(createIndex(i, 0, item->child(i)));
+    }
+
+    qDebug() << "Step 2: Item has " << item->childCount() << " children";
+
+    beginRemoveRows(createIndex(item->row(), 0, item),
+                      0, item->childCount()-1);
+    item->removeAllChildren();
+    endRemoveRows();
+
+    qDebug() << "Step 3: Item has ??? children";
+  }
+}
+

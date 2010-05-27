@@ -54,6 +54,8 @@ class FoodTreeModel : public QAbstractItemModel
 
     FoodContextMenu* getContextMenu(const QModelIndex& index) const;
 
+    void removeItem(const QModelIndex& index);
+
   public slots:
 
     void addFoodAmount(const FoodAmount& foodAmount, int mealId);
@@ -78,6 +80,8 @@ class FoodTreeModel : public QAbstractItemModel
     QMap<int, QSharedPointer<Meal> > temporaryMeals;
 
     void ensureMealRootExists(int mealId);
+
+    void removeAllChildren(const QModelIndex& index);
 };
 
 #endif /* FOOD_TREE_MODEL_H_ */

@@ -110,6 +110,28 @@ FoodTreeItem* FoodTreeItem::parent()
   return parentItem;
 }
 
+void FoodTreeItem::removeChild(FoodTreeItem* item)
+{
+  qDebug() << "Removing children of item " << item->getName();
+  item->removeAllChildren();
+  qDebug() << "Removing item " << item->getName();
+  item->remove();
+  childItems.removeOne(item); // Won't ever be more than one
+  delete item;
+}
+
+void FoodTreeItem::removeAllChildren()
+{
+  for (QList<FoodTreeItem*>::iterator i = childItems.begin(); i != childItems.end(); ++i) {
+    qDebug() << "Removing children of item " << (*i)->getName();
+    (*i)->removeAllChildren();
+    qDebug() << "Removing item " << (*i)->getName();
+    (*i)->remove();
+    delete *i;
+  }
+  childItems.clear();
+}
+
 FoodTreeItem* FoodTreeItem::addChild(FoodTreeItem* item)
 {
   childItems.append(item);
@@ -119,7 +141,9 @@ FoodTreeItem* FoodTreeItem::addChild(FoodTreeItem* item)
 QModelIndex FoodTreeItem::getIndex() const
 {
   if (model) {
-    return model->index(row(), 0, parentItem ? parentItem->getIndex() : QModelIndex());
+    QModelIndex index = model->index(row(), 0, parentItem ? parentItem->getIndex() : QModelIndex());
+    qDebug() << "Index of " << getName() << " is " << index;
+    return index;
   } else {
     return QModelIndex();
   }

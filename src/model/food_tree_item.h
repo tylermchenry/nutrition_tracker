@@ -35,6 +35,10 @@ class FoodTreeItem
 
     FoodTreeItem *parent();
 
+    void removeChild(FoodTreeItem* item);
+
+    void removeAllChildren();
+
     virtual FoodContextMenu* getContextMenu() { return NULL; }
 
   protected:
@@ -48,6 +52,8 @@ class FoodTreeItem
     virtual bool showAmount() const { return true; }
 
     virtual bool showNutrients() const { return true; }
+
+    virtual void remove() {};
 
     FoodTreeItem* addChild(FoodTreeItem* item);
 
