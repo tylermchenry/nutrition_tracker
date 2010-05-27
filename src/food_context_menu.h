@@ -34,7 +34,7 @@ class FoodContextMenu : public QMenu
 
   private slots:
 
-    void actionTriggered(QWidget* widget);
+    void actionTriggered(QAction* action);
 
   private:
 
@@ -50,8 +50,6 @@ class FoodContextMenu : public QMenu
 
     QMenu* mnuChangeUnit;
     QMenu* mnuMoveToMeal;
-
-    QSignalMapper* signalMapper;
 
     template<typename T>
       void createAction(QMap<QAction*, T>& actionMap, const QString& label,

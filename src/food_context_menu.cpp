@@ -19,8 +19,6 @@ FoodContextMenu::FoodContextMenu(FoodComponent* component, QWidget* parent)
     throw std::logic_error("Attempted to create a context menu for an undefined food component.");
   }
 
-  signalMapper = new QSignalMapper(this);
-
   createAction(actViewNutritionInfo, "View Nutrition Information...");
 
   addSeparator();
@@ -64,21 +62,15 @@ FoodContextMenu::FoodContextMenu(FoodComponent* component, QWidget* parent)
 
   createAction(actRemove, "Remove");
 
-  connect(signalMapper, SIGNAL(mapped(QWidget*)), this, SLOT(actionTriggered(QWidget*)));
+  connect(this, SIGNAL(triggered(QAction*)), this, SLOT(actionTriggered(QAction*)));
 }
 
 FoodContextMenu::~FoodContextMenu()
 {
 }
 
-void FoodContextMenu::actionTriggered(QWidget* widget)
+void FoodContextMenu::actionTriggered(QAction* action)
 {
-  QAction* action;
-
-  if (!(action = dynamic_cast<QAction*>(widget))) {
-    return;
-  }
-
   if (action == actViewNutritionInfo) {
     emit viewNutritionInformation(component);
   } else if (action == actChangeAmount) {
@@ -99,7 +91,5 @@ void FoodContextMenu::actionTriggered(QWidget* widget)
 void FoodContextMenu::createAction(QAction*& action, const QString& label, QMenu* menu)
 {
     action = new QAction(label, (menu ? menu : this));
-    signalMapper->setMapping(action, action);
-    connect(action, SIGNAL(triggered()), signalMapper, SLOT(map()));
     (menu ? menu : this)->addAction(action);
 }
