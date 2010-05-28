@@ -149,10 +149,12 @@ void FoodCollection::clearComponents()
   newIds.clear();
 }
 
-void FoodCollection::merge(const QSharedPointer<const FoodCollection>& otherFC)
+QVector<FoodComponent> FoodCollection::merge(const QSharedPointer<const FoodCollection>& otherFC)
 {
   if (otherFC != NULL) {
-    addComponents(otherFC->getComponentAmounts());
+    return addComponents(otherFC->getComponentAmounts());
+  } else {
+    return QVector<FoodComponent>();
   }
 }
 
