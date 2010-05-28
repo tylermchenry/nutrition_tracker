@@ -28,7 +28,25 @@ FoodTreeComponentItem* FoodTreeMealItem::addComponent(const FoodComponent& compo
 {
   FoodTreeComponentItem* item = new FoodTreeComponentItem(getModel(), component, this);
   addChild(item);
+  componentChildren[component.getId()] = item;
   return item;
+}
+
+FoodTreeComponentItem* FoodTreeMealItem::getComponentItem(const FoodComponent& component) const
+{
+  if (componentChildren.contains(component.getId())) {
+    return componentChildren[component.getId()];
+  } else {
+    return NULL;
+  }
+}
+
+void FoodTreeMealItem::removeComponent(const FoodComponent& component)
+{
+  if (componentChildren.contains(component.getId())) {
+    delete componentChildren[component.getId()];
+    componentChildren.remove(component.getId());
+  }
 }
 
 FoodAmount FoodTreeMealItem::getFoodAmount() const

@@ -31,26 +31,19 @@ QDate NutritionTracker::getSelectedDate() const
 void NutritionTracker::addMealsToCurrentDay
   (const QVector<QSharedPointer<const Meal> >& meals)
 {
-  addMealsToCurrentDay(meals, true);
+  ui.ftFoodsForDay->addMeals(meals);
 }
 
 void NutritionTracker::changeDay()
 {
   QDate date = getSelectedDate();
 
+  ui.ftFoodsForDay->setTemporary(false);
   ui.ftFoodsForDay->setDate(date);
   ui.ftFoodsForDay->setRootName(date.toString());
   ui.ftFoodsForDay->clear();
 
   loadCurrentDayFoodsFromDatabase();
-}
-
-void NutritionTracker::addMealsToCurrentDay
-  (const QVector<QSharedPointer<const Meal> >& meals, bool save)
-{
-  ui.ftFoodsForDay->addMeals(meals);
-
-  if (save) saveCurrentDayFoodsToDatabase();
 }
 
 void NutritionTracker::loadCurrentDayFoodsFromDatabase()
@@ -62,18 +55,3 @@ void NutritionTracker::loadCurrentDayFoodsFromDatabase()
   ui.ftFoodsForDay->addMeals(meals);
 }
 
-void NutritionTracker::saveCurrentDayFoodsToDatabase()
-{
-  QVector<QSharedPointer<const Meal> > meals = ui.ftFoodsForDay->getAllMeals();
-
-  qDebug() << "Selected date is " << getSelectedDate();
-
-  for (QVector<QSharedPointer<const Meal> >::const_iterator i = meals.begin(); i != meals.end(); ++i) {
-
-    QSharedPointer<Meal> savedMeal =
-      Meal::getOrCreateMeal((*i)->getUserId(), getSelectedDate(), (*i)->getMealId());
-
-    savedMeal->replaceWith(*i);
-    savedMeal->saveToDatabase();
-  }
-}

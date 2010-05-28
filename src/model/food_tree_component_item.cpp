@@ -16,6 +16,10 @@ FoodTreeComponentItem::FoodTreeComponentItem
   (const QAbstractItemModel* model, const FoodComponent& component, FoodTreeItem* parent)
   : FoodTreeItem(model, parent), component(component)
 {
+  qDebug() << "Creating food tree component item for component "
+           << component.getFoodAmount().getFood()->getName()
+           << " in " << component.getContainingCollection()->getName();
+
   if (component.getFoodAmount().isDefined()) {
     QVector<FoodAmount> scaledComponentAmounts = component.getFoodAmount().getScaledComponents();
     for (QVector<FoodAmount>::const_iterator i = scaledComponentAmounts.begin();
@@ -54,5 +58,4 @@ void FoodTreeComponentItem::remove()
   qDebug() << "Removing component " << component.getFoodAmount().getFood()->getName()
            << " from " << component.getContainingCollection()->getName();
   component.getContainingCollection()->removeComponent(component);
-  component.getContainingCollection()->saveToDatabase();
 }

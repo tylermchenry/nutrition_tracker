@@ -24,10 +24,12 @@ class FoodTreeModel : public QAbstractItemModel
 
   public:
 
-    explicit FoodTreeModel(QTreeView *parent, const QString& allFoodsTitle = "All Foods");
+    explicit FoodTreeModel(QTreeView *parent, const QString& allFoodsTitle = "All Foods",
+                              bool temporaryMeals = true);
 
     FoodTreeModel(QTreeView *parent, const QDate& mealsDate,
-                    const QString& allFoodsTitle = "All Foods");
+                    const QString& allFoodsTitle = "All Foods",
+                    bool temporaryMeals = true);
 
     ~FoodTreeModel();
 
@@ -54,7 +56,7 @@ class FoodTreeModel : public QAbstractItemModel
 
     FoodContextMenu* getContextMenu(const QModelIndex& index) const;
 
-    void removeItem(const QModelIndex& index);
+    void removeComponent(FoodComponent& component);
 
   public slots:
 
@@ -75,9 +77,10 @@ class FoodTreeModel : public QAbstractItemModel
     QSharedPointer<FoodCollection> allFoods;
     FoodTreeCollectionItem* allFoodsRoot;
 
+    bool temporaryMeals;
     QDate mealsDate;
     QMap<int, FoodTreeMealItem*> mealRoots;
-    QMap<int, QSharedPointer<Meal> > temporaryMeals;
+    QMap<int, QSharedPointer<Meal> > meals;
 
     void ensureMealRootExists(int mealId);
 

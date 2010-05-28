@@ -27,6 +27,9 @@ class FoodTree : public QWidget
     void initialize();
 
     // Currently will not take effect until after next clear()
+    void setTemporary(bool temporary);
+
+    // Currently will not take effect until after next clear()
     void setRootName(const QString& newRootName);
 
     // Currently will not take effect until after next clear()
@@ -64,6 +67,7 @@ class FoodTree : public QWidget
 
     Ui::FoodTreeUI ui;
 
+    bool temporary;
     QString rootName;
     QDate date;
 

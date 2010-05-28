@@ -33,7 +33,6 @@ class NutritionTracker : public QWidget
     void addMealsToCurrentDay(const QVector<QSharedPointer<const Meal> >& meals, bool save);
 
     void loadCurrentDayFoodsFromDatabase();
-    void saveCurrentDayFoodsToDatabase();
 
 };
 

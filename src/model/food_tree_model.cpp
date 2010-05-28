@@ -10,22 +10,24 @@
 #include <QtGui/QFont>
 #include <QtGui/QTreeView>
 
-FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QString& allFoodsTitle)
+FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QString& allFoodsTitle,
+                                 bool temporaryMeals)
   : QAbstractItemModel(treeView), treeView(treeView),
     rootItem(new FoodTreeCollectionItem(this, QSharedPointer<FoodCollection>())),
     allFoods(FoodCollection::createFoodCollection(allFoodsTitle)),
-    mealsDate(QDate::currentDate())
+    temporaryMeals(temporaryMeals), mealsDate(QDate::currentDate())
 {
   beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
   allFoodsRoot = rootItem->addCollection(allFoods);
   endInsertRows();
 }
 
-FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QDate& mealsDate, const QString& allFoodsTitle)
+FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QDate& mealsDate,
+                                 const QString& allFoodsTitle, bool temporaryMeals)
   : QAbstractItemModel(treeView), treeView(treeView),
     rootItem(new FoodTreeCollectionItem(this, QSharedPointer<FoodCollection>())),
     allFoods(FoodCollection::createFoodCollection(allFoodsTitle)),
-    mealsDate(mealsDate)
+    temporaryMeals(temporaryMeals), mealsDate(mealsDate)
 {
   beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
   allFoodsRoot = rootItem->addCollection(allFoods);
@@ -175,12 +177,12 @@ int FoodTreeModel::columnCount(const QModelIndex &parent) const
 QVector<QSharedPointer<const Meal> > FoodTreeModel::getAllMeals() const
 {
   QVector<QSharedPointer<const Meal> > constMeals;
-  QList<QSharedPointer<Meal> > meals = temporaryMeals.values();
+  QList<QSharedPointer<Meal> > allMeals = meals.values();
 
   // TODO: There has to be a more elegant way to convert from a collection
   // of T to a collection of const T
 
-  for (QList<QSharedPointer<Meal> >::const_iterator i = meals.begin(); i != meals.end(); ++i) {
+  for (QList<QSharedPointer<Meal> >::const_iterator i = allMeals.begin(); i != allMeals.end(); ++i) {
     constMeals.push_back(*i);
   }
 
@@ -198,22 +200,42 @@ FoodContextMenu* FoodTreeModel::getContextMenu(const QModelIndex& index) const
   }
 }
 
-void FoodTreeModel::removeItem(const QModelIndex& index)
+void FoodTreeModel::removeComponent(FoodComponent& component)
 {
-  FoodTreeItem* item = static_cast<FoodTreeItem*>(index.internalPointer());
+  qDebug() << "Attempting to remove component "
+           << component.getFoodAmount().getFood()->getName()
+           << " from " << component.getContainingCollection()->getName();
 
-  if (!item) return;
+  QSharedPointer<Meal> meal = component.getContainingCollection().dynamicCast<Meal>();
 
-  FoodTreeItem* parent = item->parent();
+  if (meal) {
 
-  qDebug() << "Attempting to remove item at " << index;
+    FoodTreeMealItem* parentItem = mealRoots[meal->getMealId()];
+    FoodTreeComponentItem* item = parentItem->getComponentItem(component);
 
-  removeAllChildren(index);
+    if (item) {
 
-  beginRemoveRows(createIndex(parent->row(), 0, parent),
-                    item->row(), item->row());
-  parent->removeChild(item);
-  endRemoveRows();
+      // First, remove all children items of the component item, which will
+      // all be amount items, not component items, since the tree widget can't
+      // manipulate anything at a lower level than meal components
+      removeAllChildren(createIndex(item->row(), 0, item));
+
+      // Actually remove the component from its containing meal, and save
+      // to the database if necessary
+      meal->removeComponent(component);
+      if (!temporaryMeals) meal->saveToDatabase();
+
+      // Finally, remove the item itself from its parent item
+      beginRemoveRows(createIndex(parentItem->row(), 0, parentItem),
+                      item->row(), item->row());
+      parentItem->removeChild(item);
+      endRemoveRows();
+    } else {
+      qDebug() << "Corresponding item not found";
+    }
+  } else {
+    qDebug() << "Corresponding meal not found";
+  }
 }
 
 void FoodTreeModel::addFoodAmount(const FoodAmount& foodAmount, int mealId)
@@ -224,7 +246,8 @@ void FoodTreeModel::addFoodAmount(const FoodAmount& foodAmount, int mealId)
 
   FoodTreeMealItem* parentOfNewItem = mealRoots[mealId];
 
-  FoodComponent component = temporaryMeals[mealId]->addComponent(foodAmount);
+  FoodComponent component = meals[mealId]->addComponent(foodAmount);
+  if (!temporaryMeals) meals[mealId]->saveToDatabase();
 
   beginInsertRows(createIndex(parentOfNewItem->row(), 0, parentOfNewItem),
                   parentOfNewItem->childCount(), parentOfNewItem->childCount());
@@ -237,19 +260,43 @@ void FoodTreeModel::addMeal(const QSharedPointer<const Meal>& meal)
 {
   int mealId = meal->getMealId();
 
+  qDebug() << "Model adding " << (meal->isTemporary() ? "temporary" : "")
+           << " meal: " << meal->getName() << " for " << meal->getDate().toString();
+
+
   ensureMealRootExists(mealId);
 
   FoodTreeMealItem* parentOfNewItem = mealRoots[mealId];
 
-  temporaryMeals[mealId]->merge(meal);
+  if (!temporaryMeals && !meal->isTemporary()) {
+    // In this case, the model is DB-backed and the meal passed in is DB-backed
+    // so we assume we just loaded the same meal out of the DB with the
+    // ensureMealRoot call, and so merging the loaded and the passed-in meal
+    // would duplicate things, as would adding additional items below
+    // the meal's item that was created in ensureMealRoot.
+    return;
+  }
 
-  QSet<FoodComponent> components = meal->getComponents();
+  qDebug() << "Model adding " << (meal->isTemporary() ? "temporary" : "")
+            << " meal: " << meal->getName() << " for " << meal->getDate().toString()
+            << " into " << (meals[mealId]->isTemporary() ? "temporary" : "")
+            << " meal: " << meals[mealId]->getName() << " for " << meals[mealId]->getDate().toString();
+
+  QVector<FoodComponent> newComponents = meals[mealId]->merge(meal);
+
+  if (!temporaryMeals) {
+    qDebug() << "Model saving  meal: " << meal->getName() << " for "
+              << meal->getDate().toString() << " to DB.";
+    meals[mealId]->saveToDatabase();
+  }
+
+  qDebug() << "Meal has " << newComponents.size() << " new components.";
 
   beginInsertRows(createIndex(parentOfNewItem->row(), 0, parentOfNewItem),
-                    parentOfNewItem->childCount(), parentOfNewItem->childCount()+components.size()-1);
+                    parentOfNewItem->childCount(), parentOfNewItem->childCount()+newComponents.size()-1);
 
-  for (QSet<FoodComponent>::const_iterator i = components.begin();
-      i != components.end(); ++i)
+  for (QVector<FoodComponent>::const_iterator i = newComponents.begin();
+      i != newComponents.end(); ++i)
   {
     parentOfNewItem->addComponent(*i);
   }
@@ -264,14 +311,21 @@ void FoodTreeModel::ensureMealRootExists(int mealId)
    }
 
    if (!mealRoots.contains(mealId)) {
-     QSharedPointer<Meal> newMeal = Meal::createTemporaryMeal(1, mealsDate, mealId);
-     temporaryMeals[mealId] = newMeal;
+
+     QSharedPointer<Meal> newMeal =
+         temporaryMeals ? Meal::createTemporaryMeal(1, mealsDate, mealId) :
+                          Meal::getOrCreateMeal(1, mealsDate, mealId);
+
+     meals[mealId] = newMeal;
+
      allFoods->addComponent(newMeal->getBaseAmount());
+
      beginInsertRows(createIndex(allFoodsRoot->row(), 0, allFoodsRoot),
                        allFoodsRoot->childCount(),
                        allFoodsRoot->childCount());
      mealRoots[mealId] = allFoodsRoot->addMeal(newMeal);
      endInsertRows();
+
      emit newGroupingCreated(createIndex(mealRoots[mealId]->row(), 0, mealRoots[mealId]));
    }
 }
@@ -281,6 +335,9 @@ void FoodTreeModel::removeAllChildren(const QModelIndex& index)
   FoodTreeItem* item = static_cast<FoodTreeItem*>(index.internalPointer());
 
   qDebug() << "Attempting to remove all children of item at " << index;
+
+  // Recursively remove all child items of the given item (but not the given
+  // item itself). This method assumes that these items are not DB-backed.
 
   if (item->childCount() > 0) {
 
