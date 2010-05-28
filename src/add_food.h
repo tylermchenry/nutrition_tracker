@@ -23,8 +23,6 @@ class AddFood : public QDialog
 
   private slots:
 
-    void expandGrouping(const QModelIndex& index);
-    void clearFoods();
     void commitFoods();
 
   private:

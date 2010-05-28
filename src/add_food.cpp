@@ -14,40 +14,25 @@ AddFood::AddFood(const QSqlDatabase& db, const QDate& date, QWidget *parent)
 	        ui.sfcResultsList, SLOT(addToFoodList(const FoodSearchControl::Result&)));
 
 	connect(ui.btnCancel, SIGNAL(clicked()), this, SLOT(close()));
-	connect(ui.btnReset, SIGNAL(clicked()), this, SLOT(clearFoods()));
 	connect(ui.btnCommit, SIGNAL(clicked()), this, SLOT(commitFoods()));
 
-	ui.trvFoodsToAdd->header()->setResizeMode(QHeaderView::ResizeToContents);
+	connect(ui.btnReset, SIGNAL(clicked()), ui.ftFoodsToAdd, SLOT(clear()));
+	connect(ui.sfcResultsList, SIGNAL(amountAdded(const FoodAmount&, int)),
+	        ui.ftFoodsToAdd, SLOT(addFoodAmount(const FoodAmount&, int)));
 
-	clearFoods();
+	ui.ftFoodsToAdd->setTemporary(true);
+	ui.ftFoodsToAdd->setDate(date);
+	ui.ftFoodsToAdd->setRootName("Proposed Additions");
+	ui.ftFoodsToAdd->initialize();
 }
 
 AddFood::~AddFood()
 {
 }
 
-void AddFood::expandGrouping(const QModelIndex& index)
-{
-  ui.trvFoodsToAdd->setExpanded(index, true);
-}
-
-void AddFood::clearFoods()
-{
-  qDebug() << "Clearing foods...";
-  FoodTreeModel* foodTreeModel = new FoodTreeModel(ui.trvFoodsToAdd, date, "Proposed Additions");
-
-  connect(ui.sfcResultsList, SIGNAL(amountAdded(const FoodAmount&, int)),
-          foodTreeModel, SLOT(addFoodAmount(const FoodAmount&, int)));
-  connect(foodTreeModel, SIGNAL(newGroupingCreated(const QModelIndex&)),
-          this, SLOT(expandGrouping(const QModelIndex&)));
-
-  ui.trvFoodsToAdd->setModel(foodTreeModel);
-}
-
 void AddFood::commitFoods()
 {
-  FoodTreeModel* foodTreeModel = static_cast<FoodTreeModel*>(ui.trvFoodsToAdd->model());
-  emit foodCollectionAdded(foodTreeModel->getAllFoods());
-  emit mealsAdded(foodTreeModel->getAllMeals());
+  emit foodCollectionAdded(ui.ftFoodsToAdd->getAllFoods());
+  emit mealsAdded(ui.ftFoodsToAdd->getAllMeals());
   close();
 }
