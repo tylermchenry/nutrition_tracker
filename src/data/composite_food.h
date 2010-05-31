@@ -14,6 +14,8 @@ class CompositeFood: public FoodCollection
 {
   public:
 
+    static QSharedPointer<CompositeFood> createNewCompositeFood();
+
     static QSharedPointer<CompositeFood> getCompositeFood(int id);
 
     static QSharedPointer<CompositeFood> createCompositeFoodFromQueryResults
@@ -42,7 +44,11 @@ class CompositeFood: public FoodCollection
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount);
 
+    CompositeFood();
+
     int id;
+
+    static int tempId;
 
     static QMap<int, QWeakPointer<CompositeFood> > compositeFoodCache;
 };
