@@ -60,6 +60,8 @@ class FoodTreeModel : public QAbstractItemModel
 
   public slots:
 
+    void addFoodAmount(const FoodAmount& foodAmount);
+
     void addFoodAmount(const FoodAmount& foodAmount, int mealId);
 
     void addMeal(const QSharedPointer<const Meal>& meal);

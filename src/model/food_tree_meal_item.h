@@ -28,6 +28,8 @@ class FoodTreeMealItem : public FoodTreeItem
 
     void removeComponent(const FoodComponent& component);
 
+    virtual bool isMeal() const { return true; }
+
   protected:
 
     virtual FoodAmount getFoodAmount() const;

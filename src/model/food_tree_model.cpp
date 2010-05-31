@@ -6,6 +6,7 @@
  */
 
 #include "food_tree_model.h"
+#include "food_tree_amount_item.h"
 #include <QDebug>
 #include <QtGui/QFont>
 #include <QtGui/QTreeView>
@@ -62,7 +63,7 @@ QVariant FoodTreeModel::data(const QModelIndex &index, int role) const
       font.setItalic(true);
     }
 
-    if (depth < 3) {
+    if (depth < 2 || item->isMeal()) {
       font.setBold(true);
     } else if (item->childCount() > 0) {
       if (treeView && treeView->isExpanded(createIndex(index.row(), 0, index.internalPointer()))) {
@@ -233,9 +234,43 @@ void FoodTreeModel::removeComponent(FoodComponent& component)
     } else {
       qDebug() << "Corresponding item not found";
     }
+
+  } else if (component.getContainingCollection()->getId() == allFoods->getId()) {
+
+    FoodTreeComponentItem* item = allFoodsRoot->getComponentItem(component);
+
+    if (item) {
+      removeAllChildren(createIndex(item->row(), 0, item));
+      allFoods->removeComponent(component);
+
+      beginRemoveRows(createIndex(allFoodsRoot->row(), 0, allFoodsRoot),
+                      item->row(), item->row());
+      allFoodsRoot->removeChild(item);
+      endRemoveRows();
+    } else {
+      qDebug() << "Corresponding item not found";
+    }
+
   } else {
     qDebug() << "Corresponding meal not found";
   }
+}
+
+void FoodTreeModel::addFoodAmount(const FoodAmount& foodAmount)
+{
+  qDebug() << "Adding food amount to food tree model (no meal)";
+
+  if (allFoodsRoot->childCount() == 0) {
+    emit newGroupingCreated(createIndex(allFoodsRoot->row(), 0, allFoodsRoot));
+  }
+
+  beginInsertRows(createIndex(allFoodsRoot->row(), 0, allFoodsRoot),
+                    allFoodsRoot->childCount(),
+                    allFoodsRoot->childCount());
+
+  allFoodsRoot->addComponent(allFoods->addComponent(foodAmount));
+
+  endInsertRows();
 }
 
 void FoodTreeModel::addFoodAmount(const FoodAmount& foodAmount, int mealId)

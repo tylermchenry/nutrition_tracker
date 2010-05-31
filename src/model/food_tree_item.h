@@ -41,6 +41,8 @@ class FoodTreeItem
 
     virtual FoodContextMenu* getContextMenu() { return NULL; }
 
+    virtual bool isMeal() const { return false; }
+
   protected:
 
     virtual FoodAmount getFoodAmount() const = 0;
