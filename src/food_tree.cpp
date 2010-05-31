@@ -54,6 +54,11 @@ void FoodTree::clear()
   ui.trvFoods->setModel(model);
 }
 
+void FoodTree::addFoodAmount(const FoodAmount& foodAmount)
+{
+  model->addFoodAmount(foodAmount);
+}
+
 void FoodTree::addFoodAmount(const FoodAmount& foodAmount, int mealId)
 {
   model->addFoodAmount(foodAmount, mealId);
