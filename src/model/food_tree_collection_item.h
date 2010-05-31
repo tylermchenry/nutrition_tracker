@@ -29,6 +29,18 @@ class FoodTreeCollectionItem : public FoodTreeItem
 
     FoodTreeComponentItem* addComponent(const FoodComponent& component);
 
+    FoodTreeCollectionItem* getCollectionItem(const QSharedPointer<FoodCollection>& collection) const;
+
+    FoodTreeMealItem* getMealItem(const QSharedPointer<Meal>& meal) const;
+
+    FoodTreeComponentItem* getComponentItem(const FoodComponent& component) const;
+
+    void removeCollection(const QSharedPointer<FoodCollection>& collection);
+
+    void removeMeal(const QSharedPointer<Meal>& meal);
+
+    void removeComponent(const FoodComponent& component);
+
   protected:
 
     virtual FoodAmount getFoodAmount() const;
@@ -40,6 +52,9 @@ class FoodTreeCollectionItem : public FoodTreeItem
   private:
 
     QSharedPointer<FoodCollection> collection;
+    QMap<QString, FoodTreeCollectionItem*> collectionChildren;
+    QMap<QString, FoodTreeMealItem*> mealChildren;
+    QMap<int, FoodTreeComponentItem*> componentChildren;
 };
 
 #endif /* FOOD_TREE_COLLECTION_ITEM_H_ */

@@ -28,6 +28,7 @@ FoodTreeCollectionItem* FoodTreeCollectionItem::addCollection(const QSharedPoint
 {
   FoodTreeCollectionItem* item = new FoodTreeCollectionItem(getModel(), collection, this);
   addChild(item);
+  collectionChildren[collection->getId()] = item;
   return item;
 }
 
@@ -35,6 +36,7 @@ FoodTreeMealItem* FoodTreeCollectionItem::addMeal(const QSharedPointer<Meal>& me
 {
   FoodTreeMealItem* item = new FoodTreeMealItem(getModel(), meal, this);
   addChild(item);
+  mealChildren[meal->getId()] = item;
   return item;
 }
 
@@ -42,7 +44,41 @@ FoodTreeComponentItem* FoodTreeCollectionItem::addComponent(const FoodComponent&
 {
   FoodTreeComponentItem* item = new FoodTreeComponentItem(getModel(), component, this);
   addChild(item);
+  componentChildren[component.getId()] = item;
   return item;
+}
+
+FoodTreeComponentItem* FoodTreeCollectionItem::getComponentItem(const FoodComponent& component) const
+{
+  if (componentChildren.contains(component.getId())) {
+    return componentChildren[component.getId()];
+  } else {
+    return NULL;
+  }
+}
+
+void FoodTreeCollectionItem::removeCollection(const QSharedPointer<FoodCollection>& collection)
+{
+  if (collectionChildren.contains(collection->getId())) {
+    delete collectionChildren[collection->getId()];
+    collectionChildren.remove(collection->getId());
+  }
+}
+
+void FoodTreeCollectionItem::removeMeal(const QSharedPointer<Meal>& meal)
+{
+  if (mealChildren.contains(meal->getId())) {
+    delete mealChildren[meal->getId()];
+    mealChildren.remove(meal->getId());
+  }
+}
+
+void FoodTreeCollectionItem::removeComponent(const FoodComponent& component)
+{
+  if (componentChildren.contains(component.getId())) {
+    delete componentChildren[component.getId()];
+    componentChildren.remove(component.getId());
+  }
 }
 
 FoodAmount FoodTreeCollectionItem::getFoodAmount() const
