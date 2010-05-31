@@ -54,7 +54,7 @@
     <addaction name="actionAdd_new_food"/>
     <addaction name="actionEdit_existing_food"/>
     <addaction name="actionAdd_new_composite_food"/>
-    <addaction name="actionCreate_template"/>
+    <addaction name="actionEdit_existing_composite_food"/>
     <addaction name="separator"/>
     <addaction name="actionSearch_foods"/>
     <addaction name="actionManage_templates"/>
@@ -101,9 +101,9 @@
     <string>Create composite food...</string>
    </property>
   </action>
-  <action name="actionCreate_template">
+  <action name="actionEdit_existing_composite_food">
    <property name="text">
-    <string>Create template...</string>
+    <string>Edit existing composite food...</string>
    </property>
   </action>
   <action name="actionExport_Nutrition_Data">
