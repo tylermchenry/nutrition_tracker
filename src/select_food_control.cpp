@@ -6,19 +6,27 @@
 #include <QDebug>
 
 SelectFoodControl::SelectFoodControl(QWidget *parent)
-    : QWidget(parent)
+  : QWidget(parent), selectMeals(true)
 {
-	ui.setupUi(this);
+  initialize();
+}
 
-	populateMealSelector(ui.cbMeal);
-
-	connect(ui.lstResults, SIGNAL(itemActivated(QListWidgetItem*)),
-	        this, SLOT(updateAddControls(QListWidgetItem*)));
-	connect(ui.btnAdd, SIGNAL(clicked()), this, SLOT(addClicked()));
+SelectFoodControl::SelectFoodControl(bool selectMeals, QWidget *parent)
+  : QWidget(parent), selectMeals(selectMeals)
+{
+  initialize();
 }
 
 SelectFoodControl::~SelectFoodControl()
 {
+}
+
+void SelectFoodControl::setAllowMealSelection(bool selectMeals)
+{
+  this->selectMeals = selectMeals;
+
+  ui.lblMeal->setVisible(selectMeals);
+  ui.cbMeal->setVisible(selectMeals);
 }
 
 void SelectFoodControl::clearFoodList()
@@ -88,8 +96,25 @@ void SelectFoodControl::addClicked()
     emit amountAdded
       (FoodAmount(selectedFood, ui.txtAmount->text().toDouble(),
                   Unit::getUnit(ui.cbUnit->itemData(ui.cbUnit->currentIndex()).toString())),
-       ui.cbMeal->itemData(ui.cbMeal->currentIndex()).toInt());
+       (selectMeals ? ui.cbMeal->itemData(ui.cbMeal->currentIndex()).toInt() : -1));
   }
+}
+
+void SelectFoodControl::initialize()
+{
+  ui.setupUi(this);
+
+  if (!selectMeals) {
+    ui.lblMeal->setVisible(false);
+    ui.cbMeal->setVisible(false);
+  } else {
+    populateMealSelector(ui.cbMeal);
+  }
+
+  connect(ui.lstResults, SIGNAL(itemActivated(QListWidgetItem*)),
+          this, SLOT(updateAddControls(QListWidgetItem*)));
+  connect(ui.btnAdd, SIGNAL(clicked()), this, SLOT(addClicked()));
+
 }
 
 void SelectFoodControl::populateMealSelector(QComboBox* cbMeals)

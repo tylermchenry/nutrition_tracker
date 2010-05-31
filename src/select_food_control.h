@@ -11,8 +11,11 @@ class SelectFoodControl : public QWidget
     Q_OBJECT
 
 public:
-    SelectFoodControl(QWidget *parent = 0);
+    explicit SelectFoodControl(QWidget *parent = 0);
+    explicit SelectFoodControl(bool selectMeals, QWidget *parent = 0);
     ~SelectFoodControl();
+
+    void setAllowMealSelection(bool selectMeals);
 
 signals:
 
@@ -32,9 +35,12 @@ private:
 
     Ui::SelectFoodControlUI ui;
 
+    bool selectMeals;
+
     QMap<int, FoodSearchControl::Result> itemToResult;
     QSharedPointer<Food> selectedFood;
 
+    void initialize();
     void populateMealSelector(QComboBox* cbMeals);
 
 };
