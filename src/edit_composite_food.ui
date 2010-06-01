@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Add or Edit Individual Food</string>
+   <string>Add or Edit Composite Food</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>
