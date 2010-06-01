@@ -39,7 +39,7 @@ class FoodTreeItem
 
     void removeAllChildren();
 
-    virtual FoodContextMenu* getContextMenu() { return NULL; }
+    virtual FoodContextMenu* getContextMenu();
 
     virtual bool isMeal() const { return false; }
 

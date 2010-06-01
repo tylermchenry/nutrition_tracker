@@ -11,6 +11,7 @@
 #include "data/food.h"
 #include "data/food_collection.h"
 #include "food_context_menu.h"
+#include "food_amount_context_menu.h"
 
 FoodTreeItem::FoodTreeItem(const QAbstractItemModel* model, FoodTreeItem* parentItem)
   : model(model), parentItem(parentItem)
@@ -130,6 +131,11 @@ void FoodTreeItem::removeAllChildren()
     delete *i;
   }
   childItems.clear();
+}
+
+FoodContextMenu* FoodTreeItem::getContextMenu()
+{
+  return new FoodAmountContextMenu(getIndex(), getFoodAmount());
 }
 
 FoodTreeItem* FoodTreeItem::addChild(FoodTreeItem* item)
