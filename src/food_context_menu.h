@@ -10,6 +10,7 @@
 
 #include <QtGui/QMenu>
 #include <QModelIndex>
+#include "data/food_amount.h"
 #include "data/food_component.h"
 
 class FoodContextMenu : public QMenu
@@ -18,13 +19,11 @@ class FoodContextMenu : public QMenu
 
   public:
 
-    FoodContextMenu(const QModelIndex& index, FoodComponent* component, QWidget* parent = 0);
-
     virtual ~FoodContextMenu();
 
   signals:
 
-    void viewNutritionInformation(const QModelIndex& index, FoodComponent* component);
+    void viewNutritionInformation(const QModelIndex& index, const FoodAmount& foodAmount);
     void changeAmount(const QModelIndex& index, FoodComponent* component);
     void changeUnit(const QModelIndex& index, FoodComponent* component, const QSharedPointer<const Unit>& unit);
     void edit(const QModelIndex& index, FoodComponent* component);
@@ -32,40 +31,19 @@ class FoodContextMenu : public QMenu
     void moveToMeal(const QModelIndex& index, FoodComponent* component, int mealId);
     void remove(const QModelIndex& index, FoodComponent* component);
 
-  private slots:
+  protected:
 
-    void actionTriggered(QAction* action);
+    FoodContextMenu(const QModelIndex& index, QWidget* parent = 0);
+
+    QModelIndex getIndex() const { return index; }
+
+  protected slots:
+
+    virtual void actionTriggered(QAction* action) = 0;
 
   private:
 
     QModelIndex index;
-    FoodComponent* component;
-
-    QAction* actViewNutritionInfo;
-    QAction* actChangeAmount;
-    QMap<QAction*, QSharedPointer<const Unit> > actChangeUnit;
-    QAction* actEdit;
-    QAction* actDuplicate;
-    QMap<QAction*, int> actMoveToMeal;
-    QAction* actRemove;
-
-    QMenu* mnuChangeUnit;
-    QMenu* mnuMoveToMeal;
-
-    template<typename T>
-      void createAction(QMap<QAction*, T>& actionMap, const QString& label,
-                          const T& mapVal, QMenu* menu = NULL);
-
-    void createAction(QAction*& action, const QString& label, QMenu* menu = NULL);
 };
-
-template<typename T>
-   void FoodContextMenu::createAction(QMap<QAction*, T>& actionMap, const QString& label,
-                                           const T& mapVal, QMenu* menu)
-{
-  QAction* action;
-  createAction(action, label, menu);
-  actionMap[action] = mapVal;
-}
 
 #endif /* FOOD_CONTEXT_MENU_H_ */
