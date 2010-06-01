@@ -1,4 +1,5 @@
 #include "food_tree.h"
+#include "view_food.h"
 #include <QDebug>
 
 FoodTree::FoodTree(QWidget *parent)
@@ -96,6 +97,8 @@ void FoodTree::showContextMenu(const QPoint& point)
     qDebug() << "Showing context menu";
     connect(contextMenu, SIGNAL(remove(const QModelIndex&, FoodComponent*)),
             this, SLOT(removeComponent(const QModelIndex&, FoodComponent*)));
+    connect(contextMenu, SIGNAL(viewNutritionInformation(const QModelIndex&, const FoodAmount&)),
+             this, SLOT(displayNutritionInfo(const QModelIndex&, const FoodAmount&)));
     contextMenu->popup(ui.trvFoods->viewport()->mapToGlobal(point));
   }
 }
@@ -105,6 +108,11 @@ void FoodTree::removeComponent(const QModelIndex&, FoodComponent* component)
   if (component) {
     model->removeComponent(*component);
   }
+}
+
+void FoodTree::displayNutritionInfo(const QModelIndex&, const FoodAmount& amount)
+{
+  (new ViewFood(amount, this))->exec();
 }
 
 void FoodTree::initialize()
