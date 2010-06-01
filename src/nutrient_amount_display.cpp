@@ -11,8 +11,9 @@
 
 NutrientAmountDisplay::NutrientAmountDisplay
   (QWidget* widgetParent, const QSharedPointer<const Nutrient>& nutrient,
-   double amount, DisplayModes::DisplayMode mode)
-  : QObject(NULL), nutrientAmount(nutrient, amount), displayMode(mode), supportsRDI(false)
+   double amount, DisplayModes::DisplayMode mode, bool enabled)
+  : QObject(NULL), nutrientAmount(nutrient, amount), displayMode(mode),
+    supportsRDI(false), enabled(enabled)
 {
   qDebug() << "Constructing NAD from Nutrient";
   initialize(widgetParent);
@@ -20,8 +21,9 @@ NutrientAmountDisplay::NutrientAmountDisplay
 
 NutrientAmountDisplay::NutrientAmountDisplay
   (QWidget* widgetParent, const NutrientAmount& amount,
-   DisplayModes::DisplayMode mode)
-  : QObject(NULL), nutrientAmount(amount), displayMode(mode), supportsRDI(false)
+   DisplayModes::DisplayMode mode, bool enabled)
+  : QObject(NULL), nutrientAmount(amount), displayMode(mode),
+    supportsRDI(false), enabled(enabled)
 {
   qDebug() << "Constructing NAD from NutrientAmount";
   initialize(widgetParent);
@@ -29,7 +31,7 @@ NutrientAmountDisplay::NutrientAmountDisplay
 
 NutrientAmountDisplay::NutrientAmountDisplay(const NutrientAmountDisplay& copy)
   : QObject(NULL), nutrientAmount(copy.nutrientAmount), displayMode(copy.displayMode),
-    supportsRDI(copy.supportsRDI)
+    supportsRDI(copy.supportsRDI), enabled(copy.enabled)
 {
   qDebug() << "Constructing NAD from copy";
 
@@ -71,6 +73,8 @@ void NutrientAmountDisplay::initialize(QWidget* widgetParent)
   txtValue->setValidator
     (new QDoubleValidator(0.0, EditFood::MAX_ENTRY, EditFood::MAX_DECIMALS, txtValue));
 
+  txtValue->setEnabled(enabled);
+
   connect(txtValue, SIGNAL(textEdited(const QString&)), this, SLOT(updateValue(const QString&)));
 
   setDisplayMode(displayMode, true);
@@ -100,7 +104,7 @@ void NutrientAmountDisplay::setDisplayMode(DisplayModes::DisplayMode mode, bool 
       case DisplayModes::Weight:
 
         if (!supportsRDI) {
-          txtValue->setEnabled(true);
+          txtValue->setEnabled(enabled);
         }
 
         txtValue->setText(QString::number(nutrientAmount.getAmount()));
