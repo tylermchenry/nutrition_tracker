@@ -1,8 +1,22 @@
 /*
- * amount.h
+ * amount.h - Data object for a specific amount of something, with a unit
  *
- *  Created on: May 14, 2010
- *      Author: tmchenry
+ * This file is part of Nutrition Tracker.
+ *
+ * Nutrition Tracker is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Nutrition Tracker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Nutrition Tracker.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright © 2010 Tyler McHenry <tyler@nerdland.net>
  */
 
 #ifndef AMOUNT_H_
@@ -12,12 +26,30 @@
 #include <stdexcept>
 #include "unit.h"
 
-/*
- * This is an abstract base that must be inherited from using the
- * curiously-recurring template pattern. Template argument S should
- * be the class of "substance" to which the amount is referring.
- * Template argument SA must be the "substance amount" class, i.e.
- * the class being derived from this base.
+/* Amount is a data object representing the abstract notion of a measurement.
+ * It combines a "substance" with a numeric amount and a unit. The "substance"
+ * is provided by means of a pointer, and if the pointer is null, the amount is
+ * "undefined".
+ *
+ * This class provides for modification of the measurement either by changing
+ * only the numeric amount or by changing both the numeric amount and the unit.
+ *
+ * Objects of this type support basic arithmetic operations. Addition and
+ * subtraction operations against numbers assume that the numbers are in the
+ * same unit as the amount. Addition and subtraction operation against other
+ * Amount objects support heterogeneous units (the resulting unit will be that
+ * of the left-hand side of the operation) but enforce that the two amounts
+ * both refer to the same substance object.
+ *
+ * Undefined amounts (with a NULL substance object) can become defined only by
+ * adding to them an Amount of a defined substance, which functions as copy
+ * construction. No other operations are permitted on undefined amounts, and
+ * attempts will result in exceptions.
+ *
+ * This is an abstract base that must be inherited from using the curiously-
+ * recurring template pattern. Template argument S should be the class of
+ * "substance" to which the amount is referring.Template argument SA must be the
+ * "substance amount" class, i.e. the class being derived from this base.
  */
 template<typename S, typename SA>
 class Amount
@@ -28,15 +60,17 @@ class Amount
 
     bool isDefined() const { return (substance != NULL); }
 
-    inline QSharedPointer<const S> getSubstance() const { return substance; }
+    inline QSharedPointer<const S> getSubstance() const
+      { return substance; }
 
-    inline QSharedPointer<const Unit> getUnit() const { return unit; }
+    inline QSharedPointer<const Unit> getUnit() const
+      { return unit; }
 
-    double getAmount
-      (const QSharedPointer<const Unit>& otherUnit = QSharedPointer<const Unit>()) const;
+    double getAmount(const QSharedPointer<const Unit>& otherUnit =
+                       QSharedPointer<const Unit>()) const;
 
-    void setAmount
-      (double amount, const QSharedPointer<const Unit>& unit = QSharedPointer<const Unit>());
+    void setAmount(double amount, const QSharedPointer<const Unit>& unit =
+                     QSharedPointer<const Unit>());
 
     SA operator+ (const SA& rhs) const;
     SA operator- (const SA& rhs) const;
@@ -50,9 +84,11 @@ class Amount
 
   protected:
 
-    Amount(const QSharedPointer<const S>& substance = QSharedPointer<const S>(),
-           double amount = 0,
-           const QSharedPointer<const Unit>& unit = QSharedPointer<const Unit>());
+    Amount(const QSharedPointer<const S>& substance =
+              QSharedPointer<const S>(),
+            double amount = 0,
+            const QSharedPointer<const Unit>& unit =
+              QSharedPointer<const Unit>());
 
     virtual QString getSubstanceName(bool plural = false) const = 0;
 
@@ -64,8 +100,9 @@ class Amount
 };
 
 template<typename S, typename SA>
-Amount<S, SA>::Amount(const QSharedPointer<const S>& substance, double amount,
-                      const QSharedPointer<const Unit>& unit)
+Amount<S, SA>::Amount(const QSharedPointer<const S>& substance,
+                         double amount,
+                         const QSharedPointer<const Unit>& unit)
   : substance(substance), amount(std::max(amount, 0.0)), unit(unit)
 {
   // Invariant: Either substance and unit are both NULL, or neither is
@@ -81,7 +118,8 @@ Amount<S, SA>::Amount(const QSharedPointer<const S>& substance, double amount,
 }
 
 template<typename S, typename SA>
-double Amount<S,SA>::getAmount(const QSharedPointer<const Unit>& otherUnit) const
+double Amount<S,SA>::getAmount
+  (const QSharedPointer<const Unit>& otherUnit) const
 {
   if (substance == NULL) {
     return 0;
@@ -93,7 +131,8 @@ double Amount<S,SA>::getAmount(const QSharedPointer<const Unit>& otherUnit) cons
 }
 
 template<typename S, typename SA>
-void Amount<S, SA>::setAmount(double amount, const QSharedPointer<const Unit>& unit)
+void Amount<S, SA>::setAmount
+  (double amount, const QSharedPointer<const Unit>& unit)
 {
   if (this->substance != NULL) {
     this->amount = std::max(amount, 0.0);

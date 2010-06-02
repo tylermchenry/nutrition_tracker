@@ -1,8 +1,22 @@
 /*
- * single_food.h
+ * single_food.h - Data object for a single, indivisible food
  *
- *  Created on: May 14, 2010
- *      Author: tmchenry
+ * This file is part of Nutrition Tracker.
+ *
+ * Nutrition Tracker is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Nutrition Tracker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Nutrition Tracker.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright © 2010 Tyler McHenry <tyler@nerdland.net>
  */
 
 #ifndef SINGLE_FOOD_H_
@@ -15,6 +29,29 @@
 #include <QWeakPointer>
 #include <QSet>
 
+/* A single food is an indivisible food with its own inherent nutrition
+ * information. In this case "indivisible" does not necessarily mean that it is
+ * a raw agricultural product (e.g. an apple), but simply that no breakdown of
+ * this food into other foods is known to the user. So commercially-produced
+ * foods which have USDA nutrition labels, and for which the user obviously
+ * cannot know the exact amounts or nature of their ingredients (e.g. a can of
+ * Progresso minestrone soup or a McDonald's Big Mac) are considered single
+ * foods. This is in contrast to home-made foods where there is no such
+ * unified nutrition label, but the ingredients are known; those are composite
+ * foods.
+ *
+ * The database is pre-populated with many single foods available from the
+ * public USDA nutrition database. It is expected that the user will enter
+ * additional single foods by transcribing the nutrition labels from
+ * commercially-produced foods that they consume.
+ *
+ * Each food has a unique ID, a name (which need not be unique, but should be,
+ * since the GUI will only display the name, and not the ID), a set of nutrient
+ * amounts, a group, and a source. The source is USDA (if it came from the USDA
+ * public database), Import (if it was brought in from a third-party database),
+ * or Custom if the user transcribed the nutrition label directly into the
+ * tracker.
+ */
 class SingleFood: public Food
 {
   public:
@@ -33,15 +70,18 @@ class SingleFood: public Food
 
     static QSharedPointer<SingleFood> getSingleFood(int id);
 
-    static QSharedPointer<SingleFood> createSingleFoodFromQueryResults(QSqlQuery& query);
+    static QSharedPointer<SingleFood> createSingleFoodFromQueryResults
+      (QSqlQuery& query);
 
     virtual ~SingleFood();
 
     inline int getSingleFoodId() const { return id; }
 
-    inline EntrySources::EntrySource getEntrySource() const { return entrySource; }
+    inline EntrySources::EntrySource getEntrySource() const
+      { return entrySource; }
 
-    inline QSharedPointer<const Group> getGroup() const { return group; }
+    inline QSharedPointer<const Group> getGroup() const
+      { return group; }
 
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
@@ -61,7 +101,8 @@ class SingleFood: public Food
 
   private:
 
-    SingleFood(int id, const QString& name, EntrySources::EntrySource entrySource,
+    SingleFood(int id, const QString& name,
+                EntrySources::EntrySource entrySource,
                 const QSharedPointer<const Group>& group,
                 const QMap<QString, NutrientAmount>& nutrients,
                 double weightAmount, double volumeAmount,
@@ -77,8 +118,8 @@ class SingleFood: public Food
 
     static int tempId;
 
-    static QMap<QString, QSharedPointer<const Unit> > createNutrientsFromQueryResults
-      (QSqlQuery& query);
+    static QMap<QString, QSharedPointer<const Unit> >
+      createNutrientsFromQueryResults(QSqlQuery& query);
 
     static QMap<int, QWeakPointer<SingleFood> > singleFoodCache;
 };

@@ -1,8 +1,22 @@
 /*
- * food.h
+ * food.h - Data object for something edible
  *
- *  Created on: May 14, 2010
- *      Author: tmchenry
+ * This file is part of Nutrition Tracker.
+ *
+ * Nutrition Tracker is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Nutrition Tracker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Nutrition Tracker.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright © 2010 Tyler McHenry <tyler@nerdland.net>
  */
 
 #ifndef FOOD_H_
@@ -18,6 +32,25 @@
 
 class FoodComponent; // Forward decl
 
+/* The Food class is the parent class for all edible objects: single foods,
+ * composite foods, collections, and meals. The concept of the Food class is
+ * very basic: something that can be eaten.
+ *
+ * Something that can be eaten has a collection of nutrients that it contains,
+ * and if it is made up of more than one thing, it has components that make it
+ * up. Each Food also has a name and a unique identification string used for
+ * quick comparisons.
+ *
+ * All Foods have a "base amount" that defines the amount of the food that its
+ * collection of nutrients describes. A food may have multiple "base amounts"
+ * for multiple dimensions (weight, volume, quantity, servings), but may only
+ * have a single base amount for each dimension. The getBaseAmount() accessor
+ * returns a FoodAmount object with the special property that the FoodAmount's
+ * scaled nutrients are equal to the Food's contained nutrient collection
+ * (because no scaling is required).
+ *
+ * This is an abstract base class and cannot be instantiated.
+ */
 class Food
 {
   public:
@@ -34,7 +67,8 @@ class Food
 
     FoodAmount getBaseAmount(Unit::Dimensions::Dimension dimension) const;
 
-    void setBaseAmount(double amount, const QSharedPointer<const Unit>& unit);
+    void setBaseAmount(double amount,
+                         const QSharedPointer<const Unit>& unit);
 
     virtual QSet<FoodComponent> getComponents() const;
 
@@ -53,10 +87,12 @@ class Food
 
     virtual QSharedPointer<Food> getCanonicalSharedPointer() = 0;
 
-    virtual QSharedPointer<const Food> getCanonicalSharedPointer() const = 0;
+    virtual QSharedPointer<const Food>
+      getCanonicalSharedPointer() const = 0;
 
     void bindBaseAmount
-      (QSqlQuery& query, const QString& placeholder, Unit::Dimensions::Dimension dimension) const;
+      (QSqlQuery& query, const QString& placeholder,
+       Unit::Dimensions::Dimension dimension) const;
 
   private:
 
