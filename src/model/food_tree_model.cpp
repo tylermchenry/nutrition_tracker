@@ -339,6 +339,28 @@ void FoodTreeModel::addMeal(const QSharedPointer<const Meal>& meal)
   endInsertRows();
 }
 
+void FoodTreeModel::changeAmount(const QModelIndex& index, const FoodAmount& newAmount)
+{
+  // TODO: Try to to this with less casting
+
+  if (hasIndex(index.row(), index.column(), index.parent())) {
+    FoodTreeItem* item = static_cast<FoodTreeItem*>(index.internalPointer());
+    FoodTreeComponentItem* componentItem;
+
+    if ((componentItem = dynamic_cast<FoodTreeComponentItem*>(item))) {
+      componentItem->changeAmount(newAmount);
+    }
+
+    for (QModelIndex idx = index; idx != QModelIndex(); idx = idx.parent()) {
+      FoodTreeItem* changedItem = static_cast<FoodTreeItem*>(idx.internalPointer());
+      if (!temporaryMeals && changedItem->isMeal()) {
+        dynamic_cast<FoodTreeMealItem*>(changedItem)->saveMealToDatabase();
+      }
+      this->dataChanged(idx, idx);
+    }
+  }
+}
+
 void FoodTreeModel::ensureMealRootExists(int mealId)
 {
   if (allFoodsRoot->childCount() == 0) {

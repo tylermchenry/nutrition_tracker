@@ -30,6 +30,8 @@ class FoodTreeMealItem : public FoodTreeItem
 
     virtual bool isMeal() const { return true; }
 
+    inline void saveMealToDatabase() { meal->saveToDatabase(); }
+
   protected:
 
     virtual FoodAmount getFoodAmount() const;

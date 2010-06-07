@@ -40,6 +40,8 @@ class FoodCollection: public Food
 
     virtual QVector<FoodComponent> addComponents(const QVector<FoodAmount>& components);
 
+    virtual FoodComponent changeComponentAmount(const FoodComponent& component, const FoodAmount& amount);
+
     virtual void removeComponent(const FoodComponent& component);
 
     virtual void clearComponents();

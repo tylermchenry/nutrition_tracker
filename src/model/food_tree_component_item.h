@@ -23,6 +23,8 @@ class FoodTreeComponentItem : public FoodTreeItem
 
     virtual FoodContextMenu* getContextMenu();
 
+    virtual void changeAmount(const FoodAmount& amount);
+
   protected:
 
     virtual FoodAmount getFoodAmount() const;
