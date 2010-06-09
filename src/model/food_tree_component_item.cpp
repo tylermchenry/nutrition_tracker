@@ -39,6 +39,11 @@ FoodContextMenu* FoodTreeComponentItem::getContextMenu()
   return new FoodComponentContextMenu(getIndex(), &component);
 }
 
+void FoodTreeComponentItem::changeAmount(const FoodAmount& amount)
+{
+  component = component.getContainingCollection()->changeComponentAmount(component, amount);
+}
+
 FoodAmount FoodTreeComponentItem::getFoodAmount() const
 {
   return component.getFoodAmount();

@@ -66,6 +66,8 @@ class FoodTreeModel : public QAbstractItemModel
 
     void addMeal(const QSharedPointer<const Meal>& meal);
 
+    void changeAmount(const QModelIndex& index, const FoodAmount& newAmount);
+
   signals:
 
     void newGroupingCreated(const QModelIndex& index);

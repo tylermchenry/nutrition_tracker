@@ -121,6 +121,22 @@ QVector<FoodComponent> FoodCollection::addComponents(const QVector<FoodAmount>& 
   return addedComponents;
 }
 
+FoodComponent FoodCollection::changeComponentAmount(const FoodComponent& component, const FoodAmount& amount)
+{
+  if (components.contains(component)) {
+    if (!amount.isDefined() || component.getFoodAmount().getFood()->getId() != amount.getFood()->getId()) {
+      throw std::logic_error("Attempted to change a component amount to another or an undefined food.");
+    }
+    FoodComponent newComponent(getCanonicalSharedPointerToCollection(), component.getId(), amount,
+                               component.getOrder());
+    components.remove(component);
+    components.insert(newComponent);
+    return newComponent;
+  } else {
+    throw std::logic_error("Attempted to change a component not part of this collection.");
+  }
+}
+
 void FoodCollection::removeComponent(const FoodComponent& component)
 {
   if (components.contains(component)) {

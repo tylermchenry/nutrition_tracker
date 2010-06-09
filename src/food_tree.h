@@ -67,6 +67,8 @@ class FoodTree : public QWidget
 
     void displayNutritionInfo(const QModelIndex& index, const FoodAmount& amount);
 
+    void changeAmount(const QModelIndex& index, FoodComponent* component);
+
   private:
 
     Ui::FoodTreeUI ui;
