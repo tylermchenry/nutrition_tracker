@@ -40,9 +40,27 @@ EditFood::EditFood(QWidget *parent, const QSharedPointer<SingleFood>& food)
     connect(ui.cboMineralDimensions, SIGNAL(currentIndexChanged(int)),
              this, SLOT(mineralsDimensionChanged(int)));
 
-    populateNutrientGroup(ui.grpBasicNutrients, basicNutrients, Nutrient::Categories::Basic);
-    populateNutrientGroup(ui.grpVitamins, vitamins, Nutrient::Categories::Vitamin);
-    populateNutrientGroup(ui.grpMinerals, minerals, Nutrient::Categories::Mineral);
+    QWidget* tabWidget = ui.cboNutrientDimensions;
+
+    tabWidget = populateNutrientGroup(ui.grpBasicNutrients, basicNutrients,
+                                      Nutrient::Categories::Basic, tabWidget);
+
+    QWidget::setTabOrder(tabWidget, ui.cboVitaminDimensions);
+    tabWidget = ui.cboVitaminDimensions;
+
+    tabWidget = populateNutrientGroup(ui.grpVitamins, vitamins,
+                                      Nutrient::Categories::Vitamin, tabWidget);
+
+    QWidget::setTabOrder(tabWidget, ui.cboMineralDimensions);
+    tabWidget = ui.cboMineralDimensions;
+
+    tabWidget = populateNutrientGroup(ui.grpMinerals, minerals,
+                                      Nutrient::Categories::Mineral, tabWidget);
+
+    QWidget::setTabOrder(tabWidget, ui.btnSaveAndClose);
+    QWidget::setTabOrder(ui.btnSaveAndClose, ui.btnSaveAndAdd);
+    QWidget::setTabOrder(ui.btnSaveAndAdd, ui.btnSave);
+    QWidget::setTabOrder(ui.btnSave, ui.btnCancel);
 
     // Default Vitamin and Mineral dimensions to % RDI
 
@@ -164,10 +182,11 @@ void EditFood::populateDimensionSelector(QComboBox* cboDimension)
     ("% RDI", QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI));
 }
 
-void EditFood::populateNutrientGroup
+QWidget* EditFood::populateNutrientGroup
   (QGroupBox* grpNutrients, QVector<NutrientAmountDisplay>& amountDisplays,
-   Nutrient::Categories::Category category)
+   Nutrient::Categories::Category category,  QWidget* previousTabWidget)
 {
+  QWidget* lastWidget = previousTabWidget;
   QGridLayout& layout = dynamic_cast<QGridLayout&>(*(grpNutrients->layout()));
   QVector<QSharedPointer<const Nutrient> > nutrients = Nutrient::getAllNutrients(category);
 
@@ -183,11 +202,16 @@ void EditFood::populateNutrientGroup
     layout.addWidget(display.getUnitWidget(), row, 3);
 
     amountDisplays.push_back(display);
+
+    QWidget::setTabOrder(lastWidget, display.getValueWidget());
+    lastWidget = display.getValueWidget();
   }
 
   layout.addItem
     (new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding),
      layout.rowCount(), 2);
+
+  return lastWidget;
 }
 
 void EditFood::loadAmountInformation(QLineEdit* txtAmount, QComboBox* cboUnit,

@@ -47,9 +47,9 @@ private:
 
     void populateDimensionSelector(QComboBox* cboDimension);
 
-    void populateNutrientGroup
+    QWidget* populateNutrientGroup
       (QGroupBox* grpNutrients, QVector<NutrientAmountDisplay>& amountDisplays,
-       Nutrient::Categories::Category category);
+       Nutrient::Categories::Category category, QWidget* previousTabWidget);
 
     void loadAmountInformation(QLineEdit* txtAmount, QComboBox* cboUnit,
                                    Unit::Dimensions::Dimension dimension);
