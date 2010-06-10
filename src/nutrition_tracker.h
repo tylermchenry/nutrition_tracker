@@ -26,6 +26,8 @@ class NutritionTracker : public QWidget
 
     void changeDay();
 
+    void updateBalance();
+
   private:
 
     Ui::NutritionTrackerUI ui;
