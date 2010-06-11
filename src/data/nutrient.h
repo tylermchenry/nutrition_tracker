@@ -64,6 +64,12 @@ class Nutrient
       static QString toHumanReadable(Category cat);
     };
 
+    static const QString CALORIES_NAME;
+    static const QString FAT_NAME;
+    static const QString CARBOHYDRATE_NAME;
+    static const QString PROTEIN_NAME;
+    static const QString ALCOHOL_NAME;
+
     static QSharedPointer<const Nutrient> getNutrient(const QString& id);
 
     static QSharedPointer<const Nutrient> getNutrientByName(const QString& name);
@@ -89,6 +95,8 @@ class Nutrient
     inline QSharedPointer<const Unit> getStandardUnit() const { return standardUnit; }
 
     inline double getRDI() const { return rdi; }
+
+    inline double getDefaultCalorieDensity() const; // in kcal/g
 
   private:
 
