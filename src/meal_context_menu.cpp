@@ -66,7 +66,10 @@ void MealContextMenu::actionTriggered(QAction* action)
     if (date == QDate()) {
       QString dateStr = QInputDialog::getText(this, "Enter Date", "(temporary) Copy meal to date (YYYY-MM-DD):");
       if ((date = QDate::fromString(dateStr, Qt::ISODate)) == QDate()) {
-        QMessageBox::critical(this, "Error", "Invalid Date");
+        QMessageBox::critical(this, "Error", "Invalid Date.");
+        return;
+      } else if (date == meal->getDate()) {
+        QMessageBox::critical(this, "Error", "Cannot copy a meal to its own date.");
         return;
       }
     }

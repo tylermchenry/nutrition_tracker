@@ -22,6 +22,8 @@ class FoodTreeMealItem : public FoodTreeItem
 
     virtual ~FoodTreeMealItem();
 
+    virtual FoodContextMenu* getContextMenu();
+
     FoodTreeComponentItem* addComponent(const FoodComponent& component);
 
     FoodTreeComponentItem* getComponentItem(const FoodComponent& component) const;

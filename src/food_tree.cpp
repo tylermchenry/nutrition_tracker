@@ -102,6 +102,8 @@ void FoodTree::showContextMenu(const QPoint& point)
              this, SLOT(changeAmount(const QModelIndex&, FoodComponent*)));
     connect(contextMenu, SIGNAL(viewNutritionInformation(const QModelIndex&, const FoodAmount&)),
              this, SLOT(displayNutritionInfo(const QModelIndex&, const FoodAmount&)));
+    connect(contextMenu, SIGNAL(copyMealToDay(const QModelIndex&, const QSharedPointer<const Meal>&, const QDate&)),
+             this, SLOT(copyMealToDay(const QModelIndex&, const QSharedPointer<const Meal>&, const QDate&)));
     contextMenu->popup(ui.trvFoods->viewport()->mapToGlobal(point));
   }
 }
@@ -128,6 +130,16 @@ void FoodTree::changeAmount(const QModelIndex& index, FoodComponent* component)
                                 "New amount (in " + amount.getUnit()->getName() + "):",
                                  amount.getAmount(), 0);
    model->changeAmount(index, FoodAmount(amount.getFood(), newAmount, amount.getUnit()));
+  }
+}
+
+void FoodTree::copyMealToDay(const QModelIndex&, const QSharedPointer<const Meal>& meal,
+                                 const QDate& date)
+{
+  if (meal && !meal->isTemporary()) {
+    QSharedPointer<Meal> targetMeal = Meal::getOrCreateMeal(meal->getUserId(), date, meal->getMealId());
+    targetMeal->merge(meal);
+    targetMeal->saveToDatabase();
   }
 }
 

@@ -69,6 +69,9 @@ class FoodTree : public QWidget
 
     void changeAmount(const QModelIndex& index, FoodComponent* component);
 
+    void copyMealToDay(const QModelIndex& index, const QSharedPointer<const Meal>& meal,
+                         const QDate& date);
+
   private:
 
     Ui::FoodTreeUI ui;

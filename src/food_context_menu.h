@@ -12,6 +12,7 @@
 #include <QModelIndex>
 #include "data/food_amount.h"
 #include "data/food_component.h"
+#include "data/meal.h"
 
 class FoodContextMenu : public QMenu
 {
@@ -24,12 +25,15 @@ class FoodContextMenu : public QMenu
   signals:
 
     void viewNutritionInformation(const QModelIndex& index, const FoodAmount& foodAmount);
+
     void changeAmount(const QModelIndex& index, FoodComponent* component);
     void changeUnit(const QModelIndex& index, FoodComponent* component, const QSharedPointer<const Unit>& unit);
     void edit(const QModelIndex& index, FoodComponent* component);
     void duplicate(const QModelIndex& index, FoodComponent* component);
     void moveToMeal(const QModelIndex& index, FoodComponent* component, int mealId);
     void remove(const QModelIndex& index, FoodComponent* component);
+
+    void copyMealToDay(const QModelIndex& index, const QSharedPointer<const Meal>& meal, const QDate& date);
 
   protected:
 

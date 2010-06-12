@@ -7,6 +7,7 @@
 
 #include "food_tree_meal_item.h"
 #include "food_tree_component_item.h"
+#include "meal_context_menu.h"
 
 FoodTreeMealItem::FoodTreeMealItem
   (const QAbstractItemModel* model, const QSharedPointer<Meal>& meal, FoodTreeItem* parent)
@@ -22,6 +23,11 @@ FoodTreeMealItem::FoodTreeMealItem
 
 FoodTreeMealItem::~FoodTreeMealItem()
 {
+}
+
+FoodContextMenu* FoodTreeMealItem::getContextMenu()
+{
+  return new MealContextMenu(getIndex(), meal);
 }
 
 FoodTreeComponentItem* FoodTreeMealItem::addComponent(const FoodComponent& component)
