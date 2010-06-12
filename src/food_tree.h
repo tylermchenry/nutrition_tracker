@@ -41,7 +41,7 @@ class FoodTree : public QWidget
 
   signals:
 
-    void mealModified(const QSharedPointer<Meal>& meal);
+     void contentsModified();
 
   public slots:
 

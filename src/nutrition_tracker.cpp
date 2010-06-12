@@ -11,6 +11,7 @@ NutritionTracker::NutritionTracker(QWidget *parent)
 	ui.setupUi(this);
 
 	connect(ui.calCurrentDay, SIGNAL(selectionChanged()), this, SLOT(changeDay()));
+	connect(ui.ftFoodsForDay, SIGNAL(contentsModified()), this, SLOT(updateBalance()));
 }
 
 NutritionTracker::~NutritionTracker()
@@ -32,6 +33,7 @@ void NutritionTracker::addMealsToCurrentDay
   (const QVector<QSharedPointer<const Meal> >& meals)
 {
   ui.ftFoodsForDay->addMeals(meals);
+  updateBalance();
 }
 
 void NutritionTracker::changeDay()
@@ -73,13 +75,23 @@ void NutritionTracker::updateBalance()
   double gramsProtein = nutrients[Nutrient::getNutrientByName("Protein")->getId()].getAmount
       (Unit::getPreferredUnit(Unit::Dimensions::Weight));
 
-  const double FAT_CALORIES_PER_GRAM = 9;
-  const double CARB_CALORIES_PER_GRAM = 4;
-  const double PROTEIN_CALORIES_PER_GRAM = 4;
+  // Our food energy is stored in kilocalories, but the more accurate energy
+  // density information is given in kilojoules (which are a smaller unit, so
+  // more granularity). Therefore, compute by converting from kJ to kCal.
+  // For future reference, alcohol is 29 kJ/g.
 
-  ui.txtFromFat->setText(QString::number(100 * gramsFat * FAT_CALORIES_PER_GRAM / totalCalories, 'f', 1) + " %");
-  ui.txtFromCarbs->setText(QString::number(100 * gramsCarbs * CARB_CALORIES_PER_GRAM / totalCalories, 'f', 1) + " %");
-  ui.txtFromProtein->setText(QString::number(100 * gramsProtein * PROTEIN_CALORIES_PER_GRAM / totalCalories, 'f', 1) + " %");
+  static const double KCAL_PER_KJ = 0.239005736;
+  static const double FAT_KCAL_PER_GRAM = 37 * KCAL_PER_KJ;
+  static const double CARB_KCAL_PER_GRAM = 17 * KCAL_PER_KJ;
+  static const double PROTEIN_KCAL_PER_GRAM = 17 * KCAL_PER_KJ;
+
+  double pctCaloriesFromFat =  gramsFat * FAT_KCAL_PER_GRAM / totalCalories;
+  double pctCaloriesFromCarbs =  gramsCarbs * CARB_KCAL_PER_GRAM / totalCalories;
+  double pctCaloriesFromProtein =  gramsProtein * PROTEIN_KCAL_PER_GRAM / totalCalories;
+
+  ui.txtFromFat->setText(QString::number(100 * pctCaloriesFromFat, 'f', 1) + " %");
+  ui.txtFromCarbs->setText(QString::number(100 * pctCaloriesFromCarbs, 'f', 1) + " %");
+  ui.txtFromProtein->setText(QString::number(100 * pctCaloriesFromProtein, 'f', 1) + " %");
 }
 
 void NutritionTracker::loadCurrentDayFoodsFromDatabase()

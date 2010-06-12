@@ -356,7 +356,7 @@ void FoodTreeModel::changeAmount(const QModelIndex& index, const FoodAmount& new
       if (!temporaryMeals && changedItem->isMeal()) {
         dynamic_cast<FoodTreeMealItem*>(changedItem)->saveMealToDatabase();
       }
-      this->dataChanged(idx, idx);
+      emit dataChanged(idx, idx);
     }
   }
 }

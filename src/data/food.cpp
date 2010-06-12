@@ -83,6 +83,22 @@ void Food::setName(const QString& name)
   this->name = name;
 }
 
+NutrientAmount Food::getCaloriesFromNutrient
+  (const QSharedPointer<const Nutrient>& nutrient)
+{
+  if (nutrient) {
+    return getCaloriesFromNutrientId(nutrient->getId());
+  } else {
+    return NutrientAmount();
+  }
+}
+
+NutrientAmount Food::getCaloriesFromNutrientName
+  (const QString& nutrName)
+{
+  return getCaloriesFromNutrient(Nutrient::getNutrientByName(nutrName));
+}
+
 QSet<FoodComponent> Food::getComponents() const
 {
   return QSet<FoodComponent>();

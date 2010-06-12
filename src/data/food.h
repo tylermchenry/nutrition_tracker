@@ -80,6 +80,15 @@ class Food
 
     virtual void saveToDatabase() = 0;
 
+    virtual NutrientAmount getCaloriesFromNutrient
+      (const QSharedPointer<const Nutrient>& nutrient);
+
+    virtual NutrientAmount getCaloriesFromNutrientName
+      (const QString& nutrName);
+
+    virtual NutrientAmount getCaloriesFromNutrientId
+      (const QString&) { return NutrientAmount(); /* TMP */ }
+
   protected:
 
     Food(const QString& id, const QString& name, double weightAmount,

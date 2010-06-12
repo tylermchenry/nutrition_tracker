@@ -53,6 +53,15 @@ void FoodTree::clear()
   connect(model, SIGNAL(newGroupingCreated(const QModelIndex&)),
           this, SLOT(expandGrouping(const QModelIndex&)));
 
+  connect(model, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
+          this, SIGNAL(contentsModified()));
+
+  connect(model, SIGNAL(rowsInserted(const QModelIndex&, int, int)),
+           this, SIGNAL(contentsModified()));
+
+  connect(model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
+           this, SIGNAL(contentsModified()));
+
   ui.trvFoods->setModel(model);
 }
 
