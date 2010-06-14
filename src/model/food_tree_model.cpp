@@ -36,7 +36,7 @@ FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QDate& mealsDate,
 }
 
 FoodTreeModel::FoodTreeModel
-  (QTreeView *parent, const QDate& mealsDate,
+  (QTreeView *treeView, const QDate& mealsDate,
    const QSharedPointer<FoodCollection>& rootCollection)
   : QAbstractItemModel(treeView), treeView(treeView),
     rootItem(new FoodTreeCollectionItem(this, QSharedPointer<FoodCollection>())),

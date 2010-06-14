@@ -24,14 +24,15 @@ class FoodTreeModel : public QAbstractItemModel
 
   public:
 
-    explicit FoodTreeModel(QTreeView *parent, const QString& allFoodsTitle = "All Foods",
+    explicit FoodTreeModel(QTreeView *treeView,
+                              const QString& allFoodsTitle = "All Foods",
                               bool temporaryMeals = true);
 
-    FoodTreeModel(QTreeView *parent, const QDate& mealsDate,
+    FoodTreeModel(QTreeView *treeView, const QDate& mealsDate,
                     const QString& allFoodsTitle = "All Foods",
                     bool temporaryMeals = true);
 
-    FoodTreeModel(QTreeView *parent, const QDate& mealsDate,
+    FoodTreeModel(QTreeView *treeView, const QDate& mealsDate,
                     const QSharedPointer<FoodCollection>& rootCollection);
 
     ~FoodTreeModel();
