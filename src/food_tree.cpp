@@ -56,7 +56,6 @@ void FoodTree::clear()
 {
   if (rootCollection) {
     model = new FoodTreeModel(ui.trvFoods, date, rootCollection);
-    ui.trvFoods->setExpanded(model->getRootCollectionIndex(), true);
   } else {
     model = new FoodTreeModel(ui.trvFoods, date, rootName, temporary);
   }
@@ -74,6 +73,7 @@ void FoodTree::clear()
            this, SIGNAL(contentsModified()));
 
   ui.trvFoods->setModel(model);
+  ui.trvFoods->setExpanded(model->getRootCollectionIndex(), true);
 }
 
 void FoodTree::addFoodAmount(const FoodAmount& foodAmount)
