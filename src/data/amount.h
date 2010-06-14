@@ -148,28 +148,28 @@ void Amount<S, SA>::setAmount
 template<typename S, typename SA>
 SA Amount<S, SA>::operator+ (const SA& rhs) const
 {
-  SA amt(*dynamic_cast<SA*>(this));
+  SA amt(*dynamic_cast<const SA*>(this));
   return (amt += rhs);
 }
 
 template<typename S, typename SA>
 SA Amount<S, SA>::operator- (const SA& rhs) const
 {
-  SA amt(*dynamic_cast<SA*>(this));
+  SA amt(*dynamic_cast<const SA*>(this));
   return (amt -= rhs);
 }
 
 template<typename S, typename SA>
 SA Amount<S, SA>::operator* (double rhs) const
 {
-  SA amt(*dynamic_cast<SA*>(this));
+  SA amt(*dynamic_cast<const SA*>(this));
   return (amt *= rhs);
 }
 
 template<typename S, typename SA>
 SA Amount<S, SA>::operator/ (double rhs) const
 {
-  SA amt(*dynamic_cast<SA*>(this));
+  SA amt(*dynamic_cast<const SA*>(this));
   return (amt /= rhs);
 }
 
