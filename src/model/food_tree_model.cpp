@@ -35,6 +35,18 @@ FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QDate& mealsDate,
   endInsertRows();
 }
 
+FoodTreeModel::FoodTreeModel
+  (QTreeView *parent, const QDate& mealsDate,
+   const QSharedPointer<FoodCollection>& rootCollection)
+  : QAbstractItemModel(treeView), treeView(treeView),
+    rootItem(new FoodTreeCollectionItem(this, QSharedPointer<FoodCollection>())),
+    allFoods(rootCollection), temporaryMeals(false), mealsDate(mealsDate)
+{
+  beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
+  allFoodsRoot = rootItem->addCollection(allFoods);
+  endInsertRows();
+}
+
 FoodTreeModel::~FoodTreeModel()
 {
   delete rootItem;
@@ -173,6 +185,11 @@ int FoodTreeModel::columnCount(const QModelIndex &parent) const
     return static_cast<FoodTreeItem*>(parent.internalPointer())->columnCount() + 1;
   else
     return rootItem->columnCount() + 1;
+}
+
+QModelIndex FoodTreeModel::getRootCollectionIndex() const
+{
+  return createIndex(0, 0, rootItem);
 }
 
 QVector<QSharedPointer<const Meal> > FoodTreeModel::getAllMeals() const

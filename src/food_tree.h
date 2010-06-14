@@ -35,6 +35,9 @@ class FoodTree : public QWidget
     // Currently will not take effect until after next clear()
     void setDate(const QDate& newDate);
 
+    // Currently will not take effect until after next clear()
+    void setRootCollection(const QSharedPointer<FoodCollection>& collection);
+
     QSharedPointer<const FoodCollection> getAllFoods() const;
 
     QVector<QSharedPointer<const Meal> > getAllMeals() const;
@@ -79,6 +82,7 @@ class FoodTree : public QWidget
     bool temporary;
     QString rootName;
     QDate date;
+    QSharedPointer<FoodCollection> rootCollection;
 
     FoodTreeModel* model;
 };

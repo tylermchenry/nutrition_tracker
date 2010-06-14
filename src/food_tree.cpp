@@ -36,6 +36,12 @@ void FoodTree::setDate(const QDate& newDate)
   date = newDate;
 }
 
+void FoodTree::setRootCollection
+  (const QSharedPointer<FoodCollection>& collection)
+{
+  rootCollection = collection;
+}
+
 QSharedPointer<const FoodCollection> FoodTree::getAllFoods() const
 {
   return model->getAllFoods();
@@ -48,7 +54,12 @@ QVector<QSharedPointer<const Meal> > FoodTree::getAllMeals() const
 
 void FoodTree::clear()
 {
-  model = new FoodTreeModel(ui.trvFoods, date, rootName, temporary);
+  if (rootCollection) {
+    model = new FoodTreeModel(ui.trvFoods, date, rootCollection);
+    ui.trvFoods->setExpanded(model->getRootCollectionIndex(), true);
+  } else {
+    model = new FoodTreeModel(ui.trvFoods, date, rootName, temporary);
+  }
 
   connect(model, SIGNAL(newGroupingCreated(const QModelIndex&)),
           this, SLOT(expandGrouping(const QModelIndex&)));

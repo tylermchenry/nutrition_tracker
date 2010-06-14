@@ -31,6 +31,9 @@ class FoodTreeModel : public QAbstractItemModel
                     const QString& allFoodsTitle = "All Foods",
                     bool temporaryMeals = true);
 
+    FoodTreeModel(QTreeView *parent, const QDate& mealsDate,
+                    const QSharedPointer<FoodCollection>& rootCollection);
+
     ~FoodTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const;
@@ -48,6 +51,8 @@ class FoodTreeModel : public QAbstractItemModel
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
+
+    QModelIndex getRootCollectionIndex() const;
 
     inline QSharedPointer<const FoodCollection> getAllFoods() const
       { return allFoods; }

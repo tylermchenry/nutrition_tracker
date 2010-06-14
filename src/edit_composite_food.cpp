@@ -2,6 +2,7 @@
 #include "data/group.h"
 #include "data/unit.h"
 #include <QtGui/QMessageBox>
+#include <QDebug>
 
 // The numeric database fields are DECIMAL(10,4), so 10 digits, 4 of which
 // appear after the decimal point.
@@ -60,6 +61,8 @@ bool EditCompositeFood::saveFood()
 {
   try {
 
+    qDebug() << "Saving composite food.";
+
     food->setName(ui.txtName->text());
 
     food->setBaseAmount
@@ -75,8 +78,6 @@ bool EditCompositeFood::saveFood()
 
     food->setBaseAmount
     (ui.txtServings->text().toDouble(), Unit::getPreferredUnit(Unit::Dimensions::Serving));
-
-    food->replaceWith(ui.ftComponents->getAllFoods());
 
     food->saveToDatabase();
 
@@ -133,7 +134,7 @@ void EditCompositeFood::loadFoodInformation()
   if (food == NULL) {
     food = CompositeFood::createNewCompositeFood();
   } else {
-    ui.ftComponents->setRootName(food->getName());
+    ui.ftComponents->setRootCollection(food);
   }
 
   ui.ftComponents->clear();
@@ -146,14 +147,6 @@ void EditCompositeFood::loadFoodInformation()
   loadAmountInformation(ui.txtVolume, ui.cboVolumeUnit, Unit::Dimensions::Volume);
   loadAmountInformation(ui.txtQuantity, NULL, Unit::Dimensions::Quantity);
   loadAmountInformation(ui.txtServings, NULL, Unit::Dimensions::Serving);
-
-  QVector<FoodAmount> componentAmounts = food->getComponentAmounts();
-
-  for (QVector<FoodAmount>::const_iterator i = componentAmounts.begin();
-      i != componentAmounts.end(); ++i)
-  {
-    ui.ftComponents->addFoodAmount(*i);
-  }
 }
 
 void EditCompositeFood::saveFoodAndClose()
