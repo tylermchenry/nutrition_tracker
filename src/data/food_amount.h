@@ -69,9 +69,20 @@ class FoodAmount : public Amount<Food, FoodAmount>
 
     QVector<FoodAmount> getScaledComponents() const;
 
+    NutrientAmount getScaledCaloriesFromNutrient
+      (const QSharedPointer<const Nutrient>& nutr) const;
+
+    NutrientAmount getScaledCaloriesFromNutrientName
+      (const QString& nutrName) const;
+
+    NutrientAmount getScaledCaloriesFromNutrientId
+      (const QString& nutrId) const;
+
   private:
 
     virtual QString getSubstanceName(bool plural) const;
+
+    double getScaleFactor() const;
 };
 
 #endif /* FOOD_AMOUNT_H_ */

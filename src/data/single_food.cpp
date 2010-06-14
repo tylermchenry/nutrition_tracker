@@ -37,7 +37,9 @@ QSharedPointer<SingleFood> SingleFood::getSingleFood(int id)
   query.prepare("SELECT food_description.Food_Id, food_description.Entry_Src, "
                 "       food_description.Long_Desc, food_description.Weight_g, "
                 "       food_description.Volume_floz, food_description.Quantity, "
-                "       food_description.Servings, nutrient_data.Nutr_Val, "
+                "       food_description.Servings, food_description.Fat_Factor,"
+                "       food_description.CHO_Factor, food_description.Pro_Factor, "
+                "       food_description.N_Factor, nutrient_data.Nutr_Val, "
                 "       nutrient_definition.Nutr_No, nutrient_definition.Category, "
                 "       nutrient_definition.ShortName, nutrient_definition.RDI, "
                 "       units.Unit, units.Type, units.Name, units.Factor,"
@@ -94,7 +96,11 @@ QSharedPointer<SingleFood> SingleFood::createSingleFoodFromQueryResults(QSqlQuer
                         record.field("Weight_g").value().toDouble(),
                         record.field("Volume_floz").value().toDouble(),
                         record.field("Quantity").value().toDouble(),
-                        record.field("Servings").value().toDouble()));
+                        record.field("Servings").value().toDouble(),
+                        record.field("Fat_Factor").value().toDouble(),
+                        record.field("CHO_Factor").value().toDouble(),
+                        record.field("Pro_Factor").value().toDouble(),
+                        record.field("N_Factor").value().toDouble()));
       singleFoodCache[id] = food;
       return food;
     } else {
@@ -110,7 +116,9 @@ SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource en
                         const QSharedPointer<const Group>& group,
                         const QMap<QString, NutrientAmount>& nutrients,
                         double weightAmount, double volumeAmount,
-                        double quantityAmount, double servingAmount)
+                        double quantityAmount, double servingAmount,
+                        double calorieDensityFat, double calorieDensityCarbohydrate,
+                        double calorieDensityProtien, double calorieDensityAlcohol)
   : Food("SINGLE_" + QString::number(id), name, weightAmount, volumeAmount,
          quantityAmount, servingAmount),
     id(id), entrySource(entrySource), group(group), nutrients(nutrients)
@@ -119,7 +127,11 @@ SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource en
            << EntrySources::toHumanReadable(entrySource)
            << " in group: " << group->getName() << " amounts: "
            << weightAmount << " g, " << volumeAmount << " fl oz "
-           << quantityAmount << "qty, " << servingAmount << " srv.";
+           << quantityAmount << "qty, " << servingAmount << " srv."
+           << " densities: fat =" << calorieDensityFat
+           << " carb = " << calorieDensityCarbohydrate
+           << " protein = " << calorieDensityProtien
+           << " alcohol = " << calorieDensityAlcohol;
 
   qDebug() << "Nutrient Amounts:";
 
@@ -130,6 +142,12 @@ SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource en
              << " (" << i.value().getAmountAsPercentRDI() * 100 << "% RDI) of "
              << i.value().getNutrient()->getName();
   }
+
+  setCalorieDensity(Nutrient::FAT_NAME, calorieDensityFat);
+  setCalorieDensity(Nutrient::CARBOHYDRATE_NAME, calorieDensityCarbohydrate);
+  setCalorieDensity(Nutrient::PROTEIN_NAME, calorieDensityProtien);
+  setCalorieDensity(Nutrient::ALCOHOL_NAME, calorieDensityAlcohol);
+  sanityCheckCalorieDensities();
 }
 
 SingleFood::SingleFood()
@@ -137,6 +155,11 @@ SingleFood::SingleFood()
     id(tempId--), entrySource(EntrySources::Custom), group(Group::getDefaultGroup())
 {
   qDebug() << "Created new food with temporary ID " << id;
+
+  setCalorieDensity(Nutrient::FAT_NAME, 0);
+  setCalorieDensity(Nutrient::CARBOHYDRATE_NAME, 0);
+  setCalorieDensity(Nutrient::PROTEIN_NAME, 0);
+  setCalorieDensity(Nutrient::ALCOHOL_NAME, 0);
 }
 
 SingleFood::~SingleFood()
@@ -146,6 +169,23 @@ SingleFood::~SingleFood()
 QMap<QString, NutrientAmount> SingleFood::getNutrients() const
 {
   return nutrients;
+}
+
+NutrientAmount SingleFood::getCaloriesFromNutrientId
+  (const QString& nutrId) const
+{
+  QSharedPointer<const Nutrient> calories =
+    Nutrient::getNutrientByName(Nutrient::CALORIES_NAME);
+
+  if (nutrients.contains(nutrId) && calorieDensities.contains(nutrId)) {
+    return NutrientAmount(calories,
+                          nutrients[nutrId].getAmount(Unit::getUnit("g")) *
+                          calorieDensities[nutrId]);
+  } else if (nutrId == calories->getId() && nutrients.contains(nutrId)) {
+    return NutrientAmount(calories, nutrients[nutrId].getAmount());
+  } else {
+    return NutrientAmount(calories, 0);
+  }
 }
 
 void SingleFood::setEntrySource(EntrySources::EntrySource source)
@@ -177,6 +217,7 @@ void SingleFood::setNutrient(const NutrientAmount& nutrientAmount)
     {
       modifiedNutrients.insert(id);
       nutrients[id] = nutrientAmount;
+      sanityCheckCalorieDensities();
     }
   }
 }
@@ -189,6 +230,11 @@ void SingleFood::saveToDatabase()
   QSqlQuery query(db);
 
   // This needs to work either for a new food or an update to an existing food
+
+  // Note that the calorie densities (factors) are not updated. Currently there
+  // is no way to modify them, or even view them.
+
+  // TODO: Save calorie density information if it becomes mutable
 
   query.prepare("INSERT INTO food_description "
                 "  (Food_Id, Entry_Src, FdGrp_Cd, Long_Desc, Weight_g, Volume_floz, Quantity, Servings) "
@@ -283,6 +329,65 @@ QSharedPointer<Food> SingleFood::getCanonicalSharedPointer()
 QSharedPointer<const Food> SingleFood::getCanonicalSharedPointer() const
 {
   return singleFoodCache[id].toStrongRef();
+}
+
+void SingleFood::setCalorieDensity(const QString& nutrientName, double density)
+{
+  QSharedPointer<const Nutrient> nutrient = Nutrient::getNutrientByName(nutrientName);
+  if (nutrient) {
+    calorieDensities[nutrient->getId()] = (density > 0) ? density :
+      nutrient->getDefaultCalorieDensity();
+  }
+}
+
+void SingleFood::sanityCheckCalorieDensities()
+{
+  QString caloriesId = Nutrient::getNutrientByName(Nutrient::CALORIES_NAME)->getId();
+
+  if (nutrients.contains(caloriesId)) {
+
+    NutrientAmount calories = nutrients[caloriesId];
+
+    if (calories.getAmount() <= 0) return;
+
+    NutrientAmount computedCalories = NutrientAmount(Nutrient::getNutrient(caloriesId), 0);
+
+    NutrientAmount caloriesFromFat = getCaloriesFromNutrientName(Nutrient::FAT_NAME);
+    NutrientAmount caloriesFromCarbs = getCaloriesFromNutrientName(Nutrient::CARBOHYDRATE_NAME);
+    NutrientAmount caloriesFromProtein = getCaloriesFromNutrientName(Nutrient::PROTEIN_NAME);
+    NutrientAmount caloriesFromAlcohol = getCaloriesFromNutrientName(Nutrient::ALCOHOL_NAME);
+
+    if (caloriesFromFat.isDefined()) computedCalories += caloriesFromFat;
+    if (caloriesFromCarbs.isDefined()) computedCalories += caloriesFromCarbs;
+    if (caloriesFromProtein.isDefined()) computedCalories += caloriesFromProtein;
+    if (caloriesFromAlcohol.isDefined()) computedCalories += caloriesFromAlcohol;
+
+    // It's OK if the computed calories are smaller than the nominal calories;
+    // that just means that some calories came from sources other than fat,
+    // carbs, protein, and alcohol. But it's not OK if the computed calories are
+    // larger than the nominal calories, since that means we are overestimating
+    // one or more of the energy densities, which will screw up calories-from-
+    // nutrient calculations elsewhere.
+
+    // Since there's no way to determine exactly which densities are wrong and
+    // by how much, we simply perform a uniform scaling to reconcile the
+    // computed calories with the nominal calories.
+
+    // This will normally happen with user-entered foods which are using the
+    // USDA default calorie densities, which appear to be upper bounds. Foods
+    // sourced from the USDA database have food-specific calorie densities that
+    // are more accurate.
+
+    double scaleFactor = calories.getAmount() / computedCalories.getAmount();
+
+    if (scaleFactor < 1) {
+      for (QMap<QString, double>::iterator i = calorieDensities.begin();
+          i != calorieDensities.end(); ++i)
+      {
+        i.value() *= scaleFactor;
+      }
+    }
+  }
 }
 
 SingleFood::EntrySources::EntrySource SingleFood::EntrySources::fromHumanReadable

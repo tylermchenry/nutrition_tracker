@@ -94,6 +94,27 @@ QMap<QString, NutrientAmount> FoodCollection::getNutrients() const
   return nutrients;
 }
 
+NutrientAmount FoodCollection::getCaloriesFromNutrientId
+   (const QString& nutrId) const
+{
+  // TODO: Intelligently cache instead of recomputing each time
+
+  NutrientAmount totalCaloriesFromNutrient
+    (Nutrient::getNutrientByName(Nutrient::CALORIES_NAME), 0);
+
+  for (QSet<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
+  {
+    NutrientAmount caloriesFromNutrient =
+      i->getFoodAmount().getScaledCaloriesFromNutrientId(nutrId);
+
+    if (caloriesFromNutrient.isDefined()) {
+      totalCaloriesFromNutrient += caloriesFromNutrient;
+    }
+  }
+
+  return totalCaloriesFromNutrient;
+}
+
 FoodComponent FoodCollection::addComponent(const FoodAmount& foodAmount)
 {
   int order = 0;
@@ -103,6 +124,11 @@ FoodComponent FoodCollection::addComponent(const FoodAmount& foodAmount)
     order = components.toList().last().getOrder()+1;
   }
 
+  qDebug() << "Adding new (unsaved) component: " << foodAmount.getAmount()
+           << foodAmount.getUnit()->getAbbreviation() << " of "
+           << foodAmount.getFood()->getName()
+           << " to collection: " << getName() << " [id = "
+           << nextTemporaryId << "]";
   FoodComponent component(getCanonicalSharedPointerToCollection(),
                           nextTemporaryId--, foodAmount, order);
   components.insert(component);
@@ -133,6 +159,10 @@ FoodComponent FoodCollection::changeComponentAmount(const FoodComponent& compone
     components.insert(newComponent);
     return newComponent;
   } else {
+    qDebug() << "Component with ID " << component.getId() << " is not part of "
+             << " this collection (id " << id << "). Claims to be part of collection"
+             << component.getContainingCollection()->getId();
+
     throw std::logic_error("Attempted to change a component not part of this collection.");
   }
 }
@@ -225,6 +255,9 @@ void FoodCollection::replaceComponent(const FoodComponent& oldComponent,
     throw std::logic_error("Attempted to replace a component with a temporary component.");
   }
 
+  qDebug() << "Replacing component ID " << oldComponent.getId()
+           << " with new component ID " << newComponent.getId();
+
   newIds.insert(oldComponent.getId(), newComponent.getId());
 
   components.remove(oldComponent);
@@ -284,6 +317,8 @@ QSet<FoodComponent> FoodCollection::createComponentsFromQueryResults
     }
 
     if (containedFood != NULL) {
+      qDebug() << "Value of component ID field " << componentIdField << ": "
+                << record.field(componentIdField).value().toInt();
       components.insert
         (FoodComponent
           (containingCollection,

@@ -71,6 +71,9 @@ class FoodCollection: public Food
 
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
+    virtual NutrientAmount getCaloriesFromNutrientId
+      (const QString& nutrId) const;
+
     virtual FoodComponent addComponent(const FoodAmount& foodAmount);
 
     virtual QVector<FoodComponent> addComponents

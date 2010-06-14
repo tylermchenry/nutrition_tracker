@@ -96,7 +96,7 @@ class Nutrient
 
     inline double getRDI() const { return rdi; }
 
-    inline double getDefaultCalorieDensity() const; // in kcal/g
+    double getDefaultCalorieDensity() const; // in kcal/g
 
   private:
 

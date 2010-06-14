@@ -136,6 +136,8 @@ void CompositeFood::saveToDatabase()
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
+  qDebug() << "Saving composite food to database.";
+
   // This needs to work either for a new food or an update to an existing food
 
   query.prepare("INSERT INTO composite_food "

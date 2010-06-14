@@ -85,6 +85,9 @@ class SingleFood: public Food
 
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
+    virtual NutrientAmount getCaloriesFromNutrientId
+       (const QString& nutrId) const;
+
     void setEntrySource(EntrySources::EntrySource source);
 
     void setGroup(const QSharedPointer<const Group>& group);
@@ -106,7 +109,9 @@ class SingleFood: public Food
                 const QSharedPointer<const Group>& group,
                 const QMap<QString, NutrientAmount>& nutrients,
                 double weightAmount, double volumeAmount,
-                double quantityAmount, double servingAmount);
+                double quantityAmount, double servingAmount,
+                double energyDensityFat, double energyDensityCarbohydrate,
+                double energyDensityProtien, double energyDensityAlcohol);
 
     SingleFood();
 
@@ -115,6 +120,11 @@ class SingleFood: public Food
     QSharedPointer<const Group> group;
     QMap<QString, NutrientAmount> nutrients;
     QSet<QString> modifiedNutrients;
+    QMap<QString, double> calorieDensities;
+
+    void setCalorieDensity(const QString& nutrientName, double density);
+
+    void sanityCheckCalorieDensities();
 
     static int tempId;
 

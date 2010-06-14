@@ -84,7 +84,7 @@ void Food::setName(const QString& name)
 }
 
 NutrientAmount Food::getCaloriesFromNutrient
-  (const QSharedPointer<const Nutrient>& nutrient)
+  (const QSharedPointer<const Nutrient>& nutrient) const
 {
   if (nutrient) {
     return getCaloriesFromNutrientId(nutrient->getId());
@@ -94,7 +94,7 @@ NutrientAmount Food::getCaloriesFromNutrient
 }
 
 NutrientAmount Food::getCaloriesFromNutrientName
-  (const QString& nutrName)
+  (const QString& nutrName) const
 {
   return getCaloriesFromNutrient(Nutrient::getNutrientByName(nutrName));
 }
