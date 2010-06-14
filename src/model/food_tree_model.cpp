@@ -63,10 +63,7 @@ QVariant FoodTreeModel::data(const QModelIndex &index, int role) const
 
   if (role == Qt::DisplayRole) {
 
-    // Hide amounts for depths of 1 and 2 (summaries)
-    if (index.column() != 1 || item->depth() >= 3) {
-      return item->data(index.column());
-    }
+    return item->data(index.column());
 
   } else if (role == Qt::FontRole) {
 
