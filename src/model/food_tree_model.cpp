@@ -45,6 +45,8 @@ FoodTreeModel::FoodTreeModel
   beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
   allFoodsRoot = rootItem->addCollection(allFoods);
   endInsertRows();
+
+  emit newGroupingCreated(createIndex(allFoodsRoot->row(), 0, allFoodsRoot));
 }
 
 FoodTreeModel::~FoodTreeModel()
@@ -189,7 +191,7 @@ int FoodTreeModel::columnCount(const QModelIndex &parent) const
 
 QModelIndex FoodTreeModel::getRootCollectionIndex() const
 {
-  return createIndex(0, 0, rootItem);
+  return createIndex(allFoodsRoot->row(), 0, allFoodsRoot);
 }
 
 QVector<QSharedPointer<const Meal> > FoodTreeModel::getAllMeals() const
