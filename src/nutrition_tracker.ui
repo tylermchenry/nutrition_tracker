@@ -112,7 +112,7 @@
         <item row="2" column="0">
          <widget class="QLabel" name="lblFromProtein">
           <property name="text">
-           <string>Calroies from Protein:</string>
+           <string>Calories from Protein:</string>
           </property>
          </widget>
         </item>
@@ -145,6 +145,32 @@
          <widget class="QLabel" name="lblFromFat">
           <property name="text">
            <string>Calories from Fat:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="lblFromOther">
+          <property name="text">
+           <string>Calories from Other:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="txtFromOther">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>60</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>

@@ -55,43 +55,38 @@ void NutritionTracker::updateBalance()
 
   QSharedPointer<const FoodCollection> foodsForDay = ui.ftFoodsForDay->getAllFoods();
 
-  QMap<QString, NutrientAmount> nutrients = foodsForDay->getNutrients();
+  NutrientAmount totalCalories =
+    foodsForDay->getCaloriesFromNutrientName(Nutrient::CALORIES_NAME);
 
-  double totalCalories = nutrients[Nutrient::getNutrientByName("Calories")->getId()].getAmount();
-
-  if (totalCalories == 0) {
+  if (totalCalories.getAmount() == 0) {
     ui.txtFromFat->setText("");
     ui.txtFromCarbs->setText("");
     ui.txtFromProtein->setText("");
+    ui.txtFromOther->setText("");
     return;
   }
 
-  double gramsFat = nutrients[Nutrient::getNutrientByName("Total Fat")->getId()].getAmount
-    (Unit::getPreferredUnit(Unit::Dimensions::Weight));
+  NutrientAmount caloriesFromFat =
+    foodsForDay->getCaloriesFromNutrientName(Nutrient::FAT_NAME);
 
-  double gramsCarbs = nutrients[Nutrient::getNutrientByName("Total Carbohydrate")->getId()].getAmount
-      (Unit::getPreferredUnit(Unit::Dimensions::Weight));
+  NutrientAmount caloriesFromCarbs =
+    foodsForDay->getCaloriesFromNutrientName(Nutrient::CARBOHYDRATE_NAME);
 
-  double gramsProtein = nutrients[Nutrient::getNutrientByName("Protein")->getId()].getAmount
-      (Unit::getPreferredUnit(Unit::Dimensions::Weight));
+  NutrientAmount caloriesFromProtein =
+    foodsForDay->getCaloriesFromNutrientName(Nutrient::PROTEIN_NAME);
 
-  // Our food energy is stored in kilocalories, but the more accurate energy
-  // density information is given in kilojoules (which are a smaller unit, so
-  // more granularity). Therefore, compute by converting from kJ to kCal.
-  // For future reference, alcohol is 29 kJ/g.
+  double pctCaloriesFromFat = caloriesFromFat.getAmount() / totalCalories.getAmount();
+  double pctCaloriesFromCarbs = caloriesFromCarbs.getAmount() / totalCalories.getAmount();
+  double pctCaloriesFromProtein = caloriesFromProtein.getAmount() / totalCalories.getAmount();
+  double pctCaloriesFromOther = 1 - pctCaloriesFromFat - pctCaloriesFromCarbs -
+      pctCaloriesFromProtein;
 
-  static const double KCAL_PER_KJ = 0.239005736;
-  static const double FAT_KCAL_PER_GRAM = 37 * KCAL_PER_KJ;
-  static const double CARB_KCAL_PER_GRAM = 17 * KCAL_PER_KJ;
-  static const double PROTEIN_KCAL_PER_GRAM = 17 * KCAL_PER_KJ;
-
-  double pctCaloriesFromFat =  gramsFat * FAT_KCAL_PER_GRAM / totalCalories;
-  double pctCaloriesFromCarbs =  gramsCarbs * CARB_KCAL_PER_GRAM / totalCalories;
-  double pctCaloriesFromProtein =  gramsProtein * PROTEIN_KCAL_PER_GRAM / totalCalories;
+  if (pctCaloriesFromOther < 0) pctCaloriesFromOther = 0;
 
   ui.txtFromFat->setText(QString::number(100 * pctCaloriesFromFat, 'f', 1) + " %");
   ui.txtFromCarbs->setText(QString::number(100 * pctCaloriesFromCarbs, 'f', 1) + " %");
   ui.txtFromProtein->setText(QString::number(100 * pctCaloriesFromProtein, 'f', 1) + " %");
+  ui.txtFromOther->setText(QString::number(100 * pctCaloriesFromOther, 'f', 1) + " %");
 }
 
 void NutritionTracker::loadCurrentDayFoodsFromDatabase()
