@@ -8,9 +8,29 @@
 FoodSearchControl::FoodSearchControl(QWidget *parent)
     : QWidget(parent)
 {
-	ui.setupUi(this);
+  ui.setupUi(this);
 
-	connect(ui.btnSearch, SIGNAL(clicked()), this, SLOT(performSearch()));
+  connect(ui.btnSearch, SIGNAL(clicked()), this, SLOT(performSearch()));
+
+  static const QString COMPOUND_NAME = "(Composite Foods)";
+  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
+
+  ui.lstCategories->clear();
+  categoryToGroupID.clear();
+
+  ui.lstCategories->addItem(COMPOUND_NAME);
+  categoryToGroupID.insert(COMPOUND_NAME, "");
+
+  QVector<QSharedPointer<const Group> > allGroups = Group::getAllGroups();
+
+  for (QVector<QSharedPointer<const Group> >::const_iterator i = allGroups.begin();
+  i != allGroups.end(); ++i)
+  {
+    ui.lstCategories->addItem((*i)->getName());
+    categoryToGroupID.insert((*i)->getName(), (*i)->getId());
+  }
+
+  ui.lstCategories->selectAll();
 }
 
 FoodSearchControl::~FoodSearchControl()
@@ -24,6 +44,7 @@ void FoodSearchControl::performSearch()
 
     emit beginNewSearch();
 
+    QSqlDatabase db = QSqlDatabase::database("nutrition_db");
     QSqlQuery query(db);
 
     QString food_sourceRestrictions;
@@ -108,32 +129,9 @@ void FoodSearchControl::performSearch()
   }
 }
 
-void FoodSearchControl::setDatabase(const QSqlDatabase& db)
-{
-  static const QString COMPOUND_NAME = "(Composite Foods)";
-
-  this->db = db;
-
-  ui.lstCategories->clear();
-  categoryToGroupID.clear();
-
-  ui.lstCategories->addItem(COMPOUND_NAME);
-  categoryToGroupID.insert(COMPOUND_NAME, "");
-
-  QVector<QSharedPointer<const Group> > allGroups = Group::getAllGroups();
-
-  for (QVector<QSharedPointer<const Group> >::const_iterator i = allGroups.begin();
-       i != allGroups.end(); ++i)
-  {
-    ui.lstCategories->addItem((*i)->getName());
-    categoryToGroupID.insert((*i)->getName(), (*i)->getId());
-  }
-
-  ui.lstCategories->selectAll();
-}
-
 void FoodSearchControl::runSearchQuery(const QString& queryText, QSet<Result>& results) const
 {
+  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
   qDebug() << "Query is: " << queryText;

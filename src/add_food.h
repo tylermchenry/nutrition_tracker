@@ -13,7 +13,7 @@ class AddFood : public QDialog
     Q_OBJECT
 
   public:
-    AddFood(const QSqlDatabase& db, const QDate& date, QWidget *parent = 0);
+    explicit AddFood(const QDate& date, QWidget *parent = 0);
     ~AddFood();
 
   signals:
@@ -30,7 +30,6 @@ class AddFood : public QDialog
     Ui::AddFoodClass ui;
 
     QDate date;
-    QSqlDatabase db;
 };
 
 #endif // ADD_FOOD_H

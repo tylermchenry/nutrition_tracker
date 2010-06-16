@@ -10,9 +10,9 @@
 const double EditCompositeFood::MAX_ENTRY = 999999.9999;
 const int EditCompositeFood::MAX_DECIMALS = 4;
 
-EditCompositeFood::EditCompositeFood(const QSqlDatabase& db, QWidget *parent,
+EditCompositeFood::EditCompositeFood(QWidget *parent,
                                           const QSharedPointer<CompositeFood>& food)
-    : QDialog(parent), db(db), food(food)
+    : QDialog(parent), food(food)
 {
 	ui.setupUi(this);
 
@@ -22,8 +22,6 @@ EditCompositeFood::EditCompositeFood(const QSqlDatabase& db, QWidget *parent,
 
     populateUnitSelector(ui.cboWeightUnit, Unit::Dimensions::Weight);
     populateUnitSelector(ui.cboVolumeUnit, Unit::Dimensions::Volume);
-
-	ui.fscSearch->setDatabase(db);
 
 	ui.sfcResultsList->setAllowMealSelection(false);
 

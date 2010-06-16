@@ -14,7 +14,7 @@ class EditCompositeFood : public QDialog
     static const double MAX_ENTRY;
     static const int MAX_DECIMALS;
 
-    explicit EditCompositeFood(const QSqlDatabase& db, QWidget *parent = 0,
+    explicit EditCompositeFood(QWidget *parent = 0,
                                    const QSharedPointer<CompositeFood>& food = QSharedPointer<CompositeFood>());
 
     ~EditCompositeFood();
@@ -28,8 +28,6 @@ class EditCompositeFood : public QDialog
   private:
 
     Ui::EditCompositeFoodUI ui;
-
-    QSqlDatabase db;
 
     QSharedPointer<CompositeFood> food;
 

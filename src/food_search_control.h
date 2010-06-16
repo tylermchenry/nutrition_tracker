@@ -33,8 +33,6 @@ public:
     FoodSearchControl(QWidget *parent = 0);
     ~FoodSearchControl();
 
-    void setDatabase(const QSqlDatabase& db);
-
 public slots:
 
   void performSearch();
@@ -48,7 +46,6 @@ signals:
 private:
 
     Ui::FoodSearchControlUI ui;
-    QSqlDatabase db;
     QMap<QString, QString> categoryToGroupID;
 
     void runSearchQuery(const QString& queryText, QSet<Result>& results) const;

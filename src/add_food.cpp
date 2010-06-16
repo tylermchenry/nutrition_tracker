@@ -2,11 +2,10 @@
 #include "model/food_tree_model.h"
 #include <QDebug>
 
-AddFood::AddFood(const QSqlDatabase& db, const QDate& date, QWidget *parent)
-    : QDialog(parent), date(date), db(db)
+AddFood::AddFood(const QDate& date, QWidget *parent)
+    : QDialog(parent), date(date)
 {
 	ui.setupUi(this);
-	ui.fscSearch->setDatabase(db);
 
 	connect(ui.fscSearch, SIGNAL(beginNewSearch()),
 	        ui.sfcResultsList, SLOT(clearFoodList()));
