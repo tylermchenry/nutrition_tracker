@@ -3,6 +3,7 @@
 
 #include <QtGui/QWidget>
 #include <QtGui/QTreeView>
+#include <QScopedPointer>
 #include <QModelIndex>
 #include <QString>
 #include <QVector>
@@ -84,7 +85,7 @@ class FoodTree : public QWidget
     QDate date;
     QSharedPointer<FoodCollection> rootCollection;
 
-    FoodTreeModel* model;
+    QScopedPointer<FoodTreeModel> model;
 };
 
 #endif // FOOD_TREE_H

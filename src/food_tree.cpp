@@ -55,24 +55,24 @@ QVector<QSharedPointer<const Meal> > FoodTree::getAllMeals() const
 void FoodTree::clear()
 {
   if (rootCollection) {
-    model = new FoodTreeModel(ui.trvFoods, date, rootCollection, temporary);
+    model.reset(new FoodTreeModel(ui.trvFoods, date, rootCollection, temporary));
   } else {
-    model = new FoodTreeModel(ui.trvFoods, date, rootName, temporary);
+    model.reset(new FoodTreeModel(ui.trvFoods, date, rootName, temporary));
   }
 
-  connect(model, SIGNAL(newGroupingCreated(const QModelIndex&)),
+  connect(model.data(), SIGNAL(newGroupingCreated(const QModelIndex&)),
           this, SLOT(expandGrouping(const QModelIndex&)));
 
-  connect(model, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
+  connect(model.data(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
           this, SIGNAL(contentsModified()));
 
-  connect(model, SIGNAL(rowsInserted(const QModelIndex&, int, int)),
+  connect(model.data(), SIGNAL(rowsInserted(const QModelIndex&, int, int)),
            this, SIGNAL(contentsModified()));
 
-  connect(model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
+  connect(model.data(), SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
            this, SIGNAL(contentsModified()));
 
-  ui.trvFoods->setModel(model);
+  ui.trvFoods->setModel(model.data());
   ui.trvFoods->setExpanded(model->getRootCollectionIndex(), true);
 }
 
