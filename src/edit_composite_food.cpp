@@ -63,6 +63,8 @@ bool EditCompositeFood::saveFood()
 
     qDebug() << "Saving composite food.";
 
+    food->replaceWith(ui.ftComponents->getAllFoods());
+
     food->setName(ui.txtName->text());
 
     food->setBaseAmount
@@ -131,6 +133,8 @@ void EditCompositeFood::loadAmountInformation(QLineEdit* txtAmount, QComboBox* c
 
 void EditCompositeFood::loadFoodInformation()
 {
+  ui.ftComponents->setTemporary(true);
+
   if (food == NULL) {
     food = CompositeFood::createNewCompositeFood();
   } else {

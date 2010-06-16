@@ -33,7 +33,8 @@ class FoodTreeModel : public QAbstractItemModel
                     bool temporaryMeals = true);
 
     FoodTreeModel(QTreeView *treeView, const QDate& mealsDate,
-                    const QSharedPointer<FoodCollection>& rootCollection);
+                    const QSharedPointer<FoodCollection>& rootCollection,
+                    bool temporaryCollection = true);
 
     ~FoodTreeModel();
 

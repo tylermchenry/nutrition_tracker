@@ -55,7 +55,7 @@ QVector<QSharedPointer<const Meal> > FoodTree::getAllMeals() const
 void FoodTree::clear()
 {
   if (rootCollection) {
-    model = new FoodTreeModel(ui.trvFoods, date, rootCollection);
+    model = new FoodTreeModel(ui.trvFoods, date, rootCollection, temporary);
   } else {
     model = new FoodTreeModel(ui.trvFoods, date, rootName, temporary);
   }

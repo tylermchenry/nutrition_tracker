@@ -37,10 +37,12 @@ FoodTreeModel::FoodTreeModel(QTreeView *treeView, const QDate& mealsDate,
 
 FoodTreeModel::FoodTreeModel
   (QTreeView *treeView, const QDate& mealsDate,
-   const QSharedPointer<FoodCollection>& rootCollection)
+   const QSharedPointer<FoodCollection>& rootCollection,
+   bool temporaryCollection)
   : QAbstractItemModel(treeView), treeView(treeView),
     rootItem(new FoodTreeCollectionItem(this, QSharedPointer<FoodCollection>())),
-    allFoods(rootCollection), temporaryMeals(false), mealsDate(mealsDate)
+    allFoods(temporaryCollection ? FoodCollection::createFoodCollection(rootCollection): rootCollection),
+    temporaryMeals(temporaryCollection), mealsDate(mealsDate)
 {
   beginInsertRows(QModelIndex(), rootItem->childCount(), rootItem->childCount());
   allFoodsRoot = rootItem->addCollection(allFoods);
