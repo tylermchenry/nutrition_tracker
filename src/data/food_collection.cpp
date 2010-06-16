@@ -92,6 +92,15 @@ FoodCollection::FoodCollection(int id, const QString& name,
 {
 }
 
+FoodCollection::FoodCollection(const QString& id,
+                             const QSharedPointer<const FoodCollection>& copy)
+  : Food(id, copy)
+{
+  if (copy) {
+    components = copy->components;
+  }
+}
+
 FoodCollection::~FoodCollection()
 {
 }

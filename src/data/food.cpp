@@ -33,6 +33,14 @@ Food::Food(const QString& id, const QString& name, double weightAmount,
   }
 }
 
+Food::Food(const QString& id, const QSharedPointer<const Food>& copy)
+  : id(id), name(copy ? copy->name : "")
+{
+  if (copy) {
+    baseAmounts = copy->baseAmounts;
+  }
+}
+
 Food::~Food()
 {
   qDebug() << "Food ID " << id << " was destroyed.";

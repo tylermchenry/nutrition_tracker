@@ -112,6 +112,9 @@ class FoodCollection: public Food
                    double weightAmount, double volumeAmount,
                    double quantityAmount, double servingAmount);
 
+    FoodCollection(const QString& id,
+                   const QSharedPointer<const FoodCollection>& copy);
+
     // If the subclass chooses not to pass components to the constructor,
     // they can be set later through this method
     void setComponents(const QSet<FoodComponent>& components);

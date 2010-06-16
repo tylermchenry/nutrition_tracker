@@ -18,9 +18,10 @@ QMap<int, QWeakPointer<SingleFood> > SingleFood::singleFoodCache;
 
 int SingleFood::tempId = -1;
 
-QSharedPointer<SingleFood> SingleFood::createNewFood()
+QSharedPointer<SingleFood> SingleFood::createNewFood
+  (const QSharedPointer<const SingleFood>& copy)
 {
-  QSharedPointer<SingleFood> food(new SingleFood());
+  QSharedPointer<SingleFood> food(new SingleFood(copy));
   singleFoodCache[food->getSingleFoodId()] = food;
   return food;
 }
@@ -175,16 +176,21 @@ SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource en
   sanityCheckCalorieDensities();
 }
 
-SingleFood::SingleFood()
-  : Food("SINGLE_" + QString::number(tempId), "", 0, 0, 0, 0),
-    id(tempId--), entrySource(EntrySources::Custom), group(Group::getDefaultGroup())
+SingleFood::SingleFood(const QSharedPointer<const SingleFood>& copy)
+  : Food("SINGLE_" + QString::number(tempId), copy),
+    id(tempId--), entrySource(copy ? copy->entrySource : EntrySources::Custom),
+    group(copy ? copy->group : Group::getDefaultGroup())
 {
   qDebug() << "Created new food with temporary ID " << id;
 
-  setCalorieDensity(Nutrient::FAT_NAME, 0);
-  setCalorieDensity(Nutrient::CARBOHYDRATE_NAME, 0);
-  setCalorieDensity(Nutrient::PROTEIN_NAME, 0);
-  setCalorieDensity(Nutrient::ALCOHOL_NAME, 0);
+  if (copy) {
+    calorieDensities = copy->calorieDensities;
+  } else {
+    setCalorieDensity(Nutrient::FAT_NAME, 0);
+    setCalorieDensity(Nutrient::CARBOHYDRATE_NAME, 0);
+    setCalorieDensity(Nutrient::PROTEIN_NAME, 0);
+    setCalorieDensity(Nutrient::ALCOHOL_NAME, 0);
+  }
 }
 
 SingleFood::~SingleFood()
@@ -262,15 +268,17 @@ void SingleFood::saveToDatabase()
   // TODO: Save calorie density information if it becomes mutable
 
   query.prepare("INSERT INTO food_description "
-                "  (Food_Id, Entry_Src, FdGrp_Cd, Long_Desc, Weight_g, Volume_floz, Quantity, Servings) "
+                "  (Food_Id, User_Id, Entry_Src, FdGrp_Cd, Long_Desc, Weight_g, Volume_floz, Quantity, Servings) "
                 "VALUES "
-                "  (:id, :entrySource, :group, :name, :weight, :volume, :quantity, :servings) "
+                "  (:id, :userId, :entrySource, :group, :name, :weight, :volume, :quantity, :servings) "
                 "ON DUPLICATE KEY UPDATE"
-                "  Entry_Src=:entrySource2, FdGrp_Cd=:group2, Long_Desc=:name2,"
+                "  User_Id=:userId2, Entry_Src=:entrySource2, FdGrp_Cd=:group2, Long_Desc=:name2,"
                 "  Weight_g=:weight2, Volume_floz=:volume2, Quantity=:quantity2, Servings=:servings2");
 
   query.bindValue(":id", (id >= 0 ? QVariant(id) : QVariant(QVariant::Int)));
 
+  query.bindValue(":userId", 1); // TODO: Real User ID
+  query.bindValue(":userId2", 1); // TODO: Real User ID
   query.bindValue(":entrySource", EntrySources::toHumanReadable(entrySource));
   query.bindValue(":entrySource2", EntrySources::toHumanReadable(entrySource));
   query.bindValue(":group", group->getId());

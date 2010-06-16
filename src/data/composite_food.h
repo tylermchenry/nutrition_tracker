@@ -52,7 +52,9 @@ class CompositeFood: public FoodCollection
 {
   public:
 
-    static QSharedPointer<CompositeFood> createNewCompositeFood();
+    static QSharedPointer<CompositeFood> createNewCompositeFood
+      (const QSharedPointer<const CompositeFood>& copy =
+       QSharedPointer<const CompositeFood>());
 
     static QSharedPointer<CompositeFood> getCompositeFood(int id);
 
@@ -84,7 +86,11 @@ class CompositeFood: public FoodCollection
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount);
 
-    CompositeFood();
+    // Default or "Copy" constructor. If a food is passed in to copy, the
+    // attributes of the food object are copied, but the constructed food
+    // is still assigned a new, temporary ID.
+    CompositeFood(const QSharedPointer<const CompositeFood>& copy =
+                    QSharedPointer<const CompositeFood>());
 
     int id;
 

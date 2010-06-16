@@ -20,9 +20,10 @@ QMap<int, QWeakPointer<CompositeFood> > CompositeFood::compositeFoodCache;
 
 int CompositeFood::tempId = -1;
 
-QSharedPointer<CompositeFood> CompositeFood::createNewCompositeFood()
+QSharedPointer<CompositeFood> CompositeFood::createNewCompositeFood
+  (const QSharedPointer<const CompositeFood>& copy)
 {
-  QSharedPointer<CompositeFood> food(new CompositeFood());
+  QSharedPointer<CompositeFood> food(new CompositeFood(copy));
   compositeFoodCache[food->getCompositeFoodId()] = food;
   return food;
 }
@@ -145,8 +146,8 @@ CompositeFood::CompositeFood(int id, const QString& name,
 {
 }
 
-CompositeFood::CompositeFood()
-  : FoodCollection("COMPOSITE_" + QString::number(tempId), "", 0, 0, 0, 0),
+CompositeFood::CompositeFood(const QSharedPointer<const CompositeFood>& copy)
+  : FoodCollection("COMPOSITE_" + QString::number(tempId), copy),
     id(tempId--)
 {
   qDebug() << "Created new composite food with temporary ID " << id;

@@ -67,7 +67,9 @@ class SingleFood: public Food
       static QString toHumanReadable(EntrySource src);
     };
 
-    static QSharedPointer<SingleFood> createNewFood();
+    static QSharedPointer<SingleFood> createNewFood
+      (const QSharedPointer<const SingleFood>& copy =
+       QSharedPointer<const SingleFood>());
 
     static QSharedPointer<SingleFood> getSingleFood(int id);
 
@@ -116,7 +118,11 @@ class SingleFood: public Food
                 double energyDensityFat, double energyDensityCarbohydrate,
                 double energyDensityProtien, double energyDensityAlcohol);
 
-    SingleFood();
+    // Default or "Copy" constructor. If a food is passed in to copy, the
+    // attributes of the food object are copied, but the constructed food
+    // is still assigned a new, temporary ID.
+    SingleFood(const QSharedPointer<const SingleFood>& copy =
+                 QSharedPointer<const SingleFood>());
 
     int id;
     EntrySources::EntrySource entrySource;
