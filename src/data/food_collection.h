@@ -24,6 +24,7 @@
 
 #include "food.h"
 #include "food_component.h"
+#include <QMultiMap>
 
 /* A FoodCollection is an arbitrary collection of single and composite foods
  * which is not necessarily treated logically as its own first-class food
@@ -66,6 +67,9 @@ class FoodCollection: public Food
     static QSharedPointer<FoodCollection> createFoodCollection
       (const QSharedPointer<FoodCollection>& copy);
 
+    static QMultiMap<QString, QPair<ContainedTypes::ContainedType, int> >
+      getFoodsForUser(int userId);
+
     virtual ~FoodCollection();
 
     virtual QVector<FoodAmount> getComponentAmounts() const;
@@ -82,7 +86,8 @@ class FoodCollection: public Food
     virtual QVector<FoodComponent> addComponents
       (const QVector<FoodAmount>& components);
 
-    virtual FoodComponent changeComponentAmount(const FoodComponent& component, const FoodAmount& amount);
+    virtual FoodComponent changeComponentAmount
+      (const FoodComponent& component, const FoodAmount& amount);
 
     virtual void removeComponent(const FoodComponent& component);
 

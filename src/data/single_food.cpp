@@ -112,6 +112,31 @@ QSharedPointer<SingleFood> SingleFood::createSingleFoodFromQueryResults(QSqlQuer
   }
 }
 
+QMultiMap<QString, int> SingleFood::getFoodsForUser(int userId)
+{
+  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
+  QSqlQuery query(db);
+  QMultiMap<QString, int> foods;
+
+  query.prepare("SELECT food_description.Food_Id, food_description.Long_Desc "
+                 "FROM   food_description "
+                 "WHERE  food_description.User_Id = :userId");
+
+  query.bindValue(":userId", userId);
+
+  if (query.exec()) {
+    while (query.next()) {
+      const QSqlRecord& record = query.record();
+      foods.insert(record.field("Long_Desc").value().toString(),
+                   record.field("Food_Id").value().toInt());
+    }
+  } else {
+    qDebug() << "Query failed: " << query.lastError();
+  }
+
+  return foods;
+}
+
 SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource entrySource,
                         const QSharedPointer<const Group>& group,
                         const QMap<QString, NutrientAmount>& nutrients,

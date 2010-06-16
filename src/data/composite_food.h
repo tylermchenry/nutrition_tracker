@@ -59,6 +59,8 @@ class CompositeFood: public FoodCollection
     static QSharedPointer<CompositeFood>
       createCompositeFoodFromQueryResults(QSqlQuery& query);
 
+    static QMultiMap<QString, int> getFoodsForUser(int userId);
+
     virtual ~CompositeFood();
 
     inline int getCompositeFoodId() const { return id; }

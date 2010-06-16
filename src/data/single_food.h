@@ -26,6 +26,7 @@
 #include "unit.h"
 #include "group.h"
 #include <QMap>
+#include <QMultiMap>
 #include <QWeakPointer>
 #include <QSet>
 
@@ -72,6 +73,8 @@ class SingleFood: public Food
 
     static QSharedPointer<SingleFood> createSingleFoodFromQueryResults
       (QSqlQuery& query);
+
+    static QMultiMap<QString, int> getFoodsForUser(int userId);
 
     virtual ~SingleFood();
 

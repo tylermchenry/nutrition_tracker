@@ -101,6 +101,31 @@ QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
   return food;
 }
 
+QMultiMap<QString, int> CompositeFood::getFoodsForUser(int userId)
+{
+  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
+  QSqlQuery query(db);
+  QMultiMap<QString, int> foods;
+
+  query.prepare("SELECT composite_food.Composite_Id, composite_food.Description "
+                 "FROM   composite_food "
+                 "WHERE  composite_food.User_Id = :userId");
+
+  query.bindValue(":userId", userId);
+
+  if (query.exec()) {
+    while (query.next()) {
+      const QSqlRecord& record = query.record();
+      foods.insert(record.field("Description").value().toString(),
+                   record.field("Composite_Id").value().toInt());
+    }
+  } else {
+    qDebug() << "Query failed: " << query.lastError();
+  }
+
+  return foods;
+}
+
 CompositeFood::CompositeFood(int id, const QString& name,
                              const QSet<FoodComponent>& components,
                              double weightAmount, double volumeAmount,

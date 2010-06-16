@@ -40,6 +40,30 @@ QSharedPointer<FoodCollection> FoodCollection::createFoodCollection
   return collection;
 }
 
+QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
+  FoodCollection::getFoodsForUser(int userId)
+{
+  QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> > foods;
+  QMultiMap<QString, int> singleFoods = SingleFood::getFoodsForUser(userId);
+  QMultiMap<QString, int> compositeFoods = CompositeFood::getFoodsForUser(userId);
+
+  for (QMultiMap<QString, int>::const_iterator i = singleFoods.begin();
+       i != singleFoods.end(); ++i)
+  {
+    foods.insert(i.key(), QPair<ContainedTypes::ContainedType, int>
+      (ContainedTypes::SingleFood, i.value()));
+  }
+
+  for (QMultiMap<QString, int>::const_iterator i = compositeFoods.begin();
+       i != compositeFoods.end(); ++i)
+  {
+    foods.insert(i.key(), QPair<ContainedTypes::ContainedType, int>
+      (ContainedTypes::CompositeFood, i.value()));
+  }
+
+  return foods;
+}
+
 FoodCollection::FoodCollection(const QString& id, const QString& name,
                              const QSet<FoodComponent>& components,
                              double weightAmount, double volumeAmount,
