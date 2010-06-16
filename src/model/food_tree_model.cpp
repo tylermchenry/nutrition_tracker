@@ -53,6 +53,7 @@ FoodTreeModel::FoodTreeModel
 
 FoodTreeModel::~FoodTreeModel()
 {
+  qDebug() << "Model destructing...";
   delete rootItem;
 }
 

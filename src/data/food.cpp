@@ -35,6 +35,7 @@ Food::Food(const QString& id, const QString& name, double weightAmount,
 
 Food::~Food()
 {
+  qDebug() << "Food ID " << id << " was destroyed.";
 }
 
 QList<Unit::Dimensions::Dimension> Food::getValidDimensions() const
