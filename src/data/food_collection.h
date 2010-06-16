@@ -63,6 +63,9 @@ class FoodCollection: public Food
     static QSharedPointer<FoodCollection> createFoodCollection
       (const QString& name = "");
 
+    static QSharedPointer<FoodCollection> createFoodCollection
+      (const QSharedPointer<FoodCollection>& copy);
+
     virtual ~FoodCollection();
 
     virtual QVector<FoodAmount> getComponentAmounts() const;

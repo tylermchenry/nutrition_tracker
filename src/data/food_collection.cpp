@@ -29,6 +29,17 @@ QSharedPointer<FoodCollection> FoodCollection::createFoodCollection(const QStrin
   return collection;
 }
 
+QSharedPointer<FoodCollection> FoodCollection::createFoodCollection
+   (const QSharedPointer<FoodCollection>& copy)
+{
+  QSharedPointer<FoodCollection> collection;
+  if (copy) {
+    collection = createFoodCollection(copy->getName());
+    collection->replaceWith(copy);
+  }
+  return collection;
+}
+
 FoodCollection::FoodCollection(const QString& id, const QString& name,
                              const QSet<FoodComponent>& components,
                              double weightAmount, double volumeAmount,
