@@ -183,7 +183,7 @@ void CompositeFood::saveToDatabase()
 
   for (QSet<int>::const_iterator i = removedLinkIds.begin(); i != removedLinkIds.end(); ++i)
   {
-    query.prepare("DELETE FROM composite_link WHERE CompositeLink_Id=:linkId");
+    query.prepare("DELETE FROM composite_food_link WHERE CompositeLink_Id=:linkId");
 
     query.bindValue(":linkId", *i);
 
