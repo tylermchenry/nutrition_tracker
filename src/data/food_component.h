@@ -58,11 +58,11 @@ class FoodComponent
     virtual ~FoodComponent();
 
     inline QSharedPointer<FoodCollection> getContainingCollection()
-      { return containingCollection; }
+      { return containingCollection.toStrongRef(); }
 
     inline QSharedPointer<const FoodCollection>
       getContainingCollection() const
-        { return containingCollection; }
+        { return containingCollection.toStrongRef(); }
 
     int getId() const { return id; }
 
@@ -76,7 +76,7 @@ class FoodComponent
 
   private:
 
-    QSharedPointer<FoodCollection> containingCollection;
+    QWeakPointer<FoodCollection> containingCollection;
 
     int id;
     FoodAmount foodAmount;
