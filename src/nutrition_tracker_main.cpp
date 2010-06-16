@@ -3,6 +3,7 @@
 #include "add_food.h"
 #include "edit_food.h"
 #include "edit_composite_food.h"
+#include "my_foods.h"
 #include "database_information.h"
 #include <data/single_food.h>
 #include <QtGui/QInputDialog>
@@ -23,6 +24,8 @@ NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
            this, SLOT(showCreateCompositeFood()));
   connect(ui.actionEdit_existing_composite_food, SIGNAL(triggered()),
            this, SLOT(showEditCompositeFood()));
+  connect(ui.actionManage_my_foods, SIGNAL(triggered()),
+          this, SLOT(showMyFoods()));
 }
 
 NutritionTrackerMain::~NutritionTrackerMain()
@@ -46,7 +49,7 @@ void NutritionTrackerMain::show()
 void NutritionTrackerMain::showAddFood()
 {
   NutritionTracker* nutritionTracker = static_cast<NutritionTracker*>(centralWidget());
-  AddFood* addFood = new AddFood(db, nutritionTracker->getSelectedDate(), this);
+  AddFood* addFood = new AddFood(nutritionTracker->getSelectedDate(), this);
   connect(addFood, SIGNAL(mealsAdded(const QVector<QSharedPointer<const Meal> >&)),
           nutritionTracker, SLOT(addMealsToCurrentDay(const QVector<QSharedPointer<const Meal> >&)));
   addFood->exec();
@@ -69,7 +72,7 @@ void NutritionTrackerMain::showEditFood()
 
 void NutritionTrackerMain::showCreateCompositeFood()
 {
-  (new EditCompositeFood(db, this))->exec();
+  (new EditCompositeFood(this))->exec();
 }
 
 void NutritionTrackerMain::showEditCompositeFood()
@@ -79,6 +82,11 @@ void NutritionTrackerMain::showEditCompositeFood()
       (QInputDialog::getInt(this, "Edit Composite Food", "(Temporary) Enter the ID of the composite  food to edit:"));
 
   if (food != NULL) {
-    (new EditCompositeFood(db, this, food))->exec();
+    (new EditCompositeFood(this, food))->exec();
   }
+}
+
+void NutritionTrackerMain::showMyFoods()
+{
+  (new MyFoods(this))->exec();
 }

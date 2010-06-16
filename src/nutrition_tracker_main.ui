@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -56,8 +56,8 @@
     <addaction name="actionAdd_new_composite_food"/>
     <addaction name="actionEdit_existing_composite_food"/>
     <addaction name="separator"/>
-    <addaction name="actionSearch_foods"/>
-    <addaction name="actionManage_templates"/>
+    <addaction name="actionManage_my_foods"/>
+    <addaction name="actionManage_my_templates"/>
    </widget>
    <widget class="QMenu" name="menuReports">
     <property name="title">
@@ -126,11 +126,6 @@
     <string>Clear current day's entries</string>
    </property>
   </action>
-  <action name="actionSearch_foods">
-   <property name="text">
-    <string>Search foods...</string>
-   </property>
-  </action>
   <action name="actionConstraint_Solver">
    <property name="text">
     <string>Constraint Solver...</string>
@@ -139,11 +134,6 @@
   <action name="actionAbout_Nutrition_Tracker">
    <property name="text">
     <string>About Nutrition Tracker...</string>
-   </property>
-  </action>
-  <action name="actionManage_templates">
-   <property name="text">
-    <string>Manage templates...</string>
    </property>
   </action>
   <action name="actionBeakfast">
@@ -204,6 +194,16 @@
   <action name="actionEdit_existing_food">
    <property name="text">
     <string>Edit existing food...</string>
+   </property>
+  </action>
+  <action name="actionManage_my_foods">
+   <property name="text">
+    <string>Manage my foods...</string>
+   </property>
+  </action>
+  <action name="actionManage_my_templates">
+   <property name="text">
+    <string>Manage my templates...</string>
    </property>
   </action>
  </widget>

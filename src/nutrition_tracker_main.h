@@ -20,6 +20,7 @@ public slots:
   void showEditFood();
   void showCreateCompositeFood();
   void showEditCompositeFood();
+  void showMyFoods();
 
 private:
     Ui::NutritionTrackerMainUI ui;
