@@ -29,6 +29,11 @@ QDate NutritionTracker::getSelectedDate() const
   return ui.calCurrentDay->selectedDate();
 }
 
+void NutritionTracker::refresh()
+{
+  changeDay();
+}
+
 void NutritionTracker::addMealsToCurrentDay
   (const QVector<QSharedPointer<const Meal> >& meals)
 {

@@ -1,5 +1,4 @@
 #include "nutrition_tracker_main.h"
-#include "nutrition_tracker.h"
 #include "add_food.h"
 #include "edit_food.h"
 #include "edit_composite_food.h"
@@ -12,7 +11,10 @@ NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
     : QMainWindow(parent)
 {
   ui.setupUi(this);
-  setCentralWidget(new NutritionTracker(this));
+
+  tracker = new NutritionTracker(this);
+
+  setCentralWidget(tracker);
 
   connect(ui.actionAdd_Food_s_to_Current_Day, SIGNAL(triggered()),
           this, SLOT(showAddFood()));
@@ -67,6 +69,7 @@ void NutritionTrackerMain::showEditFood()
 
   if (food != NULL) {
     (new EditFood(this, food))->exec();
+    tracker->refresh();
   }
 }
 
@@ -83,10 +86,12 @@ void NutritionTrackerMain::showEditCompositeFood()
 
   if (food != NULL) {
     (new EditCompositeFood(this, food))->exec();
+    tracker->refresh();
   }
 }
 
 void NutritionTrackerMain::showMyFoods()
 {
   (new MyFoods(this))->exec();
+  tracker->refresh();
 }

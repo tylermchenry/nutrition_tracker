@@ -4,26 +4,28 @@
 #include <QtGui/QMainWindow>
 #include <QtSql/QSqlDatabase>
 #include "ui_nutrition_tracker_main.h"
+#include "nutrition_tracker.h"
 
 class NutritionTrackerMain : public QMainWindow
 {
     Q_OBJECT
 
-public:
+  public:
     NutritionTrackerMain(QWidget *parent = 0);
     ~NutritionTrackerMain();
 
-public slots:
-  void show();
-  void showAddFood();
-  void showCreateFood();
-  void showEditFood();
-  void showCreateCompositeFood();
-  void showEditCompositeFood();
-  void showMyFoods();
+  public slots:
+    void show();
+    void showAddFood();
+    void showCreateFood();
+    void showEditFood();
+    void showCreateCompositeFood();
+    void showEditCompositeFood();
+    void showMyFoods();
 
-private:
+  private:
     Ui::NutritionTrackerMainUI ui;
+    NutritionTracker* tracker;
     QSqlDatabase db;
 };
 
