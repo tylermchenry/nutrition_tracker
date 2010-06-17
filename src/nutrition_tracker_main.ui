@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -52,9 +52,7 @@
      <string>Food</string>
     </property>
     <addaction name="actionAdd_new_food"/>
-    <addaction name="actionEdit_existing_food"/>
     <addaction name="actionAdd_new_composite_food"/>
-    <addaction name="actionEdit_existing_composite_food"/>
     <addaction name="separator"/>
     <addaction name="actionManage_my_foods"/>
     <addaction name="actionManage_my_templates"/>

@@ -62,32 +62,9 @@ void NutritionTrackerMain::showCreateFood()
   (new EditFood(this))->exec();
 }
 
-void NutritionTrackerMain::showEditFood()
-{
-  QSharedPointer<SingleFood> food =
-    SingleFood::getSingleFood(QInputDialog::getInt(this, "Edit Food", "(Temporary) Enter the ID of the food to edit:"));
-
-  if (food != NULL) {
-    (new EditFood(this, food))->exec();
-    tracker->refresh();
-  }
-}
-
 void NutritionTrackerMain::showCreateCompositeFood()
 {
   (new EditCompositeFood(this))->exec();
-}
-
-void NutritionTrackerMain::showEditCompositeFood()
-{
-  QSharedPointer<CompositeFood> food =
-    CompositeFood::getCompositeFood
-      (QInputDialog::getInt(this, "Edit Composite Food", "(Temporary) Enter the ID of the composite  food to edit:"));
-
-  if (food != NULL) {
-    (new EditCompositeFood(this, food))->exec();
-    tracker->refresh();
-  }
 }
 
 void NutritionTrackerMain::showMyFoods()

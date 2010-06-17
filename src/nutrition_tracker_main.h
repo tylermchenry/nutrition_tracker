@@ -18,9 +18,7 @@ class NutritionTrackerMain : public QMainWindow
     void show();
     void showAddFood();
     void showCreateFood();
-    void showEditFood();
     void showCreateCompositeFood();
-    void showEditCompositeFood();
     void showMyFoods();
 
   private:
