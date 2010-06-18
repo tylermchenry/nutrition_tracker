@@ -120,6 +120,8 @@ void FoodTree::showContextMenu(const QPoint& point)
             this, SLOT(removeComponent(const QModelIndex&, FoodComponent*)));
     connect(contextMenu, SIGNAL(changeAmount(const QModelIndex&, FoodComponent*)),
              this, SLOT(changeAmount(const QModelIndex&, FoodComponent*)));
+    connect(contextMenu, SIGNAL(changeUnit(const QModelIndex&, FoodComponent*, const QSharedPointer<const Unit>&)),
+             this, SLOT(changeUnit(const QModelIndex&, FoodComponent*, const QSharedPointer<const Unit>&)));
     connect(contextMenu, SIGNAL(viewNutritionInformation(const QModelIndex&, const FoodAmount&)),
              this, SLOT(displayNutritionInfo(const QModelIndex&, const FoodAmount&)));
     connect(contextMenu, SIGNAL(copyMealToDay(const QModelIndex&, const QSharedPointer<const Meal>&, const QDate&)),
@@ -150,6 +152,18 @@ void FoodTree::changeAmount(const QModelIndex& index, FoodComponent* component)
                                 "New amount (in " + amount.getUnit()->getName() + "):",
                                  amount.getAmount(), 0);
    model->changeAmount(index, FoodAmount(amount.getFood(), newAmount, amount.getUnit()));
+  }
+}
+
+void FoodTree::changeUnit(const QModelIndex& index, FoodComponent* component,
+                             const QSharedPointer<const Unit>& unit)
+{
+  if (component && unit) {
+    const FoodAmount& amount = component->getFoodAmount();
+
+    double newAmount = amount.getAmount(unit);
+
+    model->changeAmount(index, FoodAmount(amount.getFood(), newAmount, unit));
   }
 }
 
