@@ -19,6 +19,53 @@ FoodAmount::~FoodAmount()
 {
 }
 
+double FoodAmount::getAmount(const QSharedPointer<const Unit>& otherUnit) const
+{
+  if (!otherUnit || !isDefined() ||
+      otherUnit->getDimension() == getUnit()->getDimension())
+  {
+    return Amount<Food, FoodAmount>::getAmount(otherUnit);
+  }
+  else
+  {
+    // Unlike generic Amounts, which cannot meaningfully convert from units in
+    // one dimension to units in another, foods can be specified in multiple
+    // dimensions, allowing for such a conversion. For example, if a food's
+    // entry describes (equivalently) 2 C or 100 g, then it should be possible
+    // to determine how many grams 3 Tbsp of the food weigh.
+
+    // This is done by first finding the conversion factor from the unit that
+    // the amount is already in to the base unit of the dimension that we
+    // wish to convert to. Then, we do the normal intra-dimension conversion
+    // from the base unit of the target dimension to the ultimately desired unit.
+
+    FoodAmount baseAmountInSourceDimension =
+      getFood()->getBaseAmount(getUnit()->getDimension());
+
+    // baseAmountInSourceDimension must be defined, or something is already
+    // seriously wrong, and there should have been an exception already.
+
+    FoodAmount baseAmountInTargetDimension =
+      getFood()->getBaseAmount(otherUnit->getDimension());
+
+    if (baseAmountInTargetDimension.isDefined()) {
+
+      double dimensionConversionFactor = baseAmountInTargetDimension.getAmount() /
+          baseAmountInSourceDimension.getAmount();
+
+      FoodAmount amountInTargetBaseUnit
+      (getFood(), getAmount() * dimensionConversionFactor,
+       baseAmountInTargetDimension.getUnit());
+
+      return amountInTargetBaseUnit.getAmount(otherUnit);
+
+    } else {
+
+      throw std::logic_error("Attempted to get an amount of a food in an inappropriate dimension.");
+    }
+  }
+}
+
 QMap<QString, NutrientAmount> FoodAmount::getScaledNutrients() const
 {
   // TODO: Cache this instead of recomputing every time

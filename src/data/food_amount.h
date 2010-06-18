@@ -62,6 +62,10 @@ class FoodAmount : public Amount<Food, FoodAmount>
 
     virtual ~FoodAmount();
 
+    virtual double getAmount
+      (const QSharedPointer<const Unit>& otherUnit =
+       QSharedPointer<const Unit>()) const;
+
     inline QSharedPointer<const Food> getFood() const
       { return getSubstance(); }
 

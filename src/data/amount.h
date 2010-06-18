@@ -66,11 +66,13 @@ class Amount
     inline QSharedPointer<const Unit> getUnit() const
       { return unit; }
 
-    double getAmount(const QSharedPointer<const Unit>& otherUnit =
-                       QSharedPointer<const Unit>()) const;
+    virtual double getAmount
+      (const QSharedPointer<const Unit>& otherUnit =
+       QSharedPointer<const Unit>()) const;
 
-    void setAmount(double amount, const QSharedPointer<const Unit>& unit =
-                     QSharedPointer<const Unit>());
+    virtual void setAmount
+      (double amount, const QSharedPointer<const Unit>& unit =
+       QSharedPointer<const Unit>());
 
     SA operator+ (const SA& rhs) const;
     SA operator- (const SA& rhs) const;
@@ -91,6 +93,9 @@ class Amount
               QSharedPointer<const Unit>());
 
     virtual QString getSubstanceName(bool plural = false) const = 0;
+
+    inline void setUnit(const QSharedPointer<const Unit>& unit)
+      { this->unit = unit; }
 
   private:
 
