@@ -20,12 +20,8 @@ NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
           this, SLOT(showAddFood()));
   connect(ui.actionAdd_new_food, SIGNAL(triggered()),
           this, SLOT(showCreateFood()));
-  connect(ui.actionEdit_existing_food, SIGNAL(triggered()),
-           this, SLOT(showEditFood()));
   connect(ui.actionAdd_new_composite_food, SIGNAL(triggered()),
            this, SLOT(showCreateCompositeFood()));
-  connect(ui.actionEdit_existing_composite_food, SIGNAL(triggered()),
-           this, SLOT(showEditCompositeFood()));
   connect(ui.actionManage_my_foods, SIGNAL(triggered()),
           this, SLOT(showMyFoods()));
 }
