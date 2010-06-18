@@ -166,6 +166,7 @@ Nutrient::Nutrient(const QString& id, const QString& name, Categories::Category 
 
 Nutrient::~Nutrient()
 {
+  qDebug() << "Nutrient ID " << id << " was destroyed.";
 }
 
 double Nutrient::getDefaultCalorieDensity() const

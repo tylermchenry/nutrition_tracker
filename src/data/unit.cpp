@@ -110,6 +110,7 @@ Unit::Unit(const QString& abbreviation, const QString& name,
 
 Unit::~Unit()
 {
+  qDebug() << "Unit abbreviated " << abbreviation << " was destroyed.";
 }
 
 double Unit::getConversionFactor(const QSharedPointer<const Unit>& otherUnit) const

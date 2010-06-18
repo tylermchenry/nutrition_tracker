@@ -159,6 +159,7 @@ SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource en
            << " protein = " << calorieDensityProtien
            << " alcohol = " << calorieDensityAlcohol;
 
+#ifdef VERBOSE_DEBUG
   qDebug() << "Nutrient Amounts:";
 
   for (QMap<QString, NutrientAmount>::const_iterator i = nutrients.begin();
@@ -168,6 +169,7 @@ SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource en
              << " (" << i.value().getAmountAsPercentRDI() * 100 << "% RDI) of "
              << i.value().getNutrient()->getName();
   }
+#endif
 
   setCalorieDensity(Nutrient::FAT_NAME, calorieDensityFat);
   setCalorieDensity(Nutrient::CARBOHYDRATE_NAME, calorieDensityCarbohydrate);
