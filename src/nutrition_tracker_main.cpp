@@ -47,24 +47,24 @@ void NutritionTrackerMain::show()
 void NutritionTrackerMain::showAddFood()
 {
   NutritionTracker* nutritionTracker = static_cast<NutritionTracker*>(centralWidget());
-  AddFood* addFood = new AddFood(nutritionTracker->getSelectedDate(), this);
-  connect(addFood, SIGNAL(mealsAdded(const QVector<QSharedPointer<const Meal> >&)),
+  QScopedPointer<AddFood> addFood(new AddFood(nutritionTracker->getSelectedDate(), this));
+  connect(addFood.data(), SIGNAL(mealsAdded(const QVector<QSharedPointer<const Meal> >&)),
           nutritionTracker, SLOT(addMealsToCurrentDay(const QVector<QSharedPointer<const Meal> >&)));
   addFood->exec();
 }
 
 void NutritionTrackerMain::showCreateFood()
 {
-  (new EditFood(this))->exec();
+  QScopedPointer<QDialog>(new EditFood(this))->exec();
 }
 
 void NutritionTrackerMain::showCreateCompositeFood()
 {
-  (new EditCompositeFood(this))->exec();
+  QScopedPointer<QDialog>(new EditCompositeFood(this))->exec();
 }
 
 void NutritionTrackerMain::showMyFoods()
 {
-  (new MyFoods(this))->exec();
+  QScopedPointer<QDialog>(new MyFoods(this))->exec();
   tracker->refresh();
 }

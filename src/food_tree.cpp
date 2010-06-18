@@ -112,19 +112,21 @@ void FoodTree::expandGrouping(const QModelIndex& index)
 
 void FoodTree::showContextMenu(const QPoint& point)
 {
-  FoodContextMenu* contextMenu = model->getContextMenu(ui.trvFoods->indexAt(point));
+  QScopedPointer<FoodContextMenu> contextMenu;
+
+  contextMenu.reset(model->getContextMenu(ui.trvFoods->indexAt(point)));
 
   if (contextMenu) {
     qDebug() << "Showing context menu";
-    connect(contextMenu, SIGNAL(remove(const QModelIndex&, FoodComponent*)),
+    connect(contextMenu.data(), SIGNAL(remove(const QModelIndex&, FoodComponent*)),
             this, SLOT(removeComponent(const QModelIndex&, FoodComponent*)));
-    connect(contextMenu, SIGNAL(changeAmount(const QModelIndex&, FoodComponent*)),
+    connect(contextMenu.data(), SIGNAL(changeAmount(const QModelIndex&, FoodComponent*)),
              this, SLOT(changeAmount(const QModelIndex&, FoodComponent*)));
-    connect(contextMenu, SIGNAL(changeUnit(const QModelIndex&, FoodComponent*, const QSharedPointer<const Unit>&)),
+    connect(contextMenu.data(), SIGNAL(changeUnit(const QModelIndex&, FoodComponent*, const QSharedPointer<const Unit>&)),
              this, SLOT(changeUnit(const QModelIndex&, FoodComponent*, const QSharedPointer<const Unit>&)));
-    connect(contextMenu, SIGNAL(viewNutritionInformation(const QModelIndex&, const FoodAmount&)),
+    connect(contextMenu.data(), SIGNAL(viewNutritionInformation(const QModelIndex&, const FoodAmount&)),
              this, SLOT(displayNutritionInfo(const QModelIndex&, const FoodAmount&)));
-    connect(contextMenu, SIGNAL(copyMealToDay(const QModelIndex&, const QSharedPointer<const Meal>&, const QDate&)),
+    connect(contextMenu.data(), SIGNAL(copyMealToDay(const QModelIndex&, const QSharedPointer<const Meal>&, const QDate&)),
              this, SLOT(copyMealToDay(const QModelIndex&, const QSharedPointer<const Meal>&, const QDate&)));
     contextMenu->popup(ui.trvFoods->viewport()->mapToGlobal(point));
   }

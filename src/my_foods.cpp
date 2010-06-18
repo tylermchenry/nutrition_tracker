@@ -29,11 +29,11 @@ void MyFoods::edit()
 
     if (food.first == FoodCollection::ContainedTypes::SingleFood) {
       QSharedPointer<SingleFood> singleFood = SingleFood::getSingleFood(food.second);
-      (new EditFood(this, singleFood))->exec();
+      QScopedPointer<QDialog>(new EditFood(this, singleFood))->exec();
       currentItem->setText(singleFood->getName());
     } else if (food.first == FoodCollection::ContainedTypes::CompositeFood) {
       QSharedPointer<CompositeFood> compositeFood = CompositeFood::getCompositeFood(food.second);
-      (new EditCompositeFood(this, compositeFood))->exec();
+      QScopedPointer<QDialog>(new EditCompositeFood(this, compositeFood))->exec();
       currentItem->setText(compositeFood->getName());
     }
   }
@@ -51,12 +51,12 @@ void MyFoods::duplicate()
       QSharedPointer<SingleFood> baseSingleFood = SingleFood::getSingleFood(food.second);
       QSharedPointer<SingleFood> singleFood = SingleFood::createNewFood(baseSingleFood);
       singleFood->setName("Copy of " + baseSingleFood->getName());
-      (new EditFood(this, singleFood))->exec();
+      QScopedPointer<QDialog>(new EditFood(this, singleFood))->exec();
     } else if (food.first == FoodCollection::ContainedTypes::CompositeFood) {
       QSharedPointer<CompositeFood> baseCompositeFood = CompositeFood::getCompositeFood(food.second);
       QSharedPointer<CompositeFood> compositeFood = CompositeFood::createNewCompositeFood(baseCompositeFood);
       compositeFood->setName("Copy of " + baseCompositeFood->getName());
-      (new EditCompositeFood(this, compositeFood))->exec();
+      QScopedPointer<QDialog>(new EditCompositeFood(this, compositeFood))->exec();
     }
 
     loadUserFoods();
