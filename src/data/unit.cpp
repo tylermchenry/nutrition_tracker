@@ -30,7 +30,7 @@ QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
     return unitCache[abbreviation].toStrongRef();
   }
 
-  query.prepare("SELECT Unit, Type, Name, Factor FROM units WHERE Unit=:abbrev "
+  query.prepare("SELECT Unit, Type, Name AS UnitName, Factor FROM units WHERE Unit=:abbrev "
                 "ORDER BY Name LIMIT 1");
   query.bindValue(":abbrev", abbreviation);
 
@@ -46,7 +46,7 @@ QVector<QSharedPointer<const Unit> > Unit::getAllUnits()
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  if (query.exec("SELECT Unit, Type, Name, Factor FROM units ORDER BY Name")) {
+  if (query.exec("SELECT Unit, Type, Name AS UnitName, Factor FROM units ORDER BY Name")) {
     return createUnitsFromQueryResults(query);
   } else {
     return QVector<QSharedPointer<const Unit> >();
@@ -58,7 +58,7 @@ QVector<QSharedPointer<const Unit> > Unit::getAllUnits(Dimensions::Dimension dim
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  query.prepare("SELECT Unit, Type, Name, Factor FROM units WHERE Type=:dim ORDER BY Name");
+  query.prepare("SELECT Unit, Type, Name AS UnitName, Factor FROM units WHERE Type=:dim ORDER BY Name");
   query.bindValue(":dim", Dimensions::toHumanReadable(dimension));
 
   if (query.exec()) {
@@ -75,7 +75,7 @@ QSharedPointer<const Unit> Unit::createUnitFromRecord(const QSqlRecord& record)
     if (!unitCache[abbrev]) {
       QSharedPointer<const Unit> unit
       (new Unit(abbrev,
-                record.field("Name").value().toString(),
+                record.field("UnitName").value().toString(),
                 Dimensions::fromHumanReadable(record.field("Type").value().toString()),
                 record.field("Factor").value().toDouble()));
       unitCache[abbrev] = unit;
@@ -145,7 +145,7 @@ QSharedPointer<const Unit> Unit::getBasicUnit(Dimensions::Dimension dimension)
     QSqlDatabase db = QSqlDatabase::database("nutrition_db");
     QSqlQuery query(db);
 
-    query.prepare("SELECT Unit, Type, Name, Factor FROM units WHERE Type=:dim AND Factor=1 "
+    query.prepare("SELECT Unit, Type, Name AS UnitName, Factor FROM units WHERE Type=:dim AND Factor=1 "
                   "ORDER BY Name LIMIT 1");
     query.bindValue(":dim", Dimensions::toHumanReadable(dimension));
 

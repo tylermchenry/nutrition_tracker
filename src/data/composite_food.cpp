@@ -44,7 +44,7 @@ QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
                 "       composite_food_link.Contained_Id, composite_food_link.Magnitude, "
                 "       composite_food_link.IntrafoodOrder, "
                 "       units.Unit, units.Type, "
-                "       units.Name, units.Factor "
+                "       units.Name AS UnitName, units.Factor "
                 "FROM"
                 "        composite_food "
                 "   JOIN composite_food_link "

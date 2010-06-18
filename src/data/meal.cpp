@@ -104,7 +104,7 @@ QSharedPointer<Meal> Meal::getMeal(int userId, const QDate& date, int mealId)
                 "       meal_link.Contained_Type, meal_link.Contained_Id, "
                 "       meal_link.Magnitude, meal_link.IntramealOrder, "
                 "       units.Unit, units.Type, "
-                "       units.Name, units.Factor "
+                "       units.Name AS UnitName, units.Factor "
                 "FROM"
                 "        meal "
                 "   JOIN meal_link "

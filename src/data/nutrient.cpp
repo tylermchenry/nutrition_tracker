@@ -59,7 +59,7 @@ QSharedPointer<const Nutrient> Nutrient::getNutrient(const QString& id)
 
   query.prepare("SELECT nutrient_definition.Nutr_No, nutrient_definition.Category, "
                 "  nutrient_definition.ShortName, nutrient_definition.RDI, "
-                "  units.Unit, units.Type, units.Name, units.Factor "
+                "  units.Unit, units.Type, units.Name AS UnitName, units.Factor "
                 "FROM nutrient_definition JOIN units ON nutrient_definition.Units = units.Unit "
                 "WHERE Nutr_No=:id "
                 "ORDER BY nutrient_definition.category ASC, nutrient_definition.Disp_Order ASC, "
@@ -81,7 +81,7 @@ QVector<QSharedPointer<const Nutrient> > Nutrient::getAllNutrients()
 
   query.prepare("SELECT nutrient_definition.Nutr_No, nutrient_definition.Category, "
                 "  nutrient_definition.ShortName, nutrient_definition.RDI, "
-                "  units.Unit, units.Type, units.Name, units.Factor "
+                "  units.Unit, units.Type, units.Name AS UnitName, units.Factor "
                 "FROM nutrient_definition JOIN units ON nutrient_definition.Units = units.Unit "
                 "ORDER BY nutrient_definition.category ASC, nutrient_definition.Disp_Order ASC, "
                 "  nutrient_definition.ShortName ASC");
@@ -103,7 +103,7 @@ QVector<QSharedPointer<const Nutrient> > Nutrient::getAllNutrients
 
   query.prepare("SELECT nutrient_definition.Nutr_No, nutrient_definition.Category, "
                 "  nutrient_definition.ShortName, nutrient_definition.RDI, "
-                "  units.Unit, units.Type, units.Name, units.Factor "
+                "  units.Unit, units.Type, units.Name AS UnitName, units.Factor "
                 "FROM nutrient_definition JOIN units ON nutrient_definition.Units = units.Unit "
                 "WHERE nutrient_definition.Category=:category "
                 "ORDER BY nutrient_definition.category ASC, nutrient_definition.Disp_Order ASC, "

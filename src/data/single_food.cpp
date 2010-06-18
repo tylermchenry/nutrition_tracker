@@ -43,7 +43,7 @@ QSharedPointer<SingleFood> SingleFood::getSingleFood(int id)
                 "       food_description.N_Factor, nutrient_data.Nutr_Val, "
                 "       nutrient_definition.Nutr_No, nutrient_definition.Category, "
                 "       nutrient_definition.ShortName, nutrient_definition.RDI, "
-                "       units.Unit, units.Type, units.Name, units.Factor,"
+                "       units.Unit, units.Type, units.Name AS UnitName, units.Factor,"
                 "       group_description.FdGrp_Cd, group_description.FdGrp_Desc  "
                 "FROM "
                 "       food_description JOIN nutrient_data "
