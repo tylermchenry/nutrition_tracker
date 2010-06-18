@@ -14,8 +14,8 @@ FoodTreeMealItem::FoodTreeMealItem
   : FoodTreeItem(model, parent), meal(meal)
 {
   if (meal) {
-    QSet<FoodComponent> components = meal->getComponents();
-    for (QSet<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i) {
+    QList<FoodComponent> components = meal->getComponents();
+    for (QList<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i) {
       addComponent(*i);
     }
   }

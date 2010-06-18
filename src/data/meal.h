@@ -91,7 +91,7 @@ class Meal : public FoodCollection
   private:
 
     Meal(int id, int creatorUserId, const QString& name, int userId,
-         const QDate& date, const QSet<FoodComponent>& components,
+         const QDate& date, const QList<FoodComponent>& components,
          int temporaryId = -1);
 
     Meal(int id, int creatorUserId, const QString& name, int userId,

@@ -70,7 +70,7 @@ class Food
     void setBaseAmount(double amount,
                          const QSharedPointer<const Unit>& unit);
 
-    virtual QSet<FoodComponent> getComponents() const;
+    virtual QList<FoodComponent> getComponents() const;
 
     virtual QVector<FoodAmount> getComponentAmounts() const;
 

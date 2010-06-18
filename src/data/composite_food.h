@@ -78,7 +78,7 @@ class CompositeFood: public FoodCollection
   private:
 
     CompositeFood(int id, const QString& name,
-                    const QSet<FoodComponent>& components,
+                    const QList<FoodComponent>& components,
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount);
 

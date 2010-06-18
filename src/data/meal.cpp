@@ -69,7 +69,7 @@ QSharedPointer<Meal> Meal::createTemporaryMeal(int userId, const QDate& date, in
   QSharedPointer<Meal> meal
     (new Meal(mealId, userId,
               getAllMealNames()[mealId],
-              userId, date, QSet<FoodComponent>(), nextTemporaryId++));
+              userId, date, QList<FoodComponent>(), nextTemporaryId++));
   temporaryMealCache[meal->temporaryId] = meal;
   return meal;
 }
@@ -82,7 +82,7 @@ QSharedPointer<Meal> Meal::getOrCreateMeal(int userId, const QDate& date, int me
     QSharedPointer<Meal> newMeal
       (new Meal(mealId, userId,
                 getAllMealNames()[mealId],
-                userId, date, QSet<FoodComponent>()));
+                userId, date, QList<FoodComponent>()));
     mealCache[userId][date][mealId] = newMeal;
     meal = newMeal;
   }
@@ -190,6 +190,9 @@ QSharedPointer<Meal> Meal::createMealFromQueryResults(QSqlQuery& query)
     query.seek(-1); // Reset to before first record
     meal->setComponents
       (createComponentsFromQueryResults(query, meal, "MealLink_Id", "IntramealOrder"));
+    if (meal->needsToBeReSaved()) {
+      meal->saveToDatabase();
+    }
   } else if (!meal) {
     qDebug() << "Meal was not created!";
   } else {
@@ -204,13 +207,16 @@ Meal::~Meal()
 }
 
 Meal::Meal(int id, int creatorUserId, const QString& name, int userId,
-           const QDate& date, const QSet<FoodComponent>& components,
+           const QDate& date, const QList<FoodComponent>& components,
            int temporaryId)
   : FoodCollection((temporaryId >= 0 ? "TMPMEAL_" : "MEAL_") + QString::number(id) + "_" +
                    QString::number(userId) + "_" + date.toString(Qt::ISODate),
                    name, components, 0, 0, 0, 1),
     id(id), creatorUserId(creatorUserId), userId(userId), date(date), temporaryId(temporaryId)
 {
+  if (!isTemporary() && needsToBeReSaved()) {
+    saveToDatabase();
+  }
 }
 
 Meal::Meal(int id, int creatorUserId, const QString& name, int userId,
@@ -254,8 +260,8 @@ void Meal::saveToDatabase()
     }
   }
 
-  QSet<FoodComponent> components = getComponents();
-  for (QSet<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
+  QList<FoodComponent> components = getComponents();
+  for (QList<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
   {
     query.prepare("INSERT INTO meal_link "
                    "  (MealLink_Id, Meal_Id, User_Id, MealDate, Contained_Type, "

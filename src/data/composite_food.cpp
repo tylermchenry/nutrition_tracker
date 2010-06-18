@@ -96,7 +96,10 @@ QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
     query.seek(-1); // Reset to before first record
     food->setComponents
       (createComponentsFromQueryResults
-         (query, food, "CompositeLink_Id", "Intrafood_Order"));
+         (query, food, "CompositeLink_Id", "IntrafoodOrder"));
+    if (food->needsToBeReSaved()) {
+      food->saveToDatabase();
+    }
   }
 
   return food;
@@ -128,13 +131,16 @@ QMultiMap<QString, int> CompositeFood::getFoodsForUser(int userId)
 }
 
 CompositeFood::CompositeFood(int id, const QString& name,
-                             const QSet<FoodComponent>& components,
+                             const QList<FoodComponent>& components,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount)
   : FoodCollection("COMPOSITE_" + QString::number(id), name, components,
                    weightAmount, volumeAmount, quantityAmount, servingAmount),
     id(id)
 {
+  if (needsToBeReSaved()) {
+    saveToDatabase();
+  }
 }
 
 CompositeFood::CompositeFood(int id, const QString& name,
@@ -219,8 +225,8 @@ void CompositeFood::saveToDatabase()
     }
   }
 
-  QSet<FoodComponent> components = getComponents();
-  for (QSet<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
+  QList<FoodComponent> components = getComponents();
+  for (QList<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
   {
     if (!query.prepare("INSERT INTO composite_food_link "
         "  (CompositeLink_Id, Composite_Id, Contained_Type, "

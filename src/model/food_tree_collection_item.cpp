@@ -13,8 +13,8 @@ FoodTreeCollectionItem::FoodTreeCollectionItem
   : FoodTreeItem(model, parent), collection(collection)
 {
   if (collection) {
-    QSet<FoodComponent> components = collection->getComponents();
-    for (QSet<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i) {
+    QList<FoodComponent> components = collection->getComponents();
+    for (QList<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i) {
       addComponent(*i);
     }
   }

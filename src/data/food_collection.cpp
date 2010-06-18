@@ -23,7 +23,7 @@ QMap<int, QWeakPointer<FoodCollection> > FoodCollection::foodCollectionCache;
 QSharedPointer<FoodCollection> FoodCollection::createFoodCollection(const QString& name)
 {
   QSharedPointer<FoodCollection> collection
-    (new FoodCollection(nextCollectionId++, name, QSet<FoodComponent>(),
+    (new FoodCollection(nextCollectionId++, name, QList<FoodComponent>(),
                         0, 0, 0, 1));
   foodCollectionCache[collection->id] = collection;
   return collection;
@@ -65,36 +65,39 @@ QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
 }
 
 FoodCollection::FoodCollection(const QString& id, const QString& name,
-                             const QSet<FoodComponent>& components,
+                             const QList<FoodComponent>& components,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount)
   : Food(id, name, weightAmount, volumeAmount,
-         quantityAmount, servingAmount), id(-1), components(components),
-         nextTemporaryId(-1)
+         quantityAmount, servingAmount), id(-1), nextTemporaryId(-1),
+         bNeedsToBeReSaved(false)
 {
+  setComponents(components);
 }
 
 FoodCollection::FoodCollection(const QString& id, const QString& name,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount)
   : Food(id, name, weightAmount, volumeAmount,
-         quantityAmount, servingAmount), id(-1), nextTemporaryId(-1)
+         quantityAmount, servingAmount), id(-1), nextTemporaryId(-1),
+         bNeedsToBeReSaved(false)
 {
 }
 
 FoodCollection::FoodCollection(int id, const QString& name,
-                             const QSet<FoodComponent>& components,
+                             const QList<FoodComponent>& components,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount)
   : Food("COLLECTION_" + QString::number(id), name, weightAmount, volumeAmount,
-         quantityAmount, servingAmount), id(id), components(components),
-         nextTemporaryId(-1)
+         quantityAmount, servingAmount), id(id), nextTemporaryId(-1),
+         bNeedsToBeReSaved(false)
 {
+  setComponents(components);
 }
 
 FoodCollection::FoodCollection(const QString& id,
                              const QSharedPointer<const FoodCollection>& copy)
-  : Food(id, copy)
+  : Food(id, copy), bNeedsToBeReSaved(copy->bNeedsToBeReSaved)
 {
   if (copy) {
     components = copy->components;
@@ -105,9 +108,9 @@ FoodCollection::~FoodCollection()
 {
 }
 
-QSet<FoodComponent> FoodCollection::getComponents() const
+QList<FoodComponent> FoodCollection::getComponents() const
 {
-  return components;
+  return components.values();
 }
 
 QVector<FoodAmount> FoodCollection::getComponentAmounts() const
@@ -116,9 +119,9 @@ QVector<FoodAmount> FoodCollection::getComponentAmounts() const
 
   amounts.reserve(components.size());
 
-  for (QSet<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
+  for (QMap<int, FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
   {
-    amounts.push_back(i->getFoodAmount());
+    amounts.push_back(i.value().getFoodAmount());
   }
 
   return amounts;
@@ -130,9 +133,9 @@ QMap<QString, NutrientAmount> FoodCollection::getNutrients() const
 
   QMap<QString, NutrientAmount> nutrients;
 
-  for (QSet<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
+  for (QMap<int, FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
   {
-    mergeNutrients(nutrients, i->getFoodAmount().getScaledNutrients());
+    mergeNutrients(nutrients, i.value().getFoodAmount().getScaledNutrients());
   }
 
   return nutrients;
@@ -146,10 +149,10 @@ NutrientAmount FoodCollection::getCaloriesFromNutrientId
   NutrientAmount totalCaloriesFromNutrient
     (Nutrient::getNutrientByName(Nutrient::CALORIES_NAME), 0);
 
-  for (QSet<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
+  for (QMap<int, FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
   {
     NutrientAmount caloriesFromNutrient =
-      i->getFoodAmount().getScaledCaloriesFromNutrientId(nutrId);
+      i.value().getFoodAmount().getScaledCaloriesFromNutrientId(nutrId);
 
     if (caloriesFromNutrient.isDefined()) {
       totalCaloriesFromNutrient += caloriesFromNutrient;
@@ -165,7 +168,7 @@ FoodComponent FoodCollection::addComponent(const FoodAmount& foodAmount)
 
   if (!components.empty()) {
     // TODO: Something more efficient?
-    order = components.toList().last().getOrder()+1;
+    order = components.keys().last()+1;
   }
 
   qDebug() << "Adding new (unsaved) component: " << foodAmount.getAmount()
@@ -175,7 +178,7 @@ FoodComponent FoodCollection::addComponent(const FoodAmount& foodAmount)
            << nextTemporaryId << "]";
   FoodComponent component(getCanonicalSharedPointerToCollection(),
                           nextTemporaryId--, foodAmount, order);
-  components.insert(component);
+  components.insert(order, component);
   return component;
 }
 
@@ -193,14 +196,15 @@ QVector<FoodComponent> FoodCollection::addComponents(const QVector<FoodAmount>& 
 
 FoodComponent FoodCollection::changeComponentAmount(const FoodComponent& component, const FoodAmount& amount)
 {
-  if (components.contains(component)) {
+  if (hasComponent(component)) {
     if (!amount.isDefined() || component.getFoodAmount().getFood()->getId() != amount.getFood()->getId()) {
       throw std::logic_error("Attempted to change a component amount to another or an undefined food.");
     }
     FoodComponent newComponent(getCanonicalSharedPointerToCollection(), component.getId(), amount,
                                component.getOrder());
-    components.remove(component);
-    components.insert(newComponent);
+    Q_ASSERT(components.contains(component.getOrder()));
+    Q_ASSERT(components[component.getOrder()] == component);
+    components[component.getOrder()] = newComponent;
     return newComponent;
   } else {
     qDebug() << "Component with ID " << component.getId() << " is not part of "
@@ -213,11 +217,11 @@ FoodComponent FoodCollection::changeComponentAmount(const FoodComponent& compone
 
 void FoodCollection::removeComponent(const FoodComponent& component)
 {
-  if (components.contains(component)) {
+  if (hasComponent(component)) {
     if (component.getId() >= 0) {
       removedIds.insert(component.getId());
     }
-    components.remove(component);
+    components.remove(component.getId());
   } else if (newIds.contains(component.getId())) {
     removeComponent
       (FoodComponent(getCanonicalSharedPointerToCollection(),
@@ -228,10 +232,10 @@ void FoodCollection::removeComponent(const FoodComponent& component)
 
 void FoodCollection::clearComponents()
 {
-  for (QSet<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
+  for (QMap<int, FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
   {
-    if (i->getId() >= 0) {
-      removedIds.insert(i->getId());
+    if (i.value().getId() >= 0) {
+      removedIds.insert(i.value().getId());
     }
   }
 
@@ -263,10 +267,14 @@ void FoodCollection::replaceWith(const QSharedPointer<const FoodCollection>& oth
 
   components.clear();
 
-  for (QSet<FoodComponent>::const_iterator i = otherFC->components.begin(); i != otherFC->components.end(); ++i)
+  for (QMap<int, FoodComponent>::const_iterator i = otherFC->components.begin(); i != otherFC->components.end(); ++i)
   {
-    components.insert(FoodComponent(getCanonicalSharedPointerToCollection(),
-                                    i->getId(), i->getFoodAmount(), i->getOrder()));
+    const FoodComponent& c = i.value();
+    Q_ASSERT(i.key() == c.getOrder());
+    Q_ASSERT(!components.contains(i.key()));
+    components.insert
+      (i.key(), FoodComponent(getCanonicalSharedPointerToCollection(),
+                              c.getId(), c.getFoodAmount(), c.getOrder()));
   }
 
   newIds = otherFC->newIds;
@@ -280,12 +288,12 @@ void FoodCollection::saveToDatabase()
   throw std::logic_error("Attempted to save a bare food collection to the database.");
 }
 
-void FoodCollection::setComponents(const QSet<FoodComponent>& components)
+void FoodCollection::setComponents(const QList<FoodComponent>& components)
 {
   qDebug() << "Setting components of " << this->getName() << " to a set of "
            << components.size() << " components";
   clearComponents();
-  this->components = components;
+  addComponents(components);
 }
 
 void FoodCollection::replaceComponent(const FoodComponent& oldComponent,
@@ -304,8 +312,11 @@ void FoodCollection::replaceComponent(const FoodComponent& oldComponent,
 
   newIds.insert(oldComponent.getId(), newComponent.getId());
 
-  components.remove(oldComponent);
-  components.insert(newComponent);
+  Q_ASSERT(oldComponent.getOrder() == newComponent.getOrder());
+  Q_ASSERT(components.contains(oldComponent.getOrder()));
+  Q_ASSERT(components[oldComponent.getOrder()] == oldComponent);
+
+  components[oldComponent.getOrder()] = newComponent;
 }
 
 QSharedPointer<Food> FoodCollection::getCanonicalSharedPointer()
@@ -329,11 +340,12 @@ QSharedPointer<const FoodCollection>
   return getCanonicalSharedPointer().dynamicCast<const FoodCollection>();
 }
 
-QSet<FoodComponent> FoodCollection::createComponentsFromQueryResults
+QList<FoodComponent> FoodCollection::createComponentsFromQueryResults
   (QSqlQuery& query, const QSharedPointer<FoodCollection>& containingCollection,
    const QString& componentIdField, const QString& componentOrderField)
 {
-  QSet<FoodComponent> components;
+  QList<FoodComponent> components;
+  int order = -1;
 
   while (query.next()) {
 
@@ -354,16 +366,18 @@ QSet<FoodComponent> FoodCollection::createComponentsFromQueryResults
       qDebug() << "Component has unknown type!";
     }
 
-    int order = 0;
-
     if (!record.field(componentOrderField).value().isNull()) {
       order = record.field(componentOrderField).value().toInt();
+    } else {
+      qDebug() << "WARNING: Order field " << componentOrderField
+               << " missing. Defaulting to sequential.";
+      order++;
     }
 
     if (containedFood != NULL) {
       qDebug() << "Value of component ID field " << componentIdField << ": "
                 << record.field(componentIdField).value().toInt();
-      components.insert
+      components.append
         (FoodComponent
           (containingCollection,
            record.field(componentIdField).value().toInt(),
@@ -376,6 +390,45 @@ QSet<FoodComponent> FoodCollection::createComponentsFromQueryResults
   }
 
   return components;
+}
+
+void FoodCollection::addComponents(const QList<FoodComponent>& newComponents)
+{
+  int maxOrder = -1;
+
+  if (!components.empty()) {
+    maxOrder = components.keys().last();
+  }
+
+  for (QList<FoodComponent>::const_iterator i = newComponents.begin(); i != newComponents.end(); ++i)
+  {
+    if (i->getContainingCollection() != getCanonicalSharedPointerToCollection()) {
+      throw std::logic_error("Attempted to add components from another collection.");
+    }
+
+    qDebug() << "Inserting component: " << i->getFoodAmount().getAmount()
+             << i->getFoodAmount().getUnit()->getAbbreviation()
+             << " of " << i->getFoodAmount().getFood()->getName()
+             << " order = " << i->getOrder();
+
+    int order = i->getOrder();
+
+    if (components.contains(order)) {
+
+      qDebug() << "Order " << order << " is already in use. Replacing with order "
+                << maxOrder+1;
+
+      order = ++maxOrder;
+      components.insert(order, FoodComponent(getCanonicalSharedPointerToCollection(),
+                                             i->getId(), i->getFoodAmount(), order));
+      bNeedsToBeReSaved = true;
+    } else {
+      qDebug() << "Order " << i->getOrder() << " is OK.";
+      components.insert(i->getOrder(), *i);
+    }
+
+    maxOrder = std::max(maxOrder, order);
+  }
 }
 
 QMap<QString, NutrientAmount>& FoodCollection::mergeNutrients

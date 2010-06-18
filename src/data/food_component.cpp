@@ -35,14 +35,12 @@ FoodComponent::~FoodComponent()
 
 bool FoodComponent::operator< (const FoodComponent& rhs) const
 {
+  qDebug() << "Comparing two components.";
   if (containingCollection) {
     if (containingCollection.data() == rhs.containingCollection.data()) {
       if (foodAmount.isDefined()) {
-        if (foodAmount.getFood().data() == rhs.foodAmount.getFood().data()) {
-          return (order < rhs.order);
-        } else {
-          return (foodAmount.getFood().data() < rhs.foodAmount.getFood().data());
-        }
+        qDebug() << "Comparing by order: " << order << " < " << rhs.order;
+        return (order < rhs.order);
       } else {
         return rhs.foodAmount.isDefined();
       }

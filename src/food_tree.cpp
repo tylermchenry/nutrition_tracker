@@ -128,7 +128,7 @@ void FoodTree::showContextMenu(const QPoint& point)
              this, SLOT(displayNutritionInfo(const QModelIndex&, const FoodAmount&)));
     connect(contextMenu.data(), SIGNAL(copyMealToDay(const QModelIndex&, const QSharedPointer<const Meal>&, const QDate&)),
              this, SLOT(copyMealToDay(const QModelIndex&, const QSharedPointer<const Meal>&, const QDate&)));
-    contextMenu->popup(ui.trvFoods->viewport()->mapToGlobal(point));
+    contextMenu->exec(ui.trvFoods->viewport()->mapToGlobal(point));
   }
 }
 

@@ -108,9 +108,9 @@ NutrientAmount Food::getCaloriesFromNutrientName
   return getCaloriesFromNutrient(Nutrient::getNutrientByName(nutrName));
 }
 
-QSet<FoodComponent> Food::getComponents() const
+QList<FoodComponent> Food::getComponents() const
 {
-  return QSet<FoodComponent>();
+  return QList<FoodComponent>();
 }
 
 QVector<FoodAmount> Food::getComponentAmounts() const

@@ -74,7 +74,7 @@ class FoodCollection: public Food
 
     virtual QVector<FoodAmount> getComponentAmounts() const;
 
-    virtual QSet<FoodComponent> getComponents() const;
+    virtual QList<FoodComponent> getComponents() const;
 
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
@@ -104,7 +104,7 @@ class FoodCollection: public Food
   protected:
 
     FoodCollection(const QString& id, const QString& name,
-                    const QSet<FoodComponent>& components,
+                    const QList<FoodComponent>& components,
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount);
 
@@ -117,7 +117,7 @@ class FoodCollection: public Food
 
     // If the subclass chooses not to pass components to the constructor,
     // they can be set later through this method
-    void setComponents(const QSet<FoodComponent>& components);
+    void setComponents(const QList<FoodComponent>& components);
 
     // Derived classes call to replace a component that has been newly
     // saved to the database with one that has the DB-assigned ID.
@@ -138,7 +138,9 @@ class FoodCollection: public Food
     virtual QSharedPointer<const FoodCollection>
       getCanonicalSharedPointerToCollection() const;
 
-    static QSet<FoodComponent> createComponentsFromQueryResults
+    inline bool needsToBeReSaved() const { return bNeedsToBeReSaved; }
+
+    static QList<FoodComponent> createComponentsFromQueryResults
       (QSqlQuery& query,
        const QSharedPointer<FoodCollection>& containingCollection,
        const QString& componentIdField,
@@ -147,12 +149,20 @@ class FoodCollection: public Food
   private:
 
     FoodCollection(int id, const QString& name,
-                    const QSet<FoodComponent>& components,
+                    const QList<FoodComponent>& components,
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount);
 
+    void addComponents(const QList<FoodComponent>& components);
+
+    inline bool hasComponent(const FoodComponent& component)
+    {
+      return components.contains(component.getId()) &&
+              components[component.getId()] == component;
+    }
+
     int id;
-    QSet<FoodComponent> components;
+    QMap<int, FoodComponent> components;
 
     // Temporary IDs for components not yet saved to the database
     int nextTemporaryId;
@@ -162,6 +172,8 @@ class FoodCollection: public Food
     QMap<int, int> newIds;
 
     QSet<int> removedIds;
+
+    bool bNeedsToBeReSaved;
 
     static QMap<QString, NutrientAmount>& mergeNutrients
       (QMap<QString, NutrientAmount>& nutrients,
