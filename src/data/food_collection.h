@@ -157,8 +157,8 @@ class FoodCollection: public Food
 
     inline bool hasComponent(const FoodComponent& component)
     {
-      return components.contains(component.getId()) &&
-              components[component.getId()] == component;
+      return components.contains(component.getOrder()) &&
+              components[component.getOrder()] == component;
     }
 
     int id;

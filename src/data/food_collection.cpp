@@ -208,7 +208,7 @@ FoodComponent FoodCollection::changeComponentAmount(const FoodComponent& compone
     return newComponent;
   } else {
     qDebug() << "Component with ID " << component.getId() << " is not part of "
-             << " this collection (id " << id << "). Claims to be part of collection"
+             << " this collection (id " << getId() << "). Claims to be part of collection"
              << component.getContainingCollection()->getId();
 
     throw std::logic_error("Attempted to change a component not part of this collection.");
