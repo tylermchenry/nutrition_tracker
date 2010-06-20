@@ -202,8 +202,6 @@ FoodComponent FoodCollection::changeComponentAmount(const FoodComponent& compone
     }
     FoodComponent newComponent(getCanonicalSharedPointerToCollection(), component.getId(), amount,
                                component.getOrder());
-    Q_ASSERT(components.contains(component.getOrder()));
-    Q_ASSERT(components[component.getOrder()] == component);
     components[component.getOrder()] = newComponent;
     return newComponent;
   } else {
@@ -307,15 +305,18 @@ void FoodCollection::replaceComponent(const FoodComponent& oldComponent,
     throw std::logic_error("Attempted to replace a component with a temporary component.");
   }
 
+  if (!hasComponent(oldComponent)) {
+    throw std::logic_error("Attempted to replace a non-existent component");
+  }
+
+  if (oldComponent.getOrder() != newComponent.getOrder()) {
+    throw std::logic_error("Mismatched ordering when attempting to replace a component.");
+  }
+
   qDebug() << "Replacing component ID " << oldComponent.getId()
            << " with new component ID " << newComponent.getId();
 
   newIds.insert(oldComponent.getId(), newComponent.getId());
-
-  Q_ASSERT(oldComponent.getOrder() == newComponent.getOrder());
-  Q_ASSERT(components.contains(oldComponent.getOrder()));
-  Q_ASSERT(components[oldComponent.getOrder()] == oldComponent);
-
   components[oldComponent.getOrder()] = newComponent;
 }
 
