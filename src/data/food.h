@@ -89,6 +89,8 @@ class Food
 
     virtual void saveToDatabase() = 0;
 
+    virtual void deleteFromDatabase() = 0;
+
   protected:
 
     Food(const QString& id, const QString& name, double weightAmount,

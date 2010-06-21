@@ -324,6 +324,30 @@ void Meal::saveToDatabase()
   }
 }
 
+void Meal::deleteFromDatabase()
+{
+  if (isTemporary()) {
+    throw std::logic_error("Attempted to save a temporary meal from the database.");
+  }
+
+  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
+  QSqlQuery query(db);
+
+  query.prepare("DELETE FROM meal_link "
+                 "WHERE Meal_Id=:mealId AND User_Id=:userId "
+                 "      AND MealDate=:mealDate");
+  query.bindValue(":mealId", id);
+  query.bindValue(":userId", userId);
+  query.bindValue(":mealDate", date);
+
+  if (!query.exec()) {
+    qDebug() << "Failed to delete meal: " << query.lastError();
+  } else {
+    clearComponents();
+    mealCache[userId][date][id].clear();
+  }
+}
+
 QSharedPointer<Food> Meal::getCanonicalSharedPointer()
 {
   if (isTemporary()) {

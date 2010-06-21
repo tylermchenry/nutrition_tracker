@@ -1,6 +1,7 @@
 #include "my_foods.h"
 #include "edit_food.h"
 #include "edit_composite_food.h"
+#include <QtGui/QMessageBox>
 
 MyFoods::MyFoods(QWidget *parent)
     : QDialog(parent)
@@ -73,7 +74,31 @@ void MyFoods::duplicate()
 
 void MyFoods::del()
 {
-  // TODO: Implement when deletion functionality exists at data layer
+  QListWidgetItem* currentItem = ui.lstFoods->currentItem();
+
+  if (currentItem) {
+    QPair<FoodCollection::ContainedTypes::ContainedType, int> foodIndex =
+      itemToFood[ui.lstFoods->row(currentItem)];
+
+    QSharedPointer<Food> food;
+
+    if (foodIndex.first == FoodCollection::ContainedTypes::SingleFood) {
+      food = SingleFood::getSingleFood(foodIndex.second);
+    } else if (foodIndex.first == FoodCollection::ContainedTypes::CompositeFood) {
+      food = CompositeFood::getCompositeFood(foodIndex.second);
+    }
+
+    if (food) {
+      if (QMessageBox::warning
+            (this, "Confirm Deletion", "Are you sure you want to delete " +
+             food->getName() + "? This cannot be undone.",
+             QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes)
+      {
+        food->deleteFromDatabase();
+        loadUserFoods();
+      }
+    }
+  }
 }
 
 void MyFoods::loadUserFoods()

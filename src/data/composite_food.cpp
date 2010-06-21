@@ -289,6 +289,35 @@ void CompositeFood::saveToDatabase()
   }
 }
 
+void CompositeFood::deleteFromDatabase()
+{
+  if (id < 0) return;
+
+  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
+  QSqlQuery query(db);
+
+  query.prepare("DELETE FROM composite_food_link WHERE Composite_Id=:compositeId");
+  query.bindValue(":compositeId", id);
+
+  if (!query.exec()) {
+    qDebug() << "Failed to delete components of " << getName() << ": "
+              << query.lastError();
+    return;
+  }
+
+  query.prepare("DELETE FROM composite_food WHERE Composite_Id=:compositeId");
+  query.bindValue(":compositeId", id);
+
+  if (!query.exec()) {
+    qDebug() << "Failed to composite food " << getName() << ": "
+              << query.lastError();
+    return;
+  }
+
+  clearComponents();
+  compositeFoodCache[id].clear();
+}
+
 QSharedPointer<Food> CompositeFood::getCanonicalSharedPointer()
 {
   return compositeFoodCache[id].toStrongRef();

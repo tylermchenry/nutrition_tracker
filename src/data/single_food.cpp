@@ -356,6 +356,24 @@ void SingleFood::saveToDatabase()
   modifiedNutrients.clear();
 }
 
+void SingleFood::deleteFromDatabase()
+{
+  if (id < 0) return;
+
+  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
+  QSqlQuery query(db);
+
+  query.prepare("DELETE FROM food_description WHERE Food_Id=:id");
+  query.bindValue(":id", id);
+
+  if (!query.exec()) {
+    qDebug() << "Query error: " << query.lastError();
+    throw std::runtime_error("Failed to delete food from database.");
+  }
+
+  singleFoodCache[id].clear();
+}
+
 QSharedPointer<Food> SingleFood::getCanonicalSharedPointer()
 {
   return singleFoodCache[id].toStrongRef();

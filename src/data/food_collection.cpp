@@ -291,6 +291,11 @@ void FoodCollection::saveToDatabase()
   throw std::logic_error("Attempted to save a bare food collection to the database.");
 }
 
+void FoodCollection::deleteFromDatabase()
+{
+  throw std::logic_error("Attempted to delete a bare food collection from the database.");
+}
+
 void FoodCollection::setComponents(const QList<FoodComponent>& components)
 {
   qDebug() << "Setting components of " << this->getName() << " to a set of "

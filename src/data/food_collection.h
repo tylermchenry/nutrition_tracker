@@ -105,6 +105,8 @@ class FoodCollection: public Food
 
     virtual void saveToDatabase();
 
+    virtual void deleteFromDatabase();
+
   protected:
 
     FoodCollection(const QString& id, const QString& name,

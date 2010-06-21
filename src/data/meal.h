@@ -82,6 +82,8 @@ class Meal : public FoodCollection
 
     virtual void saveToDatabase();
 
+    virtual void deleteFromDatabase();
+
   protected:
 
     virtual QSharedPointer<Food> getCanonicalSharedPointer();
