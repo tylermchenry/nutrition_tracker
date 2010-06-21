@@ -97,10 +97,10 @@ FoodCollection::FoodCollection(int id, const QString& name,
 
 FoodCollection::FoodCollection(const QString& id,
                              const QSharedPointer<const FoodCollection>& copy)
-  : Food(id, copy), bNeedsToBeReSaved(copy->bNeedsToBeReSaved)
+  : Food(id, copy), bNeedsToBeReSaved(copy ? copy->bNeedsToBeReSaved : false)
 {
   if (copy) {
-    components = copy->components;
+    setComponents(copy->getComponents());
   }
 }
 
@@ -403,16 +403,20 @@ void FoodCollection::addComponents(const QList<FoodComponent>& newComponents)
 
   for (QList<FoodComponent>::const_iterator i = newComponents.begin(); i != newComponents.end(); ++i)
   {
-    if (i->getContainingCollection() != getCanonicalSharedPointerToCollection()) {
-      throw std::logic_error("Attempted to add components from another collection.");
-    }
-
     qDebug() << "Inserting component: " << i->getFoodAmount().getAmount()
              << i->getFoodAmount().getUnit()->getAbbreviation()
              << " of " << i->getFoodAmount().getFood()->getName()
              << " order = " << i->getOrder();
 
-    int order = i->getOrder();
+    FoodComponent c = *i;
+
+    if (c.getContainingCollection() != getCanonicalSharedPointerToCollection()) {
+      qDebug() << "Component is from another collection; Rebasing with temporary ID " << nextTemporaryId;
+      c = FoodComponent(getCanonicalSharedPointerToCollection(),
+                        nextTemporaryId--, c.getFoodAmount(), c.getOrder());
+    }
+
+    int order = c.getOrder();
 
     if (components.contains(order)) {
 
@@ -421,11 +425,11 @@ void FoodCollection::addComponents(const QList<FoodComponent>& newComponents)
 
       order = ++maxOrder;
       components.insert(order, FoodComponent(getCanonicalSharedPointerToCollection(),
-                                             i->getId(), i->getFoodAmount(), order));
+                                             c.getId(), c.getFoodAmount(), order));
       bNeedsToBeReSaved = true;
     } else {
-      qDebug() << "Order " << i->getOrder() << " is OK.";
-      components.insert(i->getOrder(), *i);
+      qDebug() << "Order " << c.getOrder() << " is OK.";
+      components.insert(c.getOrder(), c);
     }
 
     maxOrder = std::max(maxOrder, order);
