@@ -43,22 +43,27 @@ QSharedPointer<FoodCollection> FoodCollection::createFoodCollection
 QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
   FoodCollection::getFoodsForUser(int userId)
 {
-  QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> > foods;
-  QMultiMap<QString, int> singleFoods = SingleFood::getFoodsForUser(userId);
-  QMultiMap<QString, int> compositeFoods = CompositeFood::getFoodsForUser(userId);
+  return getFoodsForUser(userId, ContainedTypes::SingleFood) +
+    getFoodsForUser(userId, ContainedTypes::CompositeFood);
+}
 
-  for (QMultiMap<QString, int>::const_iterator i = singleFoods.begin();
-       i != singleFoods.end(); ++i)
-  {
-    foods.insert(i.key(), QPair<ContainedTypes::ContainedType, int>
-      (ContainedTypes::SingleFood, i.value()));
+QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
+  FoodCollection::getFoodsForUser(int userId, ContainedTypes::ContainedType type)
+{
+  QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> > foods;
+  QMultiMap<QString, int> rawFoods;
+
+  if (type == ContainedTypes::SingleFood) {
+    rawFoods = SingleFood::getFoodsForUser(userId);
+  } else if (type == ContainedTypes::CompositeFood) {
+    rawFoods = CompositeFood::getFoodsForUser(userId);
   }
 
-  for (QMultiMap<QString, int>::const_iterator i = compositeFoods.begin();
-       i != compositeFoods.end(); ++i)
+  for (QMultiMap<QString, int>::const_iterator i = rawFoods.begin();
+       i != rawFoods.end(); ++i)
   {
     foods.insert(i.key(), QPair<ContainedTypes::ContainedType, int>
-      (ContainedTypes::CompositeFood, i.value()));
+      (type, i.value()));
   }
 
   return foods;

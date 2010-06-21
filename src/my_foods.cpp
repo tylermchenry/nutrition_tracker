@@ -7,6 +7,14 @@ MyFoods::MyFoods(QWidget *parent)
 {
   ui.setupUi(this);
 
+  ui.cbFilter->addItem("Show Single Foods and Composite Foods");
+  ui.cbFilter->addItem("Show only Single Foods",
+                       QVariant::fromValue(FoodCollection::ContainedTypes::SingleFood));
+  ui.cbFilter->addItem("Show only Composite Foods",
+                       QVariant::fromValue(FoodCollection::ContainedTypes::CompositeFood));
+
+  connect(ui.cbFilter, SIGNAL(currentIndexChanged(int)), this, SLOT(loadUserFoods()));
+
   connect(ui.btnEdit, SIGNAL(clicked()), this, SLOT(edit()));
   connect(ui.btnDuplicate, SIGNAL(clicked()), this, SLOT(duplicate()));
   connect(ui.btnDelete, SIGNAL(clicked()), this, SLOT(del()));
@@ -73,8 +81,16 @@ void MyFoods::loadUserFoods()
   ui.lstFoods->clear();
   itemToFood.clear();
 
-  QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> > foods =
-    FoodCollection::getFoodsForUser(1); // TODO: Real user ID
+  QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> > foods;
+
+  QVariant filter = ui.cbFilter->itemData(ui.cbFilter->currentIndex());
+
+  // TODO: Real user IDs
+  if (filter.isNull() || !filter.canConvert<FoodCollection::ContainedTypes::ContainedType>()) {
+    foods = FoodCollection::getFoodsForUser(1);
+  } else {
+    foods = FoodCollection::getFoodsForUser(1, filter.value<FoodCollection::ContainedTypes::ContainedType>());
+  }
 
   for (QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
       ::const_iterator i = foods.begin(); i != foods.end(); ++i)

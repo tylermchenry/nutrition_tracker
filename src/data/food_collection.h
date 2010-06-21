@@ -25,6 +25,7 @@
 #include "food.h"
 #include "food_component.h"
 #include <QMultiMap>
+#include <QVariant>
 
 /* A FoodCollection is an arbitrary collection of single and composite foods
  * which is not necessarily treated logically as its own first-class food
@@ -69,6 +70,9 @@ class FoodCollection: public Food
 
     static QMultiMap<QString, QPair<ContainedTypes::ContainedType, int> >
       getFoodsForUser(int userId);
+
+    static QMultiMap<QString, QPair<ContainedTypes::ContainedType, int> >
+      getFoodsForUser(int userId, ContainedTypes::ContainedType type);
 
     virtual ~FoodCollection();
 
@@ -184,6 +188,7 @@ class FoodCollection: public Food
     static QMap<int, QWeakPointer<FoodCollection> > foodCollectionCache;
 };
 
+Q_DECLARE_METATYPE(FoodCollection::ContainedTypes::ContainedType);
 
 #endif /* FOOD_COLLECTION_H_ */
 

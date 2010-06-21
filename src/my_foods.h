@@ -19,14 +19,14 @@ class MyFoods : public QDialog
     void duplicate();
     void del();
 
+    void loadUserFoods();
+
   private:
 
     Ui::MyFoodsUI ui;
 
     QMap<int, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
       itemToFood;
-
-    void loadUserFoods();
 };
 
 #endif // MY_FOODS_H
