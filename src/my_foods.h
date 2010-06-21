@@ -23,6 +23,8 @@ class MyFoods : public QDialog
 
   private:
 
+    void reportDBError();
+
     Ui::MyFoodsUI ui;
 
     QMap<int, QPair<FoodCollection::ContainedTypes::ContainedType, int> >

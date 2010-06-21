@@ -38,12 +38,20 @@ void MyFoods::edit()
 
     if (food.first == FoodCollection::ContainedTypes::SingleFood) {
       QSharedPointer<SingleFood> singleFood = SingleFood::getSingleFood(food.second);
-      QScopedPointer<QDialog>(new EditFood(this, singleFood))->exec();
-      currentItem->setText(singleFood->getName());
+      if (singleFood) {
+        QScopedPointer<QDialog>(new EditFood(this, singleFood))->exec();
+        currentItem->setText(singleFood->getName());
+      } else {
+        reportDBError();
+      }
     } else if (food.first == FoodCollection::ContainedTypes::CompositeFood) {
       QSharedPointer<CompositeFood> compositeFood = CompositeFood::getCompositeFood(food.second);
-      QScopedPointer<QDialog>(new EditCompositeFood(this, compositeFood))->exec();
-      currentItem->setText(compositeFood->getName());
+      if (compositeFood) {
+        QScopedPointer<QDialog>(new EditCompositeFood(this, compositeFood))->exec();
+        currentItem->setText(compositeFood->getName());
+      } else {
+        reportDBError();
+      }
     }
   }
 }
@@ -58,14 +66,22 @@ void MyFoods::duplicate()
 
     if (food.first == FoodCollection::ContainedTypes::SingleFood) {
       QSharedPointer<SingleFood> baseSingleFood = SingleFood::getSingleFood(food.second);
-      QSharedPointer<SingleFood> singleFood = SingleFood::createNewFood(baseSingleFood);
-      singleFood->setName("Copy of " + baseSingleFood->getName());
-      QScopedPointer<QDialog>(new EditFood(this, singleFood))->exec();
+      if (baseSingleFood) {
+        QSharedPointer<SingleFood> singleFood = SingleFood::createNewFood(baseSingleFood);
+        singleFood->setName("Copy of " + baseSingleFood->getName());
+        QScopedPointer<QDialog>(new EditFood(this, singleFood))->exec();
+      } else {
+        reportDBError();
+      }
     } else if (food.first == FoodCollection::ContainedTypes::CompositeFood) {
       QSharedPointer<CompositeFood> baseCompositeFood = CompositeFood::getCompositeFood(food.second);
-      QSharedPointer<CompositeFood> compositeFood = CompositeFood::createNewCompositeFood(baseCompositeFood);
-      compositeFood->setName("Copy of " + baseCompositeFood->getName());
-      QScopedPointer<QDialog>(new EditCompositeFood(this, compositeFood))->exec();
+      if (baseCompositeFood) {
+        QSharedPointer<CompositeFood> compositeFood = CompositeFood::createNewCompositeFood(baseCompositeFood);
+        compositeFood->setName("Copy of " + baseCompositeFood->getName());
+        QScopedPointer<QDialog>(new EditCompositeFood(this, compositeFood))->exec();
+      } else {
+        reportDBError();
+      }
     }
 
     loadUserFoods();
@@ -97,6 +113,8 @@ void MyFoods::del()
         food->deleteFromDatabase();
         loadUserFoods();
       }
+    } else {
+      reportDBError();
     }
   }
 }
@@ -123,4 +141,11 @@ void MyFoods::loadUserFoods()
     ui.lstFoods->addItem(i.key());
     itemToFood[ui.lstFoods->count()-1] = i.value();
   }
+}
+
+void MyFoods::reportDBError()
+{
+  QMessageBox::critical
+    (this, "Database Error", "The selected food could not be loaded from the database. "
+     "This is an error within the database and there is currently nothing that can be done to correct it. Sorry!");
 }
