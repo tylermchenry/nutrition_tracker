@@ -219,7 +219,7 @@ void FoodCollection::removeComponent(const FoodComponent& component)
     if (component.getId() >= 0) {
       removedIds.insert(component.getId());
     }
-    components.remove(component.getId());
+    components.remove(component.getOrder());
   } else if (newIds.contains(component.getId())) {
     removeComponent
       (FoodComponent(getCanonicalSharedPointerToCollection(),
