@@ -362,6 +362,8 @@ QList<FoodComponent> FoodCollection::createComponentsFromQueryResults
 
     const QSqlRecord& record = query.record();
 
+    if (record.field(componentIdField).value().isNull()) continue;
+
     int containedId = record.field("Contained_Id").value().toInt();
 
     ContainedTypes::ContainedType type =

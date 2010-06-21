@@ -47,9 +47,9 @@ QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
                 "       units.Name AS UnitName, units.Factor "
                 "FROM"
                 "        composite_food "
-                "   JOIN composite_food_link "
+                "   LEFT JOIN composite_food_link "
                 "        ON composite_food.Composite_Id = composite_food_link.Composite_Id "
-                "   JOIN units "
+                "   LEFT JOIN units "
                 "        ON composite_food_link.Unit = units.Unit "
                 "WHERE composite_food.Composite_Id = :id "
                 "ORDER BY composite_food_link.IntrafoodOrder ASC");
@@ -90,6 +90,7 @@ QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
     } else {
       return compositeFoodCache[id].toStrongRef();
     }
+
   }
 
   if (food && query.isActive()) {
