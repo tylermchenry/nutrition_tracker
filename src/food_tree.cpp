@@ -147,7 +147,7 @@ void FoodTree::displayNutritionInfo(const QModelIndex&, const FoodAmount& amount
 void FoodTree::changeAmount(const QModelIndex& index, FoodComponent* component)
 {
   if (component) {
-    const FoodAmount& amount = component->getFoodAmount();
+    FoodAmount amount = component->getFoodAmount();
 
     double newAmount =
         QInputDialog::getDouble(this, "Change Amount",
@@ -161,7 +161,7 @@ void FoodTree::changeUnit(const QModelIndex& index, FoodComponent* component,
                              const QSharedPointer<const Unit>& unit)
 {
   if (component && unit) {
-    const FoodAmount& amount = component->getFoodAmount();
+    FoodAmount amount = component->getFoodAmount();
 
     double newAmount = amount.getAmount(unit);
 

@@ -63,6 +63,9 @@ class Amount
     inline QSharedPointer<const S> getSubstance() const
       { return substance; }
 
+    inline QSharedPointer<S> getSubstance()
+      { return substance; }
+
     inline QSharedPointer<const Unit> getUnit() const
       { return unit; }
 
@@ -86,11 +89,14 @@ class Amount
 
   protected:
 
-    Amount(const QSharedPointer<const S>& substance =
-              QSharedPointer<const S>(),
+    Amount(const QSharedPointer<S>& substance =
+              QSharedPointer<S>(),
             double amount = 0,
             const QSharedPointer<const Unit>& unit =
               QSharedPointer<const Unit>());
+
+    inline QSharedPointer<S> getSubstanceNonConst() const
+      { return substance; }
 
     virtual QString getSubstanceName(bool plural = false) const = 0;
 
@@ -99,20 +105,20 @@ class Amount
 
   private:
 
-    QSharedPointer<const S> substance;
+    QSharedPointer<S> substance;
     double amount;
     QSharedPointer<const Unit> unit;
 };
 
 template<typename S, typename SA>
-Amount<S, SA>::Amount(const QSharedPointer<const S>& substance,
+Amount<S, SA>::Amount(const QSharedPointer<S>& substance,
                          double amount,
                          const QSharedPointer<const Unit>& unit)
   : substance(substance), amount(std::max(amount, 0.0)), unit(unit)
 {
   // Invariant: Either substance and unit are both NULL, or neither is
   if (unit == NULL || substance == NULL) {
-    this->substance = QSharedPointer<const S>();
+    this->substance = QSharedPointer<S>();
     this->unit = QSharedPointer<const Unit>();
   }
 

@@ -374,12 +374,7 @@ void SingleFood::deleteFromDatabase()
   singleFoodCache[id].clear();
 }
 
-QSharedPointer<Food> SingleFood::getCanonicalSharedPointer()
-{
-  return singleFoodCache[id].toStrongRef();
-}
-
-QSharedPointer<const Food> SingleFood::getCanonicalSharedPointer() const
+QSharedPointer<Food> SingleFood::getCanonicalSharedPointer() const
 {
   return singleFoodCache[id].toStrongRef();
 }

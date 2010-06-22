@@ -281,12 +281,7 @@ void Template::deleteFromDatabase()
   templateCache[id].clear();
 }
 
-QSharedPointer<Food> Template::getCanonicalSharedPointer()
-{
-  return templateCache[id].toStrongRef();
-}
-
-QSharedPointer<const Food> Template::getCanonicalSharedPointer() const
+QSharedPointer<Food> Template::getCanonicalSharedPointer() const
 {
   return templateCache[id].toStrongRef();
 }

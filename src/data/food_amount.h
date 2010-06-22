@@ -54,8 +54,8 @@ class FoodAmount : public Amount<Food, FoodAmount>
 {
   public:
 
-    explicit FoodAmount(const QSharedPointer<const Food>& food =
-                              QSharedPointer<const Food>(),
+    explicit FoodAmount(const QSharedPointer<Food>& food =
+                              QSharedPointer<Food>(),
                            double amount = 0,
                            const QSharedPointer<const Unit>& unit =
                               QSharedPointer<const Unit>());
@@ -67,6 +67,9 @@ class FoodAmount : public Amount<Food, FoodAmount>
        QSharedPointer<const Unit>()) const;
 
     inline QSharedPointer<const Food> getFood() const
+      { return getSubstance(); }
+
+    inline QSharedPointer<Food> getFood()
       { return getSubstance(); }
 
     QMap<QString, NutrientAmount> getScaledNutrients() const;

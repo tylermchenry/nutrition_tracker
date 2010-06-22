@@ -9,9 +9,9 @@
 #include "food.h"
 #include <stdexcept>
 
-FoodAmount::FoodAmount(const QSharedPointer<const Food>& food, double amount,
-                       const QSharedPointer<const Unit>& unit)
-  : Amount<Food, FoodAmount>(food, amount, unit)
+FoodAmount::FoodAmount(const QSharedPointer<Food>& food, double amount,
+                          const QSharedPointer<const Unit>& unit)
+  : Amount<Food, FoodAmount>(static_cast<const QSharedPointer<Food>& >(food), amount, unit)
 {
 }
 
@@ -54,7 +54,7 @@ double FoodAmount::getAmount(const QSharedPointer<const Unit>& otherUnit) const
           baseAmountInSourceDimension.getAmount();
 
       FoodAmount amountInTargetBaseUnit
-      (getFood(), getAmount() * dimensionConversionFactor,
+      (getSubstanceNonConst(), getAmount() * dimensionConversionFactor,
        baseAmountInTargetDimension.getUnit());
 
       return amountInTargetBaseUnit.getAmount(otherUnit);

@@ -105,9 +105,7 @@ class SingleFood: public Food
 
   protected:
 
-    virtual QSharedPointer<Food> getCanonicalSharedPointer();
-
-    virtual QSharedPointer<const Food> getCanonicalSharedPointer() const;
+    virtual QSharedPointer<Food> getCanonicalSharedPointer() const;
 
   private:
 
