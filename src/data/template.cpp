@@ -1,10 +1,3 @@
-/*
- * composite_food.cpp
- *
- *  Created on: May 14, 2010
- *      Author: tmchenry
- */
-
 #include "template.h"
 #include "data/nutrient_amount.h"
 #include "data/food_amount.h"
@@ -72,7 +65,7 @@ QSharedPointer<Template> Template::createTemplateFromQueryResults
   if (query.first()) {
 
     const QSqlRecord& record = query.record();
-    int id = record.field("Composite_Id").value().toInt();
+    int id = record.field("Template_Id").value().toInt();
 
     if (!templateCache[id]) {
       food = QSharedPointer<Template>
@@ -124,7 +117,7 @@ QMultiMap<QString, int> Template::getFoodsForUser(int userId)
 
 Template::Template(int id, const QString& name,
                       const QList<FoodComponent>& components)
-  : FoodCollection("COMPOSITE_" + QString::number(id), name, components,
+  : FoodCollection("TEMPLATE_" + QString::number(id), name, components,
                    0, 0, 0, 0),
     id(id)
 {
@@ -134,7 +127,7 @@ Template::Template(int id, const QString& name,
 }
 
 Template::Template(const QSharedPointer<const Template>& copy)
-  : FoodCollection("COMPOSITE_" + QString::number(tempId), copy),
+  : FoodCollection("TEMPLATE_" + QString::number(tempId), copy),
     id(tempId--)
 {
   qDebug() << "Created new template with temporary ID " << id;
