@@ -56,7 +56,8 @@ class FoodCollection: public Food
     struct ContainedTypes {
       enum ContainedType {
           SingleFood,
-          CompositeFood
+          CompositeFood,
+          Template, /* TODO: Find a more logical place for this */
       };
       static ContainedType fromHumanReadable(const QString& str);
       static QString toHumanReadable(ContainedType src);

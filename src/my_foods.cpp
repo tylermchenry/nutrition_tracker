@@ -8,11 +8,13 @@ MyFoods::MyFoods(QWidget *parent)
 {
   ui.setupUi(this);
 
-  ui.cbFilter->addItem("Show Single Foods and Composite Foods");
+  ui.cbFilter->addItem("Show all: Single Foods, Composite Foods, and Templates");
   ui.cbFilter->addItem("Show only Single Foods",
                        QVariant::fromValue(FoodCollection::ContainedTypes::SingleFood));
   ui.cbFilter->addItem("Show only Composite Foods",
                        QVariant::fromValue(FoodCollection::ContainedTypes::CompositeFood));
+  ui.cbFilter->addItem("Show only Templates",
+                       QVariant::fromValue(FoodCollection::ContainedTypes::Template));
 
   connect(ui.cbFilter, SIGNAL(currentIndexChanged(int)), this, SLOT(loadUserFoods()));
 

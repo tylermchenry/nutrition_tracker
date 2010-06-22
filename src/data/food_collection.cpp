@@ -9,6 +9,7 @@
 #include "food_collection.h"
 #include "single_food.h"
 #include "composite_food.h"
+#include "template.h"
 #include <QVariant>
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
@@ -44,7 +45,8 @@ QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
   FoodCollection::getFoodsForUser(int userId)
 {
   return getFoodsForUser(userId, ContainedTypes::SingleFood) +
-    getFoodsForUser(userId, ContainedTypes::CompositeFood);
+    getFoodsForUser(userId, ContainedTypes::CompositeFood) +
+    getFoodsForUser(userId, ContainedTypes::Template);
 }
 
 QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
@@ -57,6 +59,8 @@ QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
     rawFoods = SingleFood::getFoodsForUser(userId);
   } else if (type == ContainedTypes::CompositeFood) {
     rawFoods = CompositeFood::getFoodsForUser(userId);
+  } else if (type == ContainedTypes::Template) {
+    rawFoods = Template::getFoodsForUser(userId);
   }
 
   for (QMultiMap<QString, int>::const_iterator i = rawFoods.begin();
