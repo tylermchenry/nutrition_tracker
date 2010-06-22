@@ -260,6 +260,8 @@ void Meal::saveToDatabase()
     }
   }
 
+  deleteRemovedNonceFoods();
+
   QList<FoodComponent> components = getComponents();
   for (QList<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
   {
@@ -321,6 +323,10 @@ void Meal::saveToDatabase()
                              newId, i->getFoodAmount(), i->getOrder()));
       }
     }
+
+    if (i->getFoodAmount().getFood()->isNonce()) {
+      i->getFoodAmount().getFood()->saveToDatabase();
+    }
   }
 }
 
@@ -344,20 +350,12 @@ void Meal::deleteFromDatabase()
     qDebug() << "Failed to delete meal: " << query.lastError();
   } else {
     clearComponents();
+    deleteRemovedNonceFoods();
     mealCache[userId][date][id].clear();
   }
 }
 
-QSharedPointer<Food> Meal::getCanonicalSharedPointer()
-{
-  if (isTemporary()) {
-    return temporaryMealCache[temporaryId].toStrongRef();
-  } else {
-    return mealCache[userId][date][id].toStrongRef();
-  }
-}
-
-QSharedPointer<const Food> Meal::getCanonicalSharedPointer() const
+QSharedPointer<Food> Meal::getCanonicalSharedPointer() const
 {
   if (isTemporary()) {
     return temporaryMealCache[temporaryId].toStrongRef();

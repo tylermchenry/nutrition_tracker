@@ -91,6 +91,12 @@ class Food
 
     virtual void deleteFromDatabase() = 0;
 
+    virtual inline bool isNonce() const { return false; }
+
+    // cloneNonce() needs to be re-implemented only if isNonce() == true
+    virtual inline QSharedPointer<Food> cloneNonce() const
+      { return QSharedPointer<Food>(); }
+
   protected:
 
     Food(const QString& id, const QString& name, double weightAmount,
@@ -98,9 +104,7 @@ class Food
 
     Food(const QString& id, const QSharedPointer<const Food>& copy);
 
-    virtual QSharedPointer<Food> getCanonicalSharedPointer() = 0;
-
-    virtual QSharedPointer<const Food>
+    virtual QSharedPointer<Food>
       getCanonicalSharedPointer() const = 0;
 
     void bindBaseAmount

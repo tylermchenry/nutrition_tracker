@@ -86,9 +86,7 @@ class Meal : public FoodCollection
 
   protected:
 
-    virtual QSharedPointer<Food> getCanonicalSharedPointer();
-
-    virtual QSharedPointer<const Food> getCanonicalSharedPointer() const;
+    virtual QSharedPointer<Food> getCanonicalSharedPointer() const;
 
   private:
 

@@ -33,7 +33,7 @@
  * have RDIs. If these methods are used on an amount of a nutrient without
  * an RDI, the amount that is retrieved or set will be 0.
  */
-class NutrientAmount : public Amount<Nutrient, NutrientAmount>
+class NutrientAmount : public Amount<const Nutrient, NutrientAmount>
 {
   public:
 

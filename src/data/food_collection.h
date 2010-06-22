@@ -77,8 +77,6 @@ class FoodCollection: public Food
 
     virtual ~FoodCollection();
 
-    virtual bool isNonce() const { return false; }
-
     virtual QVector<FoodAmount> getComponentAmounts() const;
 
     virtual QList<FoodComponent> getComponents() const;
@@ -135,16 +133,18 @@ class FoodCollection: public Food
 
     inline const QSet<int>& getRemovedIds() const { return removedIds; }
 
+    inline const QList<QSharedPointer<Food> >& getRemovedNonceFoods() const
+      { return removedNonceFoods; }
+
+    void deleteRemovedNonceFoods();
+
     inline void clearRemovedIds() { removedIds.clear(); }
 
-    virtual QSharedPointer<Food> getCanonicalSharedPointer();
+    inline void clearRemovedNonceFoods() { removedNonceFoods.clear(); }
 
-    virtual QSharedPointer<const Food> getCanonicalSharedPointer() const;
+    virtual QSharedPointer<Food> getCanonicalSharedPointer() const;
 
     virtual QSharedPointer<FoodCollection>
-      getCanonicalSharedPointerToCollection();
-
-    virtual QSharedPointer<const FoodCollection>
       getCanonicalSharedPointerToCollection() const;
 
     inline bool needsToBeReSaved() const { return bNeedsToBeReSaved; }
@@ -181,6 +181,7 @@ class FoodCollection: public Food
     QMap<int, int> newIds;
 
     QSet<int> removedIds;
+    QList<QSharedPointer<Food> > removedNonceFoods;
 
     bool bNeedsToBeReSaved;
 

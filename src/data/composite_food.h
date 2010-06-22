@@ -68,8 +68,6 @@ class CompositeFood: public FoodCollection
 
     virtual ~CompositeFood();
 
-    virtual inline bool isNonce() const { return nonce; }
-
     inline int getCompositeFoodId() const { return id; }
 
     inline QDate getCreationDate() const { return creationDate; }
@@ -80,11 +78,13 @@ class CompositeFood: public FoodCollection
 
     virtual void deleteFromDatabase();
 
+    virtual inline bool isNonce() const { return nonce; }
+
+    virtual QSharedPointer<Food> cloneNonce() const;
+
   protected:
 
-    virtual QSharedPointer<Food> getCanonicalSharedPointer();
-
-    virtual QSharedPointer<const Food> getCanonicalSharedPointer() const;
+    virtual QSharedPointer<Food> getCanonicalSharedPointer() const;
 
   private:
 

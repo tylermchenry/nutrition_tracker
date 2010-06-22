@@ -255,6 +255,8 @@ void CompositeFood::saveToDatabase()
     }
   }
 
+  deleteRemovedNonceFoods();
+
   QList<FoodComponent> components = getComponents();
   for (QList<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
   {
@@ -316,6 +318,10 @@ void CompositeFood::saveToDatabase()
                            newId, i->getFoodAmount(), i->getOrder()));
       }
     }
+
+    if (i->getFoodAmount().getFood()->isNonce()) {
+      i->getFoodAmount().getFood()->saveToDatabase();
+    }
   }
 }
 
@@ -345,15 +351,20 @@ void CompositeFood::deleteFromDatabase()
   }
 
   clearComponents();
+  deleteRemovedNonceFoods();
   compositeFoodCache[id].clear();
 }
 
-QSharedPointer<Food> CompositeFood::getCanonicalSharedPointer()
+QSharedPointer<Food> CompositeFood::cloneNonce() const
 {
-  return compositeFoodCache[id].toStrongRef();
+  if (nonce) {
+    return createNewCompositeFood(compositeFoodCache[id].toStrongRef());
+  } else {
+    return QSharedPointer<Food>();
+  }
 }
 
-QSharedPointer<const Food> CompositeFood::getCanonicalSharedPointer() const
+QSharedPointer<Food> CompositeFood::getCanonicalSharedPointer() const
 {
   return compositeFoodCache[id].toStrongRef();
 }

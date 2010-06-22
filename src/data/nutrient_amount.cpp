@@ -10,7 +10,7 @@
 #include <stdexcept>
 
 NutrientAmount::NutrientAmount(const QSharedPointer<const Nutrient>& nutrient, double amount)
-  : Amount<Nutrient, NutrientAmount>(nutrient, amount,
+  : Amount<const Nutrient, NutrientAmount>(nutrient, amount,
       (nutrient == NULL ? QSharedPointer<const Unit>() : nutrient->getStandardUnit()))
 {
 }

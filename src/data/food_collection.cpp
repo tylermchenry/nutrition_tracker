@@ -227,6 +227,9 @@ void FoodCollection::removeComponent(const FoodComponent& component)
   if (hasComponent(component)) {
     if (component.getId() >= 0) {
       removedIds.insert(component.getId());
+      if (component.getFoodAmount().getFood()->isNonce()) {
+        removedNonceFoods.append(component.getFoodAmount().getFood());
+      }
     }
     components.remove(component.getOrder());
   } else if (newIds.contains(component.getId())) {
@@ -243,6 +246,10 @@ void FoodCollection::clearComponents()
   {
     if (i.value().getId() >= 0) {
       removedIds.insert(i.value().getId());
+
+      if (i.value().getFoodAmount().getFood()->isNonce()) {
+        removedNonceFoods.append(i.value().getFoodAmount().getFood());
+      }
     }
   }
 
@@ -334,25 +341,25 @@ void FoodCollection::replaceComponent(const FoodComponent& oldComponent,
   components[oldComponent.getOrder()] = newComponent;
 }
 
-QSharedPointer<Food> FoodCollection::getCanonicalSharedPointer()
+void FoodCollection::deleteRemovedNonceFoods()
+{
+  for (QList<QSharedPointer<Food> >::const_iterator i = removedNonceFoods.begin();
+       i != removedNonceFoods.end(); ++i)
+  {
+    (*i)->deleteFromDatabase();
+  }
+
+  removedNonceFoods.clear();
+}
+
+QSharedPointer<Food> FoodCollection::getCanonicalSharedPointer() const
 {
   return foodCollectionCache[id].toStrongRef();
 }
 
-QSharedPointer<const Food> FoodCollection::getCanonicalSharedPointer() const
-{
-  return foodCollectionCache[id].toStrongRef();
-}
-
-QSharedPointer<FoodCollection> FoodCollection::getCanonicalSharedPointerToCollection()
+QSharedPointer<FoodCollection> FoodCollection::getCanonicalSharedPointerToCollection() const
 {
   return getCanonicalSharedPointer().dynamicCast<FoodCollection>();
-}
-
-QSharedPointer<const FoodCollection>
-  FoodCollection::getCanonicalSharedPointerToCollection() const
-{
-  return getCanonicalSharedPointer().dynamicCast<const FoodCollection>();
 }
 
 QList<FoodComponent> FoodCollection::createComponentsFromQueryResults
@@ -373,7 +380,7 @@ QList<FoodComponent> FoodCollection::createComponentsFromQueryResults
     ContainedTypes::ContainedType type =
       ContainedTypes::fromHumanReadable(record.field("Contained_Type").value().toString());
 
-    QSharedPointer<const Food> containedFood;
+    QSharedPointer<Food> containedFood;
 
     if (type == ContainedTypes::SingleFood) {
       containedFood = SingleFood::getSingleFood(containedId);
@@ -430,6 +437,15 @@ void FoodCollection::addComponents(const QList<FoodComponent>& newComponents)
       qDebug() << "Component is from another collection; Rebasing with temporary ID " << nextTemporaryId;
       c = FoodComponent(getCanonicalSharedPointerToCollection(),
                         nextTemporaryId--, c.getFoodAmount(), c.getOrder());
+    }
+
+    if (c.getFoodAmount().getFood()->isNonce()) {
+      qDebug() << "Component is a nonce. Making a copy.";
+      const FoodAmount& amt = c.getFoodAmount();
+      c = FoodComponent(getCanonicalSharedPointerToCollection(),
+                        nextTemporaryId--,
+                        FoodAmount(amt.getFood()->cloneNonce(), amt.getAmount(), amt.getUnit()),
+                        c.getOrder());
     }
 
     int order = c.getOrder();

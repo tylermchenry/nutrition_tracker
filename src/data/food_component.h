@@ -66,7 +66,9 @@ class FoodComponent
 
     int getId() const { return id; }
 
-    const FoodAmount& getFoodAmount() const { return foodAmount; }
+//    const FoodAmount& getFoodAmount() const { return foodAmount; }
+
+    FoodAmount getFoodAmount() const { return foodAmount; }
 
     int getOrder() const { return order; }
 
