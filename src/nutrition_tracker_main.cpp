@@ -2,6 +2,7 @@
 #include "add_food.h"
 #include "edit_food.h"
 #include "edit_composite_food.h"
+#include "edit_template.h"
 #include "my_foods.h"
 #include "database_information.h"
 #include <data/single_food.h>
@@ -21,7 +22,9 @@ NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
   connect(ui.actionAdd_new_food, SIGNAL(triggered()),
           this, SLOT(showCreateFood()));
   connect(ui.actionAdd_new_composite_food, SIGNAL(triggered()),
-           this, SLOT(showCreateCompositeFood()));
+          this, SLOT(showCreateCompositeFood()));
+  connect(ui.actionCreate_template, SIGNAL(triggered()),
+          this, SLOT(showCreateTemplate()));
   connect(ui.actionManage_my_foods, SIGNAL(triggered()),
           this, SLOT(showMyFoods()));
 }
@@ -61,6 +64,11 @@ void NutritionTrackerMain::showCreateFood()
 void NutritionTrackerMain::showCreateCompositeFood()
 {
   QScopedPointer<QDialog>(new EditCompositeFood(this))->exec();
+}
+
+void NutritionTrackerMain::showCreateTemplate()
+{
+  QScopedPointer<QDialog>(new EditTemplate(this))->exec();
 }
 
 void NutritionTrackerMain::showMyFoods()

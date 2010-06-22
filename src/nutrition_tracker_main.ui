@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -45,6 +45,7 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionAdd_Food_s_to_Current_Day"/>
+    <addaction name="actionAdd_Food_to_Current_Day_from_Template"/>
     <addaction name="actionClear_today_s_entries"/>
    </widget>
    <widget class="QMenu" name="menuFood">
@@ -53,9 +54,10 @@
     </property>
     <addaction name="actionAdd_new_food"/>
     <addaction name="actionAdd_new_composite_food"/>
+    <addaction name="actionCreate_composite_food_from_template"/>
+    <addaction name="actionCreate_template"/>
     <addaction name="separator"/>
     <addaction name="actionManage_my_foods"/>
-    <addaction name="actionManage_my_templates"/>
    </widget>
    <widget class="QMenu" name="menuReports">
     <property name="title">
@@ -196,12 +198,27 @@
   </action>
   <action name="actionManage_my_foods">
    <property name="text">
-    <string>Manage my foods...</string>
+    <string>Manage my foods and templates...</string>
    </property>
   </action>
   <action name="actionManage_my_templates">
    <property name="text">
     <string>Manage my templates...</string>
+   </property>
+  </action>
+  <action name="actionCreate_template">
+   <property name="text">
+    <string>Create template...</string>
+   </property>
+  </action>
+  <action name="actionCreate_composite_food_from_template">
+   <property name="text">
+    <string>Create composite food from template...</string>
+   </property>
+  </action>
+  <action name="actionAdd_Food_to_Current_Day_from_Template">
+   <property name="text">
+    <string>Add Food to Current Day from Template...</string>
    </property>
   </action>
  </widget>

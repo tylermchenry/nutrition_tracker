@@ -1,6 +1,7 @@
 #include "my_foods.h"
 #include "edit_food.h"
 #include "edit_composite_food.h"
+#include "edit_template.h"
 #include <QtGui/QMessageBox>
 
 MyFoods::MyFoods(QWidget *parent)
@@ -54,6 +55,14 @@ void MyFoods::edit()
       } else {
         reportDBError();
       }
+    } else if (food.first == FoodCollection::ContainedTypes::Template) {
+      QSharedPointer<Template> compositeFood = Template::getTemplate(food.second);
+      if (compositeFood) {
+        QScopedPointer<QDialog>(new EditTemplate(this, compositeFood))->exec();
+        currentItem->setText(compositeFood->getName());
+      } else {
+        reportDBError();
+      }
     }
   }
 }
@@ -81,6 +90,15 @@ void MyFoods::duplicate()
         QSharedPointer<CompositeFood> compositeFood = CompositeFood::createNewCompositeFood(baseCompositeFood);
         compositeFood->setName("Copy of " + baseCompositeFood->getName());
         QScopedPointer<QDialog>(new EditCompositeFood(this, compositeFood))->exec();
+      } else {
+        reportDBError();
+      }
+    } else if (food.first == FoodCollection::ContainedTypes::Template) {
+      QSharedPointer<Template> baseTemplate = Template::getTemplate(food.second);
+      if (baseTemplate) {
+        QSharedPointer<Template> compositeFood = Template::createNewTemplate(baseTemplate);
+        compositeFood->setName("Copy of " + baseTemplate->getName());
+        QScopedPointer<QDialog>(new EditTemplate(this, compositeFood))->exec();
       } else {
         reportDBError();
       }
