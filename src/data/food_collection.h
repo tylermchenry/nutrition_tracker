@@ -77,6 +77,8 @@ class FoodCollection: public Food
 
     virtual ~FoodCollection();
 
+    virtual bool isNonce() const { return false; }
+
     virtual QVector<FoodAmount> getComponentAmounts() const;
 
     virtual QList<FoodComponent> getComponents() const;

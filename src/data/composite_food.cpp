@@ -28,6 +28,13 @@ QSharedPointer<CompositeFood> CompositeFood::createNewCompositeFood
   return food;
 }
 
+QSharedPointer<CompositeFood> CompositeFood::createNewNonceCompositeFood()
+{
+  QSharedPointer<CompositeFood> food = createNewCompositeFood();
+  food->nonce = true;
+  return food;
+}
+
 QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
 {
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
@@ -38,6 +45,8 @@ QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
   }
 
   query.prepare("SELECT composite_food.Composite_Id, composite_food.Description, "
+                "       composite_food.User_Id, composite_food.IsNonce, "
+                "       composite_food.CreationDate, composite_food.ExpiryDate, "
                 "       composite_food.Weight_g, composite_food.Volume_floz, "
                 "       composite_food.Quantity, composite_food.Servings, "
                 "       composite_food_link.CompositeLink_Id, composite_food_link.Contained_Type, "
@@ -83,7 +92,10 @@ QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
                            record.field("Weight_g").value().toDouble(),
                            record.field("Volume_floz").value().toDouble(),
                            record.field("Quantity").value().toDouble(),
-                           record.field("Servings").value().toDouble()));
+                           record.field("Servings").value().toDouble(),
+                           record.field("CreationDate").value().toDate(),
+                           record.field("ExpiryDate").value().toDate(),
+                           record.field("IsNonce").value().toBool()));
 
       compositeFoodCache[id] = food;
 
@@ -134,10 +146,11 @@ QMultiMap<QString, int> CompositeFood::getFoodsForUser(int userId)
 CompositeFood::CompositeFood(int id, const QString& name,
                              const QList<FoodComponent>& components,
                              double weightAmount, double volumeAmount,
-                             double quantityAmount, double servingAmount)
+                             double quantityAmount, double servingAmount,
+                             QDate creationDate, QDate expiryDate, bool nonce)
   : FoodCollection("COMPOSITE_" + QString::number(id), name, components,
                    weightAmount, volumeAmount, quantityAmount, servingAmount),
-    id(id)
+    id(id), nonce(nonce), creationDate(creationDate), expiryDate(expiryDate)
 {
   if (needsToBeReSaved()) {
     saveToDatabase();
@@ -146,16 +159,20 @@ CompositeFood::CompositeFood(int id, const QString& name,
 
 CompositeFood::CompositeFood(int id, const QString& name,
                              double weightAmount, double volumeAmount,
-                             double quantityAmount, double servingAmount)
+                             double quantityAmount, double servingAmount,
+                             QDate creationDate, QDate expiryDate, bool nonce)
   : FoodCollection("COMPOSITE_" + QString::number(id), name,
                    weightAmount, volumeAmount, quantityAmount, servingAmount),
-    id(id)
+    id(id), nonce(nonce), creationDate(creationDate), expiryDate(expiryDate)
 {
 }
 
 CompositeFood::CompositeFood(const QSharedPointer<const CompositeFood>& copy)
   : FoodCollection("COMPOSITE_" + QString::number(tempId), copy),
-    id(tempId--)
+    id(tempId--),
+    nonce(copy ? copy->nonce : false),
+    creationDate(copy ? copy->creationDate : QDate::currentDate()),
+    expiryDate(copy ? copy->expiryDate : QDate())
 {
   qDebug() << "Created new composite food with temporary ID " << id;
 }
@@ -174,11 +191,15 @@ void CompositeFood::saveToDatabase()
   // This needs to work either for a new food or an update to an existing food
 
   query.prepare("INSERT INTO composite_food "
-                "  (Composite_Id, User_Id, Description, Weight_g, Volume_floz, Quantity, Servings) "
+                "  (Composite_Id, User_Id, Description, IsNonce, "
+                "   CreationDate, ExpiryDate, Weight_g, Volume_floz, "
+                "   Quantity, Servings) "
                 "VALUES "
-                "  (:id, :user_id, :name, :weight, :volume, :quantity, :servings) "
+                "  (:id, :user_id, :name, :nonce, :creation, :expiry,"
+                "   :weight, :volume, :quantity, :servings) "
                 "ON DUPLICATE KEY UPDATE"
-                "  User_Id=:user_id2, Description=:name2,"
+                "  User_Id=:user_id2, Description=:name2, IsNonce=:nonce2, "
+                "  CreationDate=:creation2, ExpiryDate=:expiry2, "
                 "  Weight_g=:weight2, Volume_floz=:volume2, Quantity=:quantity2, Servings=:servings2");
 
   query.bindValue(":id", (id >= 0 ? QVariant(id) : QVariant(QVariant::Int)));
@@ -188,6 +209,14 @@ void CompositeFood::saveToDatabase()
   query.bindValue(":user_id2", 1);
   query.bindValue(":name", getName());
   query.bindValue(":name2", getName());
+
+  query.bindValue(":nonce", nonce);
+  query.bindValue(":nonce2", nonce);
+
+  query.bindValue(":creation", creationDate.isNull() ? QVariant(QVariant::Date) : creationDate);
+  query.bindValue(":creation2", creationDate.isNull() ? QVariant(QVariant::Date) : creationDate);
+  query.bindValue(":expiry", expiryDate.isNull() ? QVariant(QVariant::Date) : expiryDate);
+  query.bindValue(":expiry2", expiryDate.isNull() ? QVariant(QVariant::Date) : expiryDate);
 
   bindBaseAmount(query, ":weight", Unit::Dimensions::Weight);
   bindBaseAmount(query, ":volume", Unit::Dimensions::Volume);

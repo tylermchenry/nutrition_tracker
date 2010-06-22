@@ -23,6 +23,7 @@
 #define COMPOSITE_FOOD_H_
 
 #include "food_collection.h"
+#include <QDate>
 
 /* A CompositeFood is a food made up of one or more other foods, which
  * functions logically as a its own food (as opposed to a FoodCollection, which
@@ -56,6 +57,8 @@ class CompositeFood: public FoodCollection
       (const QSharedPointer<const CompositeFood>& copy =
        QSharedPointer<const CompositeFood>());
 
+    static QSharedPointer<CompositeFood> createNewNonceCompositeFood();
+
     static QSharedPointer<CompositeFood> getCompositeFood(int id);
 
     static QSharedPointer<CompositeFood>
@@ -65,7 +68,13 @@ class CompositeFood: public FoodCollection
 
     virtual ~CompositeFood();
 
+    virtual inline bool isNonce() const { return nonce; }
+
     inline int getCompositeFoodId() const { return id; }
+
+    inline QDate getCreationDate() const { return creationDate; }
+
+    inline QDate getExpiryDate() const { return expiryDate; }
 
     virtual void saveToDatabase();
 
@@ -82,11 +91,17 @@ class CompositeFood: public FoodCollection
     CompositeFood(int id, const QString& name,
                     const QList<FoodComponent>& components,
                     double weightAmount, double volumeAmount,
-                    double quantityAmount, double servingAmount);
+                    double quantityAmount, double servingAmount,
+                    QDate creationDate = QDate::currentDate(),
+                    QDate expiryDate = QDate(),
+                    bool nonce = false);
 
     CompositeFood(int id, const QString& name,
                     double weightAmount, double volumeAmount,
-                    double quantityAmount, double servingAmount);
+                    double quantityAmount, double servingAmount,
+                    QDate creationDate = QDate::currentDate(),
+                    QDate expiryDate = QDate(),
+                    bool nonce = false);
 
     // Default or "Copy" constructor. If a food is passed in to copy, the
     // attributes of the food object are copied, but the constructed food
@@ -95,6 +110,9 @@ class CompositeFood: public FoodCollection
                     QSharedPointer<const CompositeFood>());
 
     int id;
+    bool nonce;
+    QDate creationDate;
+    QDate expiryDate;
 
     static int tempId;
 
