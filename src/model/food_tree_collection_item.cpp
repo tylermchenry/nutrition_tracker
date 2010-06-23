@@ -93,7 +93,7 @@ FoodAmount FoodTreeCollectionItem::getFoodAmount() const
 QString FoodTreeCollectionItem::getName() const
 {
   if (collection) {
-    return collection->getName();
+    return collection->getDisplayName();
   } else {
     return "(Undefined Collection)";
   }

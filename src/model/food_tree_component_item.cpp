@@ -52,7 +52,7 @@ FoodAmount FoodTreeComponentItem::getFoodAmount() const
 QString FoodTreeComponentItem::getName() const
 {
   if (component.getFoodAmount().isDefined()) {
-    return component.getFoodAmount().getFood()->getName();
+    return component.getFoodAmount().getFood()->getDisplayName();
   } else {
     return "(Undefined Component)";
   }

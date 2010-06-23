@@ -132,7 +132,7 @@ void ViewFood::loadNutrientInformation(QVector<NutrientAmountDisplay>& nutrientD
 
 void ViewFood::loadFoodInformation()
 {
-  ui.txtName->setText(foodAmount.getFood()->getName());
+  ui.txtName->setText(foodAmount.getFood()->getDisplayName());
 
   // TODO: Load category name. But currently this only works for single foods, and this
   // might be a composite or a meal

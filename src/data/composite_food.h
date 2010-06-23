@@ -66,7 +66,12 @@ class CompositeFood: public FoodCollection
 
     static QMultiMap<QString, int> getFoodsForUser(int userId);
 
+    static QString generateExpirySuffix
+      (const QDate& creation, const QDate& expiry);
+
     virtual ~CompositeFood();
+
+    virtual QString getDisplayName() const;
 
     inline int getCompositeFoodId() const { return id; }
 

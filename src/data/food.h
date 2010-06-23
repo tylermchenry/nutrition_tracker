@@ -61,6 +61,8 @@ class Food
 
     inline QString getName() const { return name; }
 
+    virtual inline QString getDisplayName() const { return name; }
+
     QList<Unit::Dimensions::Dimension> getValidDimensions() const;
 
     FoodAmount getBaseAmount() const;

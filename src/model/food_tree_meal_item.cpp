@@ -67,7 +67,7 @@ FoodAmount FoodTreeMealItem::getFoodAmount() const
 QString FoodTreeMealItem::getName() const
 {
   if (meal) {
-    return meal->getName();
+    return meal->getDisplayName();
   } else {
     return "(Undefined Meal)";
   }

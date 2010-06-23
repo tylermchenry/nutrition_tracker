@@ -124,7 +124,8 @@ QMultiMap<QString, int> CompositeFood::getFoodsForUser(int userId)
   QSqlQuery query(db);
   QMultiMap<QString, int> foods;
 
-  query.prepare("SELECT composite_food.Composite_Id, composite_food.Description "
+  query.prepare("SELECT composite_food.Composite_Id, composite_food.Description,"
+                 "       composite_food.CreationDate, composite_food.ExpiryDate "
                  "FROM   composite_food "
                  "WHERE  composite_food.User_Id = :userId");
 
@@ -133,7 +134,9 @@ QMultiMap<QString, int> CompositeFood::getFoodsForUser(int userId)
   if (query.exec()) {
     while (query.next()) {
       const QSqlRecord& record = query.record();
-      foods.insert(record.field("Description").value().toString(),
+      foods.insert(record.field("Description").value().toString() +
+                   generateExpirySuffix(record.field("CreationDate").value().toDate(),
+                                        record.field("ExpiryDate").value().toDate()),
                    record.field("Composite_Id").value().toInt());
     }
   } else {
@@ -141,6 +144,37 @@ QMultiMap<QString, int> CompositeFood::getFoodsForUser(int userId)
   }
 
   return foods;
+}
+
+QString CompositeFood::generateExpirySuffix
+  (const QDate& creation, const QDate& expiry)
+{
+  QString suffix;
+
+  if (!expiry.isNull()) {
+    if (!creation.isNull()) {
+      if (expiry.year() == creation.year()) {
+        if (expiry.month() == creation.month()) {
+          if (expiry.day() == creation.day()) {
+            suffix += " (" + expiry.toString("dd MMM yyyy") + ")";
+          } else {
+            suffix += " (" + creation.toString("dd") + " - " +
+            expiry.toString("dd MMM yyyy") + ")";
+          }
+        } else {
+          suffix += " (" + creation.toString("dd MMM") + " - " +
+          expiry.toString("dd MMM yyyy") + ")";
+        }
+      } else {
+        suffix += " (" + creation.toString("dd MMM yyyy") + " - " +
+        expiry.toString("dd MMM yyyy") + ")";
+      }
+    } else {
+      suffix += " (? - " + expiry.toString("dd MMM yyyy") + ")";
+    }
+  }
+
+  return suffix;
 }
 
 CompositeFood::CompositeFood(int id, const QString& name,
@@ -182,6 +216,17 @@ CompositeFood::CompositeFood(const QSharedPointer<const CompositeFood>& copy)
 
 CompositeFood::~CompositeFood()
 {
+}
+
+QString CompositeFood::getDisplayName() const
+{
+  QString name = getName() + generateExpirySuffix(creationDate, expiryDate);
+
+  if (nonce) {
+    return "[" + name + "]";
+  } else {
+    return name;
+  }
 }
 
 void CompositeFood::setCreationDate(const QDate& date)

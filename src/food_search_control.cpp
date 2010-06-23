@@ -1,5 +1,6 @@
 #include "food_search_control.h"
 #include "data/group.h"
+#include "data/composite_food.h"
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>
@@ -93,7 +94,8 @@ void FoodSearchControl::performSearch()
     QMap<QString, Result> resultSet;
 
     QString searchQuery =
-        "SELECT Food_Id AS Id, 'Food' AS Type, Long_Desc AS Description"
+        "SELECT Food_Id AS Id, 'Food' AS Type, Long_Desc AS Description,"
+        "       NULL AS CreationDate, NULL AS ExpiryDate "
         "  FROM food_description "
         "WHERE " + categoryRestrictions +
         "  " + (categoryRestrictions.size() > 0 ? "AND " : "") + food_sourceRestrictions +
@@ -106,7 +108,8 @@ void FoodSearchControl::performSearch()
     if (ui.lstCategories->isItemSelected(ui.lstCategories->item(0))) {
 
       searchQuery =
-          "SELECT Composite_Id AS Id, 'Composite Food' AS Type, Description"
+          "SELECT Composite_Id AS Id, 'Composite Food' AS Type, Description, "
+          "       CreationDate, ExpiryDate"
           "   FROM composite_food "
           "WHERE IsNonce = 0 AND " + composite_sourceRestrictions +
           "  " + (composite_sourceRestrictions.size() > 0 ? "AND " : "") + "Description LIKE "
@@ -146,12 +149,17 @@ void FoodSearchControl::runSearchQuery(const QString& queryText, QMap<QString, R
   int idField = query.record().indexOf("Id");
   int typeField = query.record().indexOf("Type");
   int descField = query.record().indexOf("Description");
+  int creationField = query.record().indexOf("CreationDate");
+  int expiryField = query.record().indexOf("ExpiryDate");
 
   while (query.next()) {
     results.insert(query.value(descField).toString(),
                    Result(query.value(idField).toInt(),
                           query.value(typeField).toString(),
-                          query.value(descField).toString()));
+                          query.value(descField).toString() +
+                          CompositeFood::generateExpirySuffix
+                            (query.value(creationField).toDate(),
+                             query.value(expiryField).toDate())));
   }
 }
 
