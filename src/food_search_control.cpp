@@ -64,17 +64,10 @@ void FoodSearchControl::performSearch()
       // food_sourceRestrictions = " (Entry_Src != 'Custom' OR User_Id != :userId)";
     }
 
-    if (!ui.chkCustom->isChecked()) {
-      // TODO: Implement when users are implemented
-      // if (food_sourceRestrictions != "") food_sourceRestrictions += " AND ";
-      // food_sourceRestrictions = " (Entry_Src != 'Custom' OR User_Id == :userId)";
-    }
-
     QString composite_sourceRestrictions;
 
     if (!ui.chkOld->isChecked()) {
-      // TODO: Implement when old markin gis implemented
-      // composite_sourceRestrictions = "Old == 0";
+      composite_sourceRestrictions = "(ExpiryDate IS NULL OR ExpiryDate > DATE(NOW()))";
     }
 
     QString categoryRestrictions;
@@ -95,9 +88,9 @@ void FoodSearchControl::performSearch()
     // it stops returning results after it hits the first result from the
     // second table in the UNION. Instead, this search is executed as two
     // separate single-table queries, and then the results are "union'ed"
-    // client-side by inserting them into a QSet, sorted by description.
+    // client-side by inserting them into a QMap, sorted by description.
 
-    QSet<Result> resultSet;
+    QMap<QString, Result> resultSet;
 
     QString searchQuery =
         "SELECT Food_Id AS Id, 'Food' AS Type, Long_Desc AS Description"
@@ -115,7 +108,7 @@ void FoodSearchControl::performSearch()
       searchQuery =
           "SELECT Composite_Id AS Id, 'Composite Food' AS Type, Description"
           "   FROM composite_food "
-          "WHERE " + composite_sourceRestrictions +
+          "WHERE IsNonce = 0 AND " + composite_sourceRestrictions +
           "  " + (composite_sourceRestrictions.size() > 0 ? "AND " : "") + "Description LIKE "
           "   CONCAT('%', :terms, '%') "
           "ORDER BY Description ASC LIMIT 500";
@@ -123,13 +116,13 @@ void FoodSearchControl::performSearch()
       runSearchQuery(searchQuery, resultSet);
     }
 
-    for (QSet<Result>::const_iterator i = resultSet.begin(); i != resultSet.end(); ++i) {
-      emit newResult(*i);
+    for (QMap<QString, Result>::const_iterator i = resultSet.begin(); i != resultSet.end(); ++i) {
+      emit newResult(i.value());
     }
   }
 }
 
-void FoodSearchControl::runSearchQuery(const QString& queryText, QSet<Result>& results) const
+void FoodSearchControl::runSearchQuery(const QString& queryText, QMap<QString, Result>& results) const
 {
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
@@ -155,7 +148,8 @@ void FoodSearchControl::runSearchQuery(const QString& queryText, QSet<Result>& r
   int descField = query.record().indexOf("Description");
 
   while (query.next()) {
-    results.insert(Result(query.value(idField).toInt(),
+    results.insert(query.value(descField).toString(),
+                   Result(query.value(idField).toInt(),
                           query.value(typeField).toString(),
                           query.value(descField).toString()));
   }

@@ -48,7 +48,7 @@ private:
     Ui::FoodSearchControlUI ui;
     QMap<QString, QString> categoryToGroupID;
 
-    void runSearchQuery(const QString& queryText, QSet<Result>& results) const;
+    void runSearchQuery(const QString& queryText, QMap<QString, Result>& results) const;
 };
 
 uint qHash(const FoodSearchControl::Result& result);
