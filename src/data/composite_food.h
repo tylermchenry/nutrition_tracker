@@ -74,6 +74,10 @@ class CompositeFood: public FoodCollection
 
     inline QDate getExpiryDate() const { return expiryDate; }
 
+    void setCreationDate(const QDate& date);
+
+    void setExpiryDate(const QDate& date);
+
     virtual void saveToDatabase();
 
     virtual void deleteFromDatabase();
@@ -108,6 +112,8 @@ class CompositeFood: public FoodCollection
     // is still assigned a new, temporary ID.
     CompositeFood(const QSharedPointer<const CompositeFood>& copy =
                     QSharedPointer<const CompositeFood>());
+
+    void validateExpiryDate();
 
     int id;
     bool nonce;

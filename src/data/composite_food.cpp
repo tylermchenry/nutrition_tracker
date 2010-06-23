@@ -152,6 +152,7 @@ CompositeFood::CompositeFood(int id, const QString& name,
                    weightAmount, volumeAmount, quantityAmount, servingAmount),
     id(id), nonce(nonce), creationDate(creationDate), expiryDate(expiryDate)
 {
+  validateExpiryDate();
   if (needsToBeReSaved()) {
     saveToDatabase();
   }
@@ -165,6 +166,7 @@ CompositeFood::CompositeFood(int id, const QString& name,
                    weightAmount, volumeAmount, quantityAmount, servingAmount),
     id(id), nonce(nonce), creationDate(creationDate), expiryDate(expiryDate)
 {
+  validateExpiryDate();
 }
 
 CompositeFood::CompositeFood(const QSharedPointer<const CompositeFood>& copy)
@@ -175,10 +177,23 @@ CompositeFood::CompositeFood(const QSharedPointer<const CompositeFood>& copy)
     expiryDate(copy ? copy->expiryDate : QDate())
 {
   qDebug() << "Created new composite food with temporary ID " << id;
+  validateExpiryDate();
 }
 
 CompositeFood::~CompositeFood()
 {
+}
+
+void CompositeFood::setCreationDate(const QDate& date)
+{
+  creationDate = date;
+  validateExpiryDate();
+}
+
+void CompositeFood::setExpiryDate(const QDate& date)
+{
+  expiryDate = date;
+  validateExpiryDate();
 }
 
 void CompositeFood::saveToDatabase()
@@ -369,3 +384,9 @@ QSharedPointer<Food> CompositeFood::getCanonicalSharedPointer() const
   return compositeFoodCache[id].toStrongRef();
 }
 
+void CompositeFood::validateExpiryDate()
+{
+  if (!creationDate.isNull() && !expiryDate.isNull() && expiryDate < creationDate) {
+    expiryDate = creationDate;
+  }
+}
