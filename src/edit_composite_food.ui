@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>323</height>
+    <width>628</width>
+    <height>706</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -60,6 +60,53 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QLabel" name="lblCreated">
+       <property name="text">
+        <string>Created:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDateEdit" name="deCreated">
+       <property name="displayFormat">
+        <string>dd MMM yyyy</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="chkExpires">
+       <property name="text">
+        <string>Expires:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDateEdit" name="deExpires">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="specialValueText">
+        <string/>
+       </property>
+       <property name="displayFormat">
+        <string>dd MMM yyyy</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+       <property name="date">
+        <date>
+         <year>2000</year>
+         <month>1</month>
+         <day>1</day>
+        </date>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -77,6 +124,12 @@
       </item>
       <item>
        <widget class="QLineEdit" name="txtWeight">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
@@ -94,6 +147,12 @@
       </item>
       <item>
        <widget class="QLineEdit" name="txtVolume">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
@@ -111,6 +170,12 @@
       </item>
       <item>
        <widget class="QLineEdit" name="txtQuantity">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
@@ -125,6 +190,12 @@
       </item>
       <item>
        <widget class="QLineEdit" name="txtServings">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>

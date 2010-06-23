@@ -45,6 +45,7 @@ class EditCompositeFood : public QDialog
 
   private slots:
 
+    void setExpiryMinimumDate(const QDate& date);
     void saveFoodAndClose();
     void saveFoodAndClear();
 };

@@ -25,6 +25,9 @@ EditCompositeFood::EditCompositeFood(QWidget *parent,
 
 	ui.sfcResultsList->setAllowMealSelection(false);
 
+	connect(ui.chkExpires, SIGNAL(clicked(bool)), ui.deExpires, SLOT(setEnabled(bool)));
+	connect(ui.deCreated, SIGNAL(dateChanged(const QDate&)), this, SLOT(setExpiryMinimumDate(const QDate&)));
+
 	connect(ui.fscSearch, SIGNAL(beginNewSearch()),
 	        ui.sfcResultsList, SLOT(clearFoodList()));
 	connect(ui.fscSearch, SIGNAL(newResult(const FoodSearchControl::Result&)),
@@ -64,6 +67,14 @@ bool EditCompositeFood::saveFood()
     food->replaceWith(ui.ftComponents->getAllFoods());
 
     food->setName(ui.txtName->text());
+
+    food->setCreationDate(ui.deCreated->date());
+
+    if (ui.chkExpires->isChecked()) {
+      food->setExpiryDate(ui.deExpires->date());
+    } else {
+      food->setExpiryDate(QDate());
+    }
 
     food->setBaseAmount
     (ui.txtWeight->text().toDouble(),
@@ -143,12 +154,36 @@ void EditCompositeFood::loadFoodInformation()
 
   ui.txtName->setText(food->getName());
 
+  QDate creationDate = food->getCreationDate();
+  QDate expiryDate = food->getExpiryDate();
+
+  if (creationDate.isNull()) {
+    creationDate = QDate::currentDate();
+  }
+
+  ui.deCreated->setDate(creationDate);
+
+  ui.chkExpires->setChecked(!expiryDate.isNull());
+  ui.deExpires->setEnabled(!expiryDate.isNull());
+
+  if (expiryDate.isNull()) {
+    expiryDate = creationDate.addDays(7);
+  }
+
+  ui.deExpires->setMinimumDate(creationDate);
+  ui.deExpires->setDate(expiryDate);
+
   // TODO: Set user when users are supported
 
   loadAmountInformation(ui.txtWeight, ui.cboWeightUnit, Unit::Dimensions::Weight);
   loadAmountInformation(ui.txtVolume, ui.cboVolumeUnit, Unit::Dimensions::Volume);
   loadAmountInformation(ui.txtQuantity, NULL, Unit::Dimensions::Quantity);
   loadAmountInformation(ui.txtServings, NULL, Unit::Dimensions::Serving);
+}
+
+void EditCompositeFood::setExpiryMinimumDate(const QDate& date)
+{
+  ui.deExpires->setMinimumDate(date);
 }
 
 void EditCompositeFood::saveFoodAndClose()
