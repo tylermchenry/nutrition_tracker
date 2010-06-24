@@ -106,7 +106,8 @@ FoodCollection::FoodCollection(int id, const QString& name,
 
 FoodCollection::FoodCollection(const QString& id,
                              const QSharedPointer<const FoodCollection>& copy)
-  : Food(id, copy), bNeedsToBeReSaved(copy ? copy->bNeedsToBeReSaved : false)
+  : Food(id, copy), id(-1), nextTemporaryId(copy ? copy->nextTemporaryId : -1),
+    bNeedsToBeReSaved(copy ? copy->bNeedsToBeReSaved : false)
 {
   if (copy) {
     setComponents(copy->getComponents());
@@ -180,13 +181,27 @@ FoodComponent FoodCollection::addComponent(const FoodAmount& foodAmount)
     order = components.keys().last()+1;
   }
 
+
   qDebug() << "Adding new (unsaved) component: " << foodAmount.getAmount()
            << foodAmount.getUnit()->getAbbreviation() << " of "
            << foodAmount.getFood()->getName()
            << " to collection: " << getName() << " [id = "
            << nextTemporaryId << "]";
-  FoodComponent component(getCanonicalSharedPointerToCollection(),
-                          nextTemporaryId--, foodAmount, order);
+
+  FoodComponent component;
+
+  if (foodAmount.getFood()->isNonce()) {
+    qDebug() << "Component is a nonce. Making a copy.";
+    component = FoodComponent(getCanonicalSharedPointerToCollection(),
+                              nextTemporaryId--,
+                              FoodAmount(foodAmount.getFood()->cloneNonce(),
+                                         foodAmount.getAmount(), foodAmount.getUnit()),
+                              component.getOrder());
+  } else {
+    component = FoodComponent(getCanonicalSharedPointerToCollection(),
+                              nextTemporaryId--, foodAmount, order);
+  }
+
   components.insert(order, component);
   return component;
 }
