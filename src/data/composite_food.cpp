@@ -28,10 +28,30 @@ QSharedPointer<CompositeFood> CompositeFood::createNewCompositeFood
   return food;
 }
 
-QSharedPointer<CompositeFood> CompositeFood::createNewNonceCompositeFood()
+QSharedPointer<CompositeFood> CompositeFood::createNewNonceCompositeFood
+  (const FoodAmount& basisAmount)
 {
   QSharedPointer<CompositeFood> food = createNewCompositeFood();
+
   food->nonce = true;
+
+  if (basisAmount.isDefined()) {
+
+    food->setName(basisAmount.getFood()->getName());
+
+    QList<FoodComponent> components = basisAmount.getFood()->getComponents();
+
+    if (components.empty()) {
+      food->addComponent(basisAmount);
+    } else {
+      for (QList<FoodComponent>::iterator i = components.begin(); i != components.end(); ++i) {
+        food->addComponent(i->getFoodAmount());
+      }
+    }
+
+    food->setBaseAmount(basisAmount.getAmount(), basisAmount.getUnit());
+  }
+
   return food;
 }
 
@@ -320,6 +340,10 @@ void CompositeFood::saveToDatabase()
   QList<FoodComponent> components = getComponents();
   for (QList<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
   {
+    if (i->getFoodAmount().getFood()->isNonce()) {
+      i->getFoodAmount().getFood()->saveToDatabase();
+    }
+
     if (!query.prepare("INSERT INTO composite_food_link "
         "  (CompositeLink_Id, Composite_Id, Contained_Type, "
         "   Contained_Id, Magnitude, Unit, IntrafoodOrder) "
@@ -377,10 +401,6 @@ void CompositeFood::saveToDatabase()
         (*i, FoodComponent(getCanonicalSharedPointerToCollection(),
                            newId, i->getFoodAmount(), i->getOrder()));
       }
-    }
-
-    if (i->getFoodAmount().getFood()->isNonce()) {
-      i->getFoodAmount().getFood()->saveToDatabase();
     }
   }
 }

@@ -57,7 +57,8 @@ class CompositeFood: public FoodCollection
       (const QSharedPointer<const CompositeFood>& copy =
        QSharedPointer<const CompositeFood>());
 
-    static QSharedPointer<CompositeFood> createNewNonceCompositeFood();
+    static QSharedPointer<CompositeFood> createNewNonceCompositeFood
+      (const FoodAmount& basisAmount = FoodAmount());
 
     static QSharedPointer<CompositeFood> getCompositeFood(int id);
 
