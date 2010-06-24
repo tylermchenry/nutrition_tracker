@@ -10,7 +10,8 @@ INCLUDEPATH += . \
     src
 
 # Input
-HEADERS += src/template_components.h \
+HEADERS += src/select_template.h \
+    src/template_components.h \
     src/instantiate_template.h \
     src/edit_template.h \
     src/data/template.h \
@@ -49,7 +50,8 @@ HEADERS += src/template_components.h \
     src/food_search_control.h \
     src/nutrition_tracker.h \
     src/nutrition_tracker_main.h
-FORMS += src/template_components.ui \
+FORMS += src/select_template.ui \
+    src/template_components.ui \
     src/instantiate_template.ui \
     src/edit_template.ui \
     src/my_foods.ui \
@@ -63,7 +65,8 @@ FORMS += src/template_components.ui \
     src/food_search_control.ui \
     src/nutrition_tracker.ui \
     src/nutrition_tracker_main.ui
-SOURCES += src/template_components.cpp \
+SOURCES += src/select_template.cpp \
+    src/template_components.cpp \
     src/instantiate_template.cpp \
     src/edit_template.cpp \
     src/data/template.cpp \

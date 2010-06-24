@@ -3,6 +3,7 @@
 #include "edit_food.h"
 #include "edit_composite_food.h"
 #include "edit_template.h"
+#include "select_template.h"
 #include "instantiate_template.h"
 #include "my_foods.h"
 #include "database_information.h"
@@ -71,7 +72,17 @@ void NutritionTrackerMain::showCreateCompositeFood()
 
 void NutritionTrackerMain::showCreateCompositeFoodFromTemplate()
 {
-  QScopedPointer<QDialog>(new InstantiateTemplate(Template::getTemplate(40), this))->exec();
+  QSharedPointer<const Template> templ;
+
+  {
+    QScopedPointer<SelectTemplate> selectTemplate(new SelectTemplate(this));
+    selectTemplate->exec();
+    templ = selectTemplate->getSelectedTemplate();
+  }
+
+  if (templ) {
+    QSharedPointer<QDialog>(new InstantiateTemplate(templ, this))->exec();
+  }
 }
 
 void NutritionTrackerMain::showCreateTemplate()
