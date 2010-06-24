@@ -265,6 +265,10 @@ void Meal::saveToDatabase()
   QList<FoodComponent> components = getComponents();
   for (QList<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
   {
+    if (i->getFoodAmount().getFood()->isNonce()) {
+      i->getFoodAmount().getFood()->saveToDatabase();
+    }
+
     query.prepare("INSERT INTO meal_link "
                    "  (MealLink_Id, Meal_Id, User_Id, MealDate, Contained_Type, "
                    "   Contained_Id, Magnitude, Unit, IntramealOrder) "
@@ -322,10 +326,6 @@ void Meal::saveToDatabase()
           (*i, FoodComponent(getCanonicalSharedPointerToCollection(),
                              newId, i->getFoodAmount(), i->getOrder()));
       }
-    }
-
-    if (i->getFoodAmount().getFood()->isNonce()) {
-      i->getFoodAmount().getFood()->saveToDatabase();
     }
   }
 }
