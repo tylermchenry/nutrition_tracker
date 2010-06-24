@@ -1,9 +1,10 @@
 #include "instantiate_template.h"
+#include "data/meal.h"
 
 InstantiateTemplate::InstantiateTemplate
-  (const QSharedPointer<const Template>& templ, QWidget *parent)
+  (const QSharedPointer<const Template>& templ, bool promptForMeal, QWidget *parent)
     : QDialog(parent), tcComponents(new TemplateComponents(templ, this)),
-      created(false)
+      promptForMeal(promptForMeal), created(false)
 {
 	ui.setupUi(this);
 
@@ -22,6 +23,18 @@ InstantiateTemplate::InstantiateTemplate
 	ui.cbAmountUnit->setCurrentIndex
       (ui.cbAmountUnit->findData
          (Unit::getPreferredUnit(Unit::Dimensions::Serving)->getAbbreviation()));
+
+	ui.lblMeal->setVisible(promptForMeal);
+	ui.cbMeal->setVisible(promptForMeal);
+
+	if (promptForMeal) {
+	  QMap<int, QString> mealNames = Meal::getAllMealNames();
+
+	  for (QMap<int, QString>::const_iterator i = mealNames.begin(); i != mealNames.end(); ++i)
+	  {
+	    ui.cbMeal->addItem(i.value(), i.key());
+	  }
+	}
 
 	ui.saComponents->setWidget(tcComponents);
 
@@ -42,6 +55,15 @@ FoodAmount InstantiateTemplate::getInstanceAmount() const
                                      (ui.cbAmountUnit->currentIndex()).toString()));
   } else {
     return FoodAmount();
+  }
+}
+
+int InstantiateTemplate::getSelectedMealId() const
+{
+  if (created && promptForMeal) {
+    return ui.cbMeal->itemData(ui.cbMeal->currentIndex()).toInt();
+  } else {
+    return -1;
   }
 }
 

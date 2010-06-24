@@ -69,6 +69,16 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QLabel" name="lblMeal">
+       <property name="text">
+        <string>Add to Meal:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="cbMeal"/>
+     </item>
     </layout>
    </item>
    <item>

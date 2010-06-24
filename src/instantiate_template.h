@@ -13,11 +13,14 @@ class InstantiateTemplate : public QDialog
   public:
 
     InstantiateTemplate(const QSharedPointer<const Template>& templ,
+                           bool promptForMeal = false,
                            QWidget *parent = 0);
 
     ~InstantiateTemplate();
 
     FoodAmount getInstanceAmount() const;
+
+    int getSelectedMealId() const;
 
   private slots:
 
@@ -28,6 +31,7 @@ class InstantiateTemplate : public QDialog
     Ui::InstantiateTemplateUI ui;
 
     TemplateComponents* tcComponents;
+    bool promptForMeal;
     bool created;
 };
 
