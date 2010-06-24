@@ -19,6 +19,7 @@ EditCompositeFood::EditCompositeFood(QWidget *parent,
 }
 
 EditCompositeFood::EditCompositeFood(QWidget *parent, const FoodAmount& initialData)
+  : QDialog(parent)
 {
   initialize();
   loadFoodInformation();
