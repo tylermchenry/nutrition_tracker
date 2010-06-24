@@ -48,10 +48,10 @@ TemplateComponents::ComponentWidgetGroup::ComponentWidgetGroup
 
     lblFoodName->setText(food->getDisplayName());
     lblFoodName->setWordWrap(true);
-    lblFoodName->setMaximumWidth(300);
 
     txtAmount->setText(QString::number(foodAmount.getAmount()));
     txtAmount->setMinimumWidth(50);
+    txtAmount->setMaximumWidth(80);
     txtAmount->setAlignment(Qt::AlignRight);
 
     QMap<QString, QSharedPointer<const Unit> > unitsToShow;
