@@ -17,6 +17,8 @@ class EditCompositeFood : public QDialog
     explicit EditCompositeFood(QWidget *parent = 0,
                                    const QSharedPointer<CompositeFood>& food = QSharedPointer<CompositeFood>());
 
+    EditCompositeFood(QWidget *parent, const FoodAmount& initialData);
+
     ~EditCompositeFood();
 
   public slots:
@@ -30,6 +32,8 @@ class EditCompositeFood : public QDialog
     Ui::EditCompositeFoodUI ui;
 
     QSharedPointer<CompositeFood> food;
+
+    void initialize();
 
     // TODO: These methods are largely in common with the EditFood class;
     // refactor them so into a common base or utility class.

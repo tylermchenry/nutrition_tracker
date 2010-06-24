@@ -73,6 +73,7 @@ void NutritionTrackerMain::showCreateCompositeFood()
 void NutritionTrackerMain::showCreateCompositeFoodFromTemplate()
 {
   QSharedPointer<const Template> templ;
+  FoodAmount instanceAmount;
 
   {
     QScopedPointer<SelectTemplate> selectTemplate(new SelectTemplate(this));
@@ -81,7 +82,13 @@ void NutritionTrackerMain::showCreateCompositeFoodFromTemplate()
   }
 
   if (templ) {
-    QSharedPointer<QDialog>(new InstantiateTemplate(templ, this))->exec();
+    QSharedPointer<InstantiateTemplate> instantiateTemplate(new InstantiateTemplate(templ, this));
+    instantiateTemplate->exec();
+    instanceAmount = instantiateTemplate->getInstanceAmount();
+  }
+
+  if (instanceAmount.isDefined()) {
+    QScopedPointer<QDialog>(new EditCompositeFood(this, instanceAmount))->exec();
   }
 }
 

@@ -22,7 +22,7 @@ TemplateComponents::~TemplateComponents()
 {
 }
 
-QSharedPointer<const FoodCollection> TemplateComponents::getCollection() const
+QSharedPointer<FoodCollection> TemplateComponents::getCollection() const
 {
   QSharedPointer<FoodCollection> collection = FoodCollection::createFoodCollection(templ->getDisplayName());
 

@@ -14,38 +14,45 @@ EditCompositeFood::EditCompositeFood(QWidget *parent,
                                           const QSharedPointer<CompositeFood>& food)
     : QDialog(parent), food(food)
 {
-	ui.setupUi(this);
+  initialize();
+  loadFoodInformation();
+}
 
-    populateUserSelector(ui.cboOwner);
+EditCompositeFood::EditCompositeFood(QWidget *parent, const FoodAmount& initialData)
+{
+  initialize();
+  loadFoodInformation();
 
-    // TODO: Connect owner combobox when it is enabled
+  if (initialData.isDefined()) {
 
-    populateUnitSelector(ui.cboWeightUnit, Unit::Dimensions::Weight);
-    populateUnitSelector(ui.cboVolumeUnit, Unit::Dimensions::Volume);
+    ui.txtName->setText(initialData.getFood()->getName());
 
-	ui.sfcResultsList->setAllowMealSelection(false);
+    switch (initialData.getUnit()->getDimension()) {
+      case Unit::Dimensions::Weight:
+        ui.txtWeight->setText(QString::number(initialData.getAmount()));
+        ui.cboWeightUnit->setCurrentIndex(ui.cboWeightUnit->findData(initialData.getUnit()->getAbbreviation()));
+        break;
+      case Unit::Dimensions::Volume:
+        ui.txtVolume->setText(QString::number(initialData.getAmount()));
+        ui.cboVolumeUnit->setCurrentIndex(ui.cboVolumeUnit->findData(initialData.getUnit()->getAbbreviation()));
+        break;
+      case Unit::Dimensions::Quantity:
+        ui.txtQuantity->setText(QString::number(initialData.getAmount()));
+        break;
+      case Unit::Dimensions::Serving:
+        ui.txtServings->setText(QString::number(initialData.getAmount()));
+        break;
+      default:
+        // Do nothing
+        break;
+    }
 
-	connect(ui.chkExpires, SIGNAL(clicked(bool)), ui.deExpires, SLOT(setEnabled(bool)));
-	connect(ui.deCreated, SIGNAL(dateChanged(const QDate&)), this, SLOT(setExpiryMinimumDate(const QDate&)));
+    QList<FoodComponent> components = initialData.getFood()->getComponents();
 
-	connect(ui.fscSearch, SIGNAL(beginNewSearch()),
-	        ui.sfcResultsList, SLOT(clearFoodList()));
-	connect(ui.fscSearch, SIGNAL(newResult(const FoodSearchControl::Result&)),
-	        ui.sfcResultsList, SLOT(addToFoodList(const FoodSearchControl::Result&)));
-
-	connect(ui.sfcResultsList, SIGNAL(amountAdded(const FoodAmount&, int)),
-	        ui.ftComponents, SLOT(addFoodAmount(const FoodAmount&)));
-
-	connect(ui.btnCancel, SIGNAL(clicked()), this, SLOT(close()));
-	connect(ui.btnSave, SIGNAL(clicked()), this, SLOT(saveFood()));
-	connect(ui.btnSaveAndAdd, SIGNAL(clicked()), this, SLOT(saveFoodAndClear()));
-	connect(ui.btnSaveAndClose, SIGNAL(clicked()), this, SLOT(saveFoodAndClose()));
-
-	ui.ftComponents->setTemporary(true);
-	ui.ftComponents->setRootName("Composite Food");
-	ui.ftComponents->initialize();
-
-	loadFoodInformation();
+    for (QList<FoodComponent>::iterator i = components.begin(); i != components.end(); ++i) {
+      ui.ftComponents->addFoodAmount(i->getFoodAmount());
+    }
+  }
 }
 
 EditCompositeFood::~EditCompositeFood()
@@ -99,6 +106,40 @@ bool EditCompositeFood::saveFood()
                           QString("Unable to save composite food. Error was: ") + ex.what());
     return false;
   }
+}
+
+void EditCompositeFood::initialize()
+{
+  ui.setupUi(this);
+
+  populateUserSelector(ui.cboOwner);
+
+  // TODO: Connect owner combobox when it is enabled
+
+  populateUnitSelector(ui.cboWeightUnit, Unit::Dimensions::Weight);
+  populateUnitSelector(ui.cboVolumeUnit, Unit::Dimensions::Volume);
+
+  ui.sfcResultsList->setAllowMealSelection(false);
+
+  connect(ui.chkExpires, SIGNAL(clicked(bool)), ui.deExpires, SLOT(setEnabled(bool)));
+  connect(ui.deCreated, SIGNAL(dateChanged(const QDate&)), this, SLOT(setExpiryMinimumDate(const QDate&)));
+
+  connect(ui.fscSearch, SIGNAL(beginNewSearch()),
+          ui.sfcResultsList, SLOT(clearFoodList()));
+  connect(ui.fscSearch, SIGNAL(newResult(const FoodSearchControl::Result&)),
+          ui.sfcResultsList, SLOT(addToFoodList(const FoodSearchControl::Result&)));
+
+  connect(ui.sfcResultsList, SIGNAL(amountAdded(const FoodAmount&, int)),
+          ui.ftComponents, SLOT(addFoodAmount(const FoodAmount&)));
+
+  connect(ui.btnCancel, SIGNAL(clicked()), this, SLOT(close()));
+  connect(ui.btnSave, SIGNAL(clicked()), this, SLOT(saveFood()));
+  connect(ui.btnSaveAndAdd, SIGNAL(clicked()), this, SLOT(saveFoodAndClear()));
+  connect(ui.btnSaveAndClose, SIGNAL(clicked()), this, SLOT(saveFoodAndClose()));
+
+  ui.ftComponents->setTemporary(true);
+  ui.ftComponents->setRootName("Composite Food");
+  ui.ftComponents->initialize();
 }
 
 void EditCompositeFood::populateUserSelector(QComboBox* cboOwner)

@@ -20,7 +20,7 @@ class TemplateComponents : public QWidget
 
     ~TemplateComponents();
 
-    QSharedPointer<const FoodCollection> getCollection() const;
+    QSharedPointer<FoodCollection> getCollection() const;
 
   private:
 

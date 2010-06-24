@@ -2,7 +2,8 @@
 
 InstantiateTemplate::InstantiateTemplate
   (const QSharedPointer<const Template>& templ, QWidget *parent)
-    : QDialog(parent), tcComponents(new TemplateComponents(templ, this))
+    : QDialog(parent), tcComponents(new TemplateComponents(templ, this)),
+      created(false)
 {
 	ui.setupUi(this);
 
@@ -25,9 +26,27 @@ InstantiateTemplate::InstantiateTemplate
 	ui.saComponents->setWidget(tcComponents);
 
 	connect(ui.btnCancel, SIGNAL(clicked()), this, SLOT(close()));
+	connect(ui.btnCreate, SIGNAL(clicked()), this, SLOT(create()));
 }
 
 InstantiateTemplate::~InstantiateTemplate()
 {
+}
 
+FoodAmount InstantiateTemplate::getInstanceAmount() const
+{
+  if (created) {
+    return FoodAmount(tcComponents->getCollection(),
+                      ui.txtAmount->text().toDouble(),
+                      Unit::getUnit(ui.cbAmountUnit->itemData
+                                     (ui.cbAmountUnit->currentIndex()).toString()));
+  } else {
+    return FoodAmount();
+  }
+}
+
+void InstantiateTemplate::create()
+{
+  created = true;
+  close();
 }

@@ -17,11 +17,18 @@ class InstantiateTemplate : public QDialog
 
     ~InstantiateTemplate();
 
+    FoodAmount getInstanceAmount() const;
+
+  private slots:
+
+    void create();
+
   private:
 
     Ui::InstantiateTemplateUI ui;
 
     TemplateComponents* tcComponents;
+    bool created;
 };
 
 #endif // INSTANTIATE_TEMPLATE_H
