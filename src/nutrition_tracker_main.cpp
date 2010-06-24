@@ -21,6 +21,8 @@ NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
 
   connect(ui.actionAdd_Food_s_to_Current_Day, SIGNAL(triggered()),
           this, SLOT(showAddFood()));
+  connect(ui.actionAdd_Food_to_Current_Day_from_Template, SIGNAL(triggered()),
+           this, SLOT(showAddFoodFromTemplate()));
   connect(ui.actionAdd_new_food, SIGNAL(triggered()),
           this, SLOT(showCreateFood()));
   connect(ui.actionAdd_new_composite_food, SIGNAL(triggered()),
@@ -60,6 +62,19 @@ void NutritionTrackerMain::showAddFood()
   addFood->exec();
 }
 
+void NutritionTrackerMain::showAddFoodFromTemplate()
+{
+  int mealId;
+  FoodAmount instanceAmount = promptForTemplateInstance(true, mealId);
+
+  if (instanceAmount.isDefined() && mealId >= 0) {
+    NutritionTracker* nutritionTracker = static_cast<NutritionTracker*>(centralWidget());
+    QSharedPointer<CompositeFood> nonceComposite =
+      CompositeFood::createNewNonceCompositeFood(instanceAmount);
+    nutritionTracker->addFoodToCurrentDay(nonceComposite->getBaseAmount(), mealId);
+  }
+}
+
 void NutritionTrackerMain::showCreateFood()
 {
   QScopedPointer<QDialog>(new EditFood(this))->exec();
@@ -72,20 +87,7 @@ void NutritionTrackerMain::showCreateCompositeFood()
 
 void NutritionTrackerMain::showCreateCompositeFoodFromTemplate()
 {
-  QSharedPointer<const Template> templ;
-  FoodAmount instanceAmount;
-
-  {
-    QScopedPointer<SelectTemplate> selectTemplate(new SelectTemplate(this));
-    selectTemplate->exec();
-    templ = selectTemplate->getSelectedTemplate();
-  }
-
-  if (templ) {
-    QSharedPointer<InstantiateTemplate> instantiateTemplate(new InstantiateTemplate(templ, this));
-    instantiateTemplate->exec();
-    instanceAmount = instantiateTemplate->getInstanceAmount();
-  }
+  FoodAmount instanceAmount = promptForTemplateInstance();
 
   if (instanceAmount.isDefined()) {
     QScopedPointer<QDialog>(new EditCompositeFood(this, instanceAmount))->exec();
@@ -101,4 +103,27 @@ void NutritionTrackerMain::showMyFoods()
 {
   QScopedPointer<QDialog>(new MyFoods(this))->exec();
   tracker->refresh();
+}
+
+FoodAmount NutritionTrackerMain::promptForTemplateInstance
+  (bool promptForMeal, int& mealId)
+{
+  QSharedPointer<const Template> templ;
+  FoodAmount instanceAmount;
+
+  {
+    QScopedPointer<SelectTemplate> selectTemplate(new SelectTemplate(this));
+    selectTemplate->exec();
+    templ = selectTemplate->getSelectedTemplate();
+  }
+
+  if (templ) {
+    QSharedPointer<InstantiateTemplate> instantiateTemplate
+      (new InstantiateTemplate(templ, promptForMeal, this));
+    instantiateTemplate->exec();
+    instanceAmount = instantiateTemplate->getInstanceAmount();
+    mealId = instantiateTemplate->getSelectedMealId();
+  }
+
+  return instanceAmount;
 }

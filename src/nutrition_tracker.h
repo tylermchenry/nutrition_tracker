@@ -24,6 +24,8 @@ class NutritionTracker : public QWidget
 
     void addMealsToCurrentDay(const QVector<QSharedPointer<const Meal> >& meals);
 
+    void addFoodToCurrentDay(const FoodAmount& foodAmount, int mealId);
+
   private slots:
 
     void changeDay();

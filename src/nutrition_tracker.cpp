@@ -2,6 +2,7 @@
 #include "food_context_menu.h"
 #include "model/food_tree_model.h"
 #include "data/food_collection.h"
+#include "data/composite_food.h"
 #include <QDebug>
 #include <QtGui/QCursor>
 
@@ -38,6 +39,12 @@ void NutritionTracker::addMealsToCurrentDay
   (const QVector<QSharedPointer<const Meal> >& meals)
 {
   ui.ftFoodsForDay->addMeals(meals);
+  updateBalance();
+}
+
+void NutritionTracker::addFoodToCurrentDay(const FoodAmount& foodAmount, int mealId)
+{
+  ui.ftFoodsForDay->addFoodAmount(foodAmount, mealId);
   updateBalance();
 }
 

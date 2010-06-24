@@ -5,18 +5,22 @@
 #include <QtSql/QSqlDatabase>
 #include "ui_nutrition_tracker_main.h"
 #include "nutrition_tracker.h"
+#include "data/food_amount.h"
 
 class NutritionTrackerMain : public QMainWindow
 {
     Q_OBJECT
 
   public:
+
     NutritionTrackerMain(QWidget *parent = 0);
     ~NutritionTrackerMain();
 
   public slots:
+
     void show();
     void showAddFood();
+    void showAddFoodFromTemplate();
     void showCreateFood();
     void showCreateCompositeFood();
     void showCreateCompositeFoodFromTemplate();
@@ -24,6 +28,12 @@ class NutritionTrackerMain : public QMainWindow
     void showMyFoods();
 
   private:
+
+    inline FoodAmount promptForTemplateInstance()
+      { int m; return promptForTemplateInstance(false, m); }
+
+    FoodAmount promptForTemplateInstance(bool promptForMeal, int& mealId);
+
     Ui::NutritionTrackerMainUI ui;
     NutritionTracker* tracker;
     QSqlDatabase db;
