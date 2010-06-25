@@ -4,6 +4,7 @@
 #include <QtGui/QSpacerItem>
 #include <QtGui/QMessageBox>
 #include <QSettings>
+#include "fill_in.h"
 #include "data/unit.h"
 #include "data/group.h"
 #include "model/variant_value_item_model.h"
@@ -72,6 +73,8 @@ EditFood::EditFood(QWidget *parent, const QSharedPointer<SingleFood>& food)
   (ui.cboMineralDimensions->findData
    (QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI)));
 
+  connect(ui.btnFillIn, SIGNAL(clicked()), this, SLOT(promptForFillIn()));
+
   connect(ui.btnCancel, SIGNAL(clicked()), this, SLOT(close()));
   connect(ui.btnSave, SIGNAL(clicked()), this, SLOT(saveFood()));
   connect(ui.btnSaveAndAdd, SIGNAL(clicked()), this, SLOT(saveFoodAndClear()));
@@ -133,6 +136,12 @@ bool EditFood::saveFood()
     saveNutrientInformation(vitamins);
     saveNutrientInformation(minerals);
 
+    for (QMap<QString, NutrientAmount>::const_iterator i = leftoverFillins.begin();
+         i != leftoverFillins.end(); ++i)
+    {
+      food->setNutrient(i.value());
+    }
+
     food->saveToDatabase();
 
     return true;
@@ -142,6 +151,31 @@ bool EditFood::saveFood()
                           QString("Unable to save food. Error was: ") + ex.what());
     return false;
   }
+}
+
+void EditFood::promptForFillIn()
+{
+  QMap<QString, NutrientAmount> nutrientMap;
+
+  addNutrientInformation
+    (basicNutrients, addNutrientInformation
+       (vitamins, addNutrientInformation
+          (minerals, nutrientMap)));
+
+  QSharedPointer<const Nutrient> calories = Nutrient::getNutrientByName(Nutrient::CALORIES_NAME);
+  nutrientMap[calories->getId()] = NutrientAmount(calories, ui.txtCalories->text().toDouble());
+
+  QScopedPointer<FillIn> fillInPrompt(new FillIn(nutrientMap, this));
+  fillInPrompt->exec();
+
+  QMap<QString, NutrientAmount> fillinAmounts = fillInPrompt->getFillinNutrients();
+
+  fillInFrom(basicNutrients, fillinAmounts);
+  fillInFrom(vitamins, fillinAmounts);
+  fillInFrom(minerals, fillinAmounts);
+
+  // Note that fillInFrom will removed used-up fillin amounts.
+  leftoverFillins = fillinAmounts;
 }
 
 void EditFood::populateSourceSelector(QComboBox* cboSource)
@@ -299,6 +333,34 @@ void EditFood::saveNutrientInformation(const QVector<NutrientAmountDisplay>& nut
       i != nutrientDisplays.end(); ++i)
   {
     food->setNutrient(i->getNutrientAmount());
+  }
+}
+
+QMap<QString, NutrientAmount>& EditFood::addNutrientInformation
+  (const QVector<NutrientAmountDisplay>& nutrientDisplays, QMap<QString, NutrientAmount>& nutrientMap)
+{
+  for (QVector<NutrientAmountDisplay>::const_iterator i = nutrientDisplays.begin();
+      i != nutrientDisplays.end(); ++i)
+  {
+    if (i->isAmountFilledIn()) {
+      nutrientMap[i->getNutrientAmount().getNutrient()->getId()] = i->getNutrientAmount();
+    }
+  }
+
+  return nutrientMap;
+}
+
+void EditFood::fillInFrom(QVector<NutrientAmountDisplay>& nutrientDisplays,
+                              QMap<QString, NutrientAmount>& nutrientMap)
+{
+  for (QVector<NutrientAmountDisplay>::iterator i = nutrientDisplays.begin();
+        i != nutrientDisplays.end(); ++i)
+  {
+    QString id = i->getNutrientAmount().getNutrient()->getId();
+    if (!i->isAmountFilledIn() && nutrientMap.contains(id)) {
+      i->setNutrientAmount(nutrientMap[id]);
+      nutrientMap.remove(id);
+    }
   }
 }
 

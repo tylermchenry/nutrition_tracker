@@ -27,6 +27,10 @@ public slots:
 
     bool saveFood();
 
+private slots:
+
+    void promptForFillIn();
+
 private:
 
     Ui::EditFoodUI ui;
@@ -36,6 +40,10 @@ private:
     QVector<NutrientAmountDisplay> basicNutrients;
     QVector<NutrientAmountDisplay> vitamins;
     QVector<NutrientAmountDisplay> minerals;
+
+    // A temporary way to hold filled-in "extra" nutrients until we have a
+    // way to display them
+    QMap<QString, NutrientAmount> leftoverFillins;
 
     void populateSourceSelector(QComboBox* cboSource);
 
@@ -60,6 +68,13 @@ private:
     void loadFoodInformation();
 
     void saveNutrientInformation(const QVector<NutrientAmountDisplay>& nutrientDisplays);
+
+    QMap<QString, NutrientAmount>& addNutrientInformation
+      (const QVector<NutrientAmountDisplay>& nutrientDisplays,
+       QMap<QString, NutrientAmount>& nutrientMap);
+
+    void fillInFrom(QVector<NutrientAmountDisplay>& nutrientDisplays,
+                      QMap<QString, NutrientAmount>& nutrientMap);
 
     void changeDisplayModes(QVector<NutrientAmountDisplay>& nutrients,
                                NutrientAmountDisplay::DisplayModes::DisplayMode mode);

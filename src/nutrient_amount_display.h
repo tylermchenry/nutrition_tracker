@@ -47,6 +47,8 @@ class NutrientAmountDisplay : public QObject
 
     inline QWidget* getUnitWidget() const { return lblUnit; }
 
+    inline bool isAmountFilledIn() const { return txtValue->text() != ""; }
+
     inline const NutrientAmount& getNutrientAmount() const { return nutrientAmount; }
 
     void setNutrientAmount(const NutrientAmount& newAmount);
