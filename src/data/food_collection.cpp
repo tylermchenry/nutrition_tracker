@@ -421,7 +421,8 @@ QList<FoodComponent> FoodCollection::createComponentsFromQueryResults
           (containingCollection,
            record.field(componentIdField).value().toInt(),
            FoodAmount(containedFood, record.field("Magnitude").value().toDouble(),
-                      Unit::createUnitFromRecord(record)),
+                      Unit::createUnitFromRecord(record),
+                      record.field("Includes_Refuse").value().toBool()),
            order));
     } else {
       qDebug() << "Failed to create component!";

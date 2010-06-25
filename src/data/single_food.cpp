@@ -36,7 +36,8 @@ QSharedPointer<SingleFood> SingleFood::getSingleFood(int id)
   }
 
   query.prepare("SELECT food_description.Food_Id, food_description.Entry_Src, "
-                "       food_description.Long_Desc, food_description.Weight_g, "
+                "       food_description.Long_Desc, food_description.Refuse,"
+                "       food_description.Ref_desc, food_description.Weight_g, "
                 "       food_description.Volume_floz, food_description.Quantity, "
                 "       food_description.Servings, food_description.Fat_Factor,"
                 "       food_description.CHO_Factor, food_description.Pro_Factor, "
@@ -93,6 +94,8 @@ QSharedPointer<SingleFood> SingleFood::createSingleFoodFromQueryResults(QSqlQuer
                         record.field("Long_Desc").value().toString(),
                         EntrySources::fromHumanReadable(record.field("Entry_Src").value().toString()),
                         Group::createGroupFromRecord(record),
+                        record.field("Refuse").value().toDouble(),
+                        record.field("Ref_desc").value().toString(),
                         nutrients,
                         record.field("Weight_g").value().toDouble(),
                         record.field("Volume_floz").value().toDouble(),
@@ -140,6 +143,7 @@ QMultiMap<QString, int> SingleFood::getFoodsForUser(int userId)
 
 SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource entrySource,
                         const QSharedPointer<const Group>& group,
+                        double percentRefuse, const QString& refuseDescription,
                         const QMap<QString, NutrientAmount>& nutrients,
                         double weightAmount, double volumeAmount,
                         double quantityAmount, double servingAmount,
@@ -147,11 +151,15 @@ SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource en
                         double calorieDensityProtien, double calorieDensityAlcohol)
   : Food("SINGLE_" + QString::number(id), name, weightAmount, volumeAmount,
          quantityAmount, servingAmount),
-    id(id), entrySource(entrySource), group(group), nutrients(nutrients)
+    id(id), entrySource(entrySource), group(group),
+    percentRefuse(percentRefuse), refuseDescription(refuseDescription),
+    nutrients(nutrients)
 {
   qDebug() << "Created food ID " << id << " named " << name << " from "
            << EntrySources::toHumanReadable(entrySource)
-           << " in group: " << group->getName() << " amounts: "
+           << " in group: " << group->getName()
+           << " refuse: " << percentRefuse << "% "
+           << refuseDescription << " amounts: "
            << weightAmount << " g, " << volumeAmount << " fl oz "
            << quantityAmount << "qty, " << servingAmount << " srv."
            << " densities: fat =" << calorieDensityFat

@@ -76,6 +76,12 @@ class Food
 
     virtual QVector<FoodAmount> getComponentAmounts() const;
 
+    inline virtual double getPercentRefuse() const
+      { return 0; }
+
+    inline virtual QString getRefuseDescription() const
+      { return ""; }
+
     virtual QMap<QString, NutrientAmount> getNutrients() const = 0;
 
     void setName(const QString& name);

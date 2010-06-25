@@ -88,10 +88,16 @@ class SingleFood: public Food
     inline QSharedPointer<const Group> getGroup() const
       { return group; }
 
+    inline virtual double getPercentRefuse() const
+      { return percentRefuse; }
+
+    inline virtual QString getRefuseDescription() const
+      { return refuseDescription; }
+
     virtual QMap<QString, NutrientAmount> getNutrients() const;
 
     virtual NutrientAmount getCaloriesFromNutrientId
-       (const QString& nutrId) const;
+      (const QString& nutrId) const;
 
     void setEntrySource(EntrySources::EntrySource source);
 
@@ -112,6 +118,7 @@ class SingleFood: public Food
     SingleFood(int id, const QString& name,
                 EntrySources::EntrySource entrySource,
                 const QSharedPointer<const Group>& group,
+                double percentRefuse, const QString& refuseDescription,
                 const QMap<QString, NutrientAmount>& nutrients,
                 double weightAmount, double volumeAmount,
                 double quantityAmount, double servingAmount,
@@ -127,6 +134,8 @@ class SingleFood: public Food
     int id;
     EntrySources::EntrySource entrySource;
     QSharedPointer<const Group> group;
+    double percentRefuse;
+    QString refuseDescription;
     QMap<QString, NutrientAmount> nutrients;
     QSet<QString> modifiedNutrients;
     QMap<QString, double> calorieDensities;

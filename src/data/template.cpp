@@ -33,8 +33,8 @@ QSharedPointer<Template> Template::getTemplate(int id)
 
   query.prepare("SELECT template.Template_Id, template.Description, "
                 "       template_link.TemplateLink_Id, template_link.Contained_Type, "
-                "       template_link.Contained_Id, template_link.Magnitude, "
-                "       template_link.IntrafoodOrder, "
+                "       template_link.Contained_Id, template_link.Includes_Refuse, "
+                "       template_link.Magnitude, template_link.IntrafoodOrder, "
                 "       units.Unit, units.Type, "
                 "       units.Name AS UnitName, units.Factor "
                 "FROM"
@@ -193,12 +193,13 @@ void Template::saveToDatabase()
   {
     if (!query.prepare("INSERT INTO template_link "
         "  (TemplateLink_Id, Template_Id, Contained_Type, "
-        "   Contained_Id, Magnitude, Unit, IntrafoodOrder) "
+        "   Contained_Id, Includes_Refuse, Magnitude, Unit, IntrafoodOrder) "
         "VALUES "
         "  (:linkId, :templateId, :containedType, "
-        "   :containedId, :magnitude, :unit, :order) "
+        "   :containedId, :includesRefuse, :magnitude, :unit, :order) "
         "ON DUPLICATE KEY UPDATE "
-        "  Magnitude=:magnitude2, Unit=:unit2, IntrafoodOrder=:order2")) {
+        "  Includes_Refuse=:includesRefuse2, Magnitude=:magnitude2, "
+        "  Unit=:unit2, IntrafoodOrder=:order2")) {
       qDebug() << "Failed to prepare query: " << query.lastError();
     }
 
@@ -229,10 +230,12 @@ void Template::saveToDatabase()
     query.bindValue(":containedType", FoodCollection::ContainedTypes::toHumanReadable(containedType));
     query.bindValue(":containedId", containedId);
 
+    query.bindValue(":includesRefuse", i->getFoodAmount().includesRefuse());
     query.bindValue(":magnitude", i->getFoodAmount().getAmount());
     query.bindValue(":unit", i->getFoodAmount().getUnit()->getAbbreviation());
     query.bindValue(":order", i->getOrder());
 
+    query.bindValue(":includesRefuse2", i->getFoodAmount().includesRefuse());
     query.bindValue(":magnitude2", i->getFoodAmount().getAmount());
     query.bindValue(":unit2", i->getFoodAmount().getUnit()->getAbbreviation());
     query.bindValue(":order2", i->getOrder());

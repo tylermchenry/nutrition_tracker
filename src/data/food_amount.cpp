@@ -10,8 +10,10 @@
 #include <stdexcept>
 
 FoodAmount::FoodAmount(const QSharedPointer<Food>& food, double amount,
-                          const QSharedPointer<const Unit>& unit)
-  : Amount<Food, FoodAmount>(static_cast<const QSharedPointer<Food>& >(food), amount, unit)
+                          const QSharedPointer<const Unit>& unit,
+                          bool includesRefuse)
+  : Amount<Food, FoodAmount>(static_cast<const QSharedPointer<Food>& >(food), amount, unit),
+    bIncludesRefuse(includesRefuse)
 {
 }
 
@@ -168,5 +170,11 @@ double FoodAmount::getScaleFactor() const
         "the food does not have a base amount.");
   }
 
-  return getAmount() / baseAmount.getAmount(unit);
+  double scaleFactor = getAmount() / baseAmount.getAmount(unit);
+
+  if (!bIncludesRefuse) {
+    scaleFactor /= ((100 - getFood()->getPercentRefuse()) / 100);
+  }
+
+  return scaleFactor;
 }

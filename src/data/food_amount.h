@@ -58,7 +58,8 @@ class FoodAmount : public Amount<Food, FoodAmount>
                               QSharedPointer<Food>(),
                            double amount = 0,
                            const QSharedPointer<const Unit>& unit =
-                              QSharedPointer<const Unit>());
+                              QSharedPointer<const Unit>(),
+                           bool includesRefuse = true);
 
     virtual ~FoodAmount();
 
@@ -71,6 +72,11 @@ class FoodAmount : public Amount<Food, FoodAmount>
 
     inline QSharedPointer<Food> getFood()
       { return getSubstance(); }
+
+    // TODO: Prohibit adding, subtracting, etc. between amounts that include
+    // refuse and those that do not.
+    inline bool includesRefuse() const
+      { return bIncludesRefuse; }
 
     QMap<QString, NutrientAmount> getScaledNutrients() const;
 
@@ -90,6 +96,8 @@ class FoodAmount : public Amount<Food, FoodAmount>
     virtual QString getSubstanceName(bool plural) const;
 
     double getScaleFactor() const;
+
+    bool bIncludesRefuse;
 };
 
 #endif /* FOOD_AMOUNT_H_ */

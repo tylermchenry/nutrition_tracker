@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.1.41, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.1.41, for debian-linux-gnu (i486)
 --
 -- Host: localhost    Database: nutrition
 -- ------------------------------------------------------
@@ -19,27 +19,29 @@
 -- Table structure for table `composite_food`
 --
 
+DROP TABLE IF EXISTS `composite_food`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `composite_food` (
   `Composite_Id` int(11) NOT NULL AUTO_INCREMENT,
   `User_Id` int(11) NOT NULL,
   `Description` char(200) NOT NULL,
-  `isNonce` tinyint(1) NOT NULL DEFAULT '0',
-  `creationDate` date DEFAULT NULL,
-  `expiryDate` date DEFAULT NULL,
+  `IsNonce` tinyint(1) NOT NULL DEFAULT '0',
+  `CreationDate` date DEFAULT NULL,
+  `ExpiryDate` date DEFAULT NULL,
   `Weight_g` decimal(10,4) DEFAULT NULL,
   `Volume_floz` decimal(10,4) DEFAULT NULL,
   `Quantity` decimal(10,4) DEFAULT NULL,
   `Servings` decimal(10,4) DEFAULT NULL,
   PRIMARY KEY (`Composite_Id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=40 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=64 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `composite_food_link`
 --
 
+DROP TABLE IF EXISTS `composite_food_link`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `composite_food_link` (
@@ -47,17 +49,19 @@ CREATE TABLE `composite_food_link` (
   `Composite_Id` int(11) NOT NULL,
   `Contained_Type` enum('Food','CompositeFood') NOT NULL,
   `Contained_Id` int(11) NOT NULL,
+  `Includes_Refuse` tinyint(1) NOT NULL DEFAULT '1',
   `Magnitude` decimal(10,4) NOT NULL,
   `Unit` char(7) NOT NULL,
   `IntrafoodOrder` int(11) DEFAULT NULL,
   PRIMARY KEY (`CompositeLink_Id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=245 DEFAULT CHARSET=latin1 COMMENT='Describes which individual foods are part of each compound f';
+) ENGINE=MyISAM AUTO_INCREMENT=1163141683 DEFAULT CHARSET=latin1 COMMENT='Describes which individual foods are part of each compound f';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `data_source`
 --
 
+DROP TABLE IF EXISTS `data_source`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `data_source` (
@@ -78,6 +82,7 @@ CREATE TABLE `data_source` (
 -- Table structure for table `data_source_link`
 --
 
+DROP TABLE IF EXISTS `data_source_link`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `data_source_link` (
@@ -92,6 +97,7 @@ CREATE TABLE `data_source_link` (
 -- Table structure for table `derivation_code`
 --
 
+DROP TABLE IF EXISTS `derivation_code`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `derivation_code` (
@@ -102,9 +108,31 @@ CREATE TABLE `derivation_code` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `entry`
+--
+
+DROP TABLE IF EXISTS `entry`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `entry` (
+  `Entry_Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Date` date NOT NULL,
+  `User_Id` int(11) NOT NULL,
+  `Meal_Id` int(11) DEFAULT NULL,
+  `Order` int(11) DEFAULT NULL,
+  `Type` enum('Food','CompoundFood') NOT NULL,
+  `Item_Id` int(11) NOT NULL,
+  `Magnitude` decimal(10,4) NOT NULL,
+  `Unit` char(7) NOT NULL,
+  PRIMARY KEY (`Entry_Id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `food_description`
 --
 
+DROP TABLE IF EXISTS `food_description`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `food_description` (
@@ -129,13 +157,14 @@ CREATE TABLE `food_description` (
   `Quantity` decimal(10,4) unsigned DEFAULT NULL,
   `Servings` decimal(10,4) unsigned DEFAULT NULL,
   PRIMARY KEY (`Food_Id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=7572 DEFAULT CHARSET=latin1 ROW_FORMAT=FIXED;
+) ENGINE=MyISAM AUTO_INCREMENT=7566 DEFAULT CHARSET=latin1 ROW_FORMAT=FIXED;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `footnote`
 --
 
+DROP TABLE IF EXISTS `footnote`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `footnote` (
@@ -151,6 +180,7 @@ CREATE TABLE `footnote` (
 -- Table structure for table `group_description`
 --
 
+DROP TABLE IF EXISTS `group_description`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `group_description` (
@@ -164,6 +194,7 @@ CREATE TABLE `group_description` (
 -- Table structure for table `meal`
 --
 
+DROP TABLE IF EXISTS `meal`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `meal` (
@@ -178,6 +209,7 @@ CREATE TABLE `meal` (
 -- Table structure for table `meal_link`
 --
 
+DROP TABLE IF EXISTS `meal_link`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `meal_link` (
@@ -187,17 +219,19 @@ CREATE TABLE `meal_link` (
   `MealDate` date NOT NULL,
   `Contained_Type` enum('Food','CompositeFood') NOT NULL,
   `Contained_Id` int(11) NOT NULL,
+  `Includes_Refuse` tinyint(1) NOT NULL DEFAULT '1',
   `Magnitude` decimal(10,4) NOT NULL,
   `Unit` char(7) NOT NULL,
   `IntramealOrder` int(11) DEFAULT NULL,
   PRIMARY KEY (`MealLink_Id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=379 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=267 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `nutrient_data`
 --
 
+DROP TABLE IF EXISTS `nutrient_data`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `nutrient_data` (
@@ -226,6 +260,7 @@ CREATE TABLE `nutrient_data` (
 -- Table structure for table `nutrient_definition`
 --
 
+DROP TABLE IF EXISTS `nutrient_definition`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `nutrient_definition` (
@@ -247,6 +282,7 @@ CREATE TABLE `nutrient_definition` (
 -- Table structure for table `source_code`
 --
 
+DROP TABLE IF EXISTS `source_code`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `source_code` (
@@ -260,6 +296,7 @@ CREATE TABLE `source_code` (
 -- Table structure for table `template`
 --
 
+DROP TABLE IF EXISTS `template`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `template` (
@@ -267,13 +304,14 @@ CREATE TABLE `template` (
   `User_Id` int(11) NOT NULL,
   `Description` char(200) NOT NULL,
   PRIMARY KEY (`Template_Id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=40 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=41 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `template_link`
 --
 
+DROP TABLE IF EXISTS `template_link`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `template_link` (
@@ -281,17 +319,20 @@ CREATE TABLE `template_link` (
   `Template_Id` int(11) NOT NULL,
   `Contained_Type` enum('Food','CompositeFood') NOT NULL,
   `Contained_Id` int(11) NOT NULL,
+  `Includes_Refuse` tinyint(1) NOT NULL DEFAULT '1',
   `Magnitude` decimal(10,4) NOT NULL,
   `Unit` char(7) NOT NULL,
   `IntrafoodOrder` int(11) DEFAULT NULL,
   PRIMARY KEY (`TemplateLink_Id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=245 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=252 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Temporary table structure for view `unit_description`
 --
 
+DROP TABLE IF EXISTS `unit_description`;
+/*!50001 DROP VIEW IF EXISTS `unit_description`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `unit_description` (
@@ -305,6 +346,7 @@ SET character_set_client = @saved_cs_client;
 -- Table structure for table `units`
 --
 
+DROP TABLE IF EXISTS `units`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `units` (
@@ -320,6 +362,7 @@ CREATE TABLE `units` (
 -- Table structure for table `usda_ndb_link`
 --
 
+DROP TABLE IF EXISTS `usda_ndb_link`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `usda_ndb_link` (
@@ -333,6 +376,7 @@ CREATE TABLE `usda_ndb_link` (
 -- Table structure for table `user`
 --
 
+DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
@@ -347,6 +391,7 @@ CREATE TABLE `user` (
 -- Table structure for table `weight`
 --
 
+DROP TABLE IF EXISTS `weight`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `weight` (
@@ -366,6 +411,7 @@ CREATE TABLE `weight` (
 --
 
 /*!50001 DROP TABLE IF EXISTS `unit_description`*/;
+/*!50001 DROP VIEW IF EXISTS `unit_description`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -388,4 +434,4 @@ CREATE TABLE `weight` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-06-21 22:45:57
+-- Dump completed on 2010-06-25  9:32:34
