@@ -438,7 +438,7 @@ void CompositeFood::deleteFromDatabase()
 QSharedPointer<Food> CompositeFood::cloneNonce() const
 {
   if (nonce) {
-    return createNewCompositeFood(compositeFoodCache[id].toStrongRef());
+    return createNewNonceCompositeFood(getBaseAmount());
   } else {
     return QSharedPointer<Food>();
   }
