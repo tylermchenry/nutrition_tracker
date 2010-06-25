@@ -44,7 +44,10 @@ void NutritionTrackerMain::show()
   QMainWindow::show();
 
   DatabaseInformation infoPrompt(this);
-  infoPrompt.exec();
+
+  if (!infoPrompt.tryAutoConnect()) {
+    infoPrompt.exec();
+  }
 
   if (!(db = infoPrompt.getDatabase()).isOpen()) {
     close();

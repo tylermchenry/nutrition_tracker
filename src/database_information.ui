@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>186</height>
+    <height>212</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,6 +49,20 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Database:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="txtDatabase">
+       <property name="text">
+        <string>nutrition</string>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
@@ -76,17 +90,13 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_5">
+     <item row="4" column="1">
+      <widget class="QCheckBox" name="chkRemember">
        <property name="text">
-        <string>Database:</string>
+        <string>Remember and automatically use these values</string>
        </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="txtDatabase">
-       <property name="text">
-        <string>nutrition</string>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -121,6 +131,9 @@
       <widget class="QLabel" name="lblFailed">
        <property name="text">
         <string/>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
