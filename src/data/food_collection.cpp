@@ -449,18 +449,19 @@ void FoodCollection::addComponents(const QList<FoodComponent>& newComponents)
     FoodComponent c = *i;
 
     if (c.getContainingCollection() != getCanonicalSharedPointerToCollection()) {
+
       qDebug() << "Component is from another collection; Rebasing with temporary ID " << nextTemporaryId;
       c = FoodComponent(getCanonicalSharedPointerToCollection(),
                         nextTemporaryId--, c.getFoodAmount(), c.getOrder());
-    }
 
-    if (c.getFoodAmount().getFood()->isNonce()) {
-      qDebug() << "Component is a nonce. Making a copy.";
-      const FoodAmount& amt = c.getFoodAmount();
-      c = FoodComponent(getCanonicalSharedPointerToCollection(),
-                        nextTemporaryId--,
-                        FoodAmount(amt.getFood()->cloneNonce(), amt.getAmount(), amt.getUnit()),
-                        c.getOrder());
+      if (c.getFoodAmount().getFood()->isNonce()) {
+        qDebug() << "Component is a nonce. Making a copy.";
+        const FoodAmount& amt = c.getFoodAmount();
+        c = FoodComponent(getCanonicalSharedPointerToCollection(),
+                          nextTemporaryId--,
+                          FoodAmount(amt.getFood()->cloneNonce(), amt.getAmount(), amt.getUnit()),
+                          c.getOrder());
+      }
     }
 
     int order = c.getOrder();
