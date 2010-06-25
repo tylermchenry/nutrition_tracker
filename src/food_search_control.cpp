@@ -1,6 +1,7 @@
 #include "food_search_control.h"
 #include "data/group.h"
 #include "data/composite_food.h"
+#include "edit_food.h"
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>
@@ -12,6 +13,7 @@ FoodSearchControl::FoodSearchControl(QWidget *parent)
   ui.setupUi(this);
 
   connect(ui.btnSearch, SIGNAL(clicked()), this, SLOT(performSearch()));
+  connect(ui.btnCreate, SIGNAL(clicked()), this, SLOT(showCreateFood()));
 
   static const QString COMPOUND_NAME = "(Composite Foods)";
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
@@ -123,6 +125,11 @@ void FoodSearchControl::performSearch()
       emit newResult(i.value());
     }
   }
+}
+
+void FoodSearchControl::showCreateFood()
+{
+  QScopedPointer<QDialog>(new EditFood(this))->exec();
 }
 
 void FoodSearchControl::runSearchQuery(const QString& queryText, QMap<QString, Result>& results) const

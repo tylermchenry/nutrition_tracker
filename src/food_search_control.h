@@ -11,7 +11,7 @@ class FoodSearchControl : public QWidget
 {
     Q_OBJECT
 
-public:
+  public:
 
     struct Result
     {
@@ -20,35 +20,39 @@ public:
       QString description; /* Sorted ONLY by description */
 
       explicit Result(int i = 0, const QString& t = "", const QString& d = "")
-        : id(i), type(t), description(d)
+      : id(i), type(t), description(d)
       {}
 
       bool operator< (const Result& rhs) const
       { return description < rhs.description; }
 
       bool operator== (const Result& rhs) const
-      { return description == rhs.description; }
+              { return description == rhs.description; }
     };
 
     FoodSearchControl(QWidget *parent = 0);
     ~FoodSearchControl();
 
-public slots:
+  public slots:
 
-  void performSearch();
+    void performSearch();
 
-signals:
+  signals:
 
-  void beginNewSearch();
+    void beginNewSearch();
 
-  void newResult(const FoodSearchControl::Result& result);
+    void newResult(const FoodSearchControl::Result& result);
 
-private:
+  private slots:
+
+    void showCreateFood();
+
+  private:
 
     Ui::FoodSearchControlUI ui;
     QMap<QString, QString> categoryToGroupID;
 
-    void runSearchQuery(const QString& queryText, QMap<QString, Result>& results) const;
+  void runSearchQuery(const QString& queryText, QMap<QString, Result>& results) const;
 };
 
 uint qHash(const FoodSearchControl::Result& result);
