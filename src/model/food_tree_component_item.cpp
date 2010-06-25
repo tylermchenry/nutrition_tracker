@@ -51,8 +51,11 @@ FoodAmount FoodTreeComponentItem::getFoodAmount() const
 
 QString FoodTreeComponentItem::getName() const
 {
-  if (component.getFoodAmount().isDefined()) {
-    return component.getFoodAmount().getFood()->getDisplayName();
+  const FoodAmount& amt = component.getFoodAmount();
+  if (amt.isDefined()) {
+    return amt.getFood()->getDisplayName() +
+     ((!amt.includesRefuse() && amt.getFood()->getPercentRefuse() > 0) ?
+       " [excluding inedible parts]" : "");
   } else {
     return "(Undefined Component)";
   }

@@ -86,6 +86,18 @@ void SelectFoodControl::updateAddControls(QListWidgetItem* curSelectedItem)
   ui.cbUnit->setEnabled(enableControls);
   ui.cbMeal->setEnabled(enableControls);
   ui.btnAdd->setEnabled(enableControls);
+
+  bool enableRefuse = enableControls && (selectedFood->getPercentRefuse() > 0);
+
+  ui.chkIncludeRefuse->setChecked(enableRefuse);
+  ui.chkIncludeRefuse->setEnabled(enableRefuse);
+  ui.lblRefuse->setVisible(enableRefuse);
+  ui.lblRefuseDescription->setVisible(enableRefuse);
+
+  if (enableRefuse) {
+    ui.lblRefuseDescription->setText(selectedFood->getRefuseDescription());
+  }
+
 }
 
 void SelectFoodControl::addClicked()
@@ -95,7 +107,8 @@ void SelectFoodControl::addClicked()
     qDebug() << "Emitting amountAdded for " << selectedFood->getName();
     emit amountAdded
       (FoodAmount(selectedFood, ui.txtAmount->text().toDouble(),
-                  Unit::getUnit(ui.cbUnit->itemData(ui.cbUnit->currentIndex()).toString())),
+                  Unit::getUnit(ui.cbUnit->itemData(ui.cbUnit->currentIndex()).toString()),
+                  !ui.chkIncludeRefuse->isEnabled() || ui.chkIncludeRefuse->isChecked()),
        (selectMeals ? ui.cbMeal->itemData(ui.cbMeal->currentIndex()).toInt() : -1));
   }
 }
@@ -110,6 +123,9 @@ void SelectFoodControl::initialize()
   } else {
     populateMealSelector(ui.cbMeal);
   }
+
+  ui.lblRefuse->setVisible(false);
+  ui.lblRefuseDescription->setVisible(false);
 
   connect(ui.lstResults, SIGNAL(itemActivated(QListWidgetItem*)),
           this, SLOT(updateAddControls(QListWidgetItem*)));
