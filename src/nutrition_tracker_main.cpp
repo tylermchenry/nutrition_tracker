@@ -9,6 +9,7 @@
 #include "database_information.h"
 #include <data/single_food.h>
 #include <QtGui/QInputDialog>
+#include <QSettings>
 
 NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
     : QMainWindow(parent)
@@ -37,11 +38,32 @@ NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
 
 NutritionTrackerMain::~NutritionTrackerMain()
 {
+  QSettings settings("Nerdland", "Nutrition Tracker");
+  settings.beginGroup("mainwindow");
+  settings.setValue("size", size());
+  settings.setValue("position", pos());
+  settings.setValue("fullscreen", isFullScreen());
+  settings.endGroup();
 }
 
 void NutritionTrackerMain::show()
 {
-  QMainWindow::show();
+  QSettings settings("Nerdland", "Nutrition Tracker");
+
+  settings.beginGroup("mainwindow");
+
+  resize(settings.value("size", size()).toSize());
+  if (!settings.value("position").isNull()) {
+    move(settings.value("position", pos()).toPoint());
+  }
+
+  if (settings.value("fullscreen", false).toBool()) {
+    showFullScreen();
+  } else {
+    QMainWindow::show();
+  }
+
+  settings.endGroup();
 
   DatabaseInformation infoPrompt(this);
 

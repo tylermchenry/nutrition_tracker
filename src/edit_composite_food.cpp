@@ -3,6 +3,7 @@
 #include "data/unit.h"
 #include <QtGui/QMessageBox>
 #include <QDebug>
+#include <QSettings>
 
 // The numeric database fields are DECIMAL(10,4), so 10 digits, 4 of which
 // appear after the decimal point.
@@ -58,6 +59,11 @@ EditCompositeFood::EditCompositeFood(QWidget *parent, const FoodAmount& initialD
 
 EditCompositeFood::~EditCompositeFood()
 {
+  QSettings settings("Nerdland", "Nutrition Tracker");
+  settings.beginGroup("editcompositefood");
+  settings.setValue("size", size());
+  settings.setValue("position", pos());
+  settings.endGroup();
 }
 
 void EditCompositeFood::clearFood()
@@ -141,6 +147,14 @@ void EditCompositeFood::initialize()
   ui.ftComponents->setTemporary(true);
   ui.ftComponents->setRootName("Composite Food");
   ui.ftComponents->initialize();
+
+  QSettings settings("Nerdland", "Nutrition Tracker");
+  settings.beginGroup("editcompositefood");
+  resize(settings.value("size", size()).toSize());
+  if (!settings.value("position").isNull()) {
+    move(settings.value("position", pos()).toPoint());
+  }
+  settings.endGroup();
 }
 
 void EditCompositeFood::populateUserSelector(QComboBox* cboOwner)

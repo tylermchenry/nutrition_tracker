@@ -3,6 +3,7 @@
 #include <QtGui/QDoubleValidator>
 #include <QtGui/QSpacerItem>
 #include <QtGui/QMessageBox>
+#include <QSettings>
 #include "data/unit.h"
 #include "data/group.h"
 #include "model/variant_value_item_model.h"
@@ -16,47 +17,59 @@ const int ViewFood::MAX_DECIMALS = 4;
 ViewFood::ViewFood(const FoodAmount& foodAmount, QWidget *parent)
     : QDialog(parent), foodAmount(foodAmount)
 {
-    ui.setupUi(this);
+  ui.setupUi(this);
 
-    // TODO: Add functionality so that the user can change the amount and have
-    // the changes reflected in the dialog.
+  // TODO: Add functionality so that the user can change the amount and have
+  // the changes reflected in the dialog.
 
-    populateUnitSelector(ui.cboUnit);
+  populateUnitSelector(ui.cboUnit);
 
-    populateDimensionSelector(ui.cboNutrientDimensions);
-    connect(ui.cboNutrientDimensions, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(basicNutrientsDimensionChanged(int)));
+  populateDimensionSelector(ui.cboNutrientDimensions);
+  connect(ui.cboNutrientDimensions, SIGNAL(currentIndexChanged(int)),
+          this, SLOT(basicNutrientsDimensionChanged(int)));
 
-    populateDimensionSelector(ui.cboVitaminDimensions);
-    connect(ui.cboVitaminDimensions, SIGNAL(currentIndexChanged(int)),
-             this, SLOT(vitaminsDimensionChanged(int)));
+  populateDimensionSelector(ui.cboVitaminDimensions);
+  connect(ui.cboVitaminDimensions, SIGNAL(currentIndexChanged(int)),
+          this, SLOT(vitaminsDimensionChanged(int)));
 
-    populateDimensionSelector(ui.cboMineralDimensions);
-    connect(ui.cboMineralDimensions, SIGNAL(currentIndexChanged(int)),
-             this, SLOT(mineralsDimensionChanged(int)));
+  populateDimensionSelector(ui.cboMineralDimensions);
+  connect(ui.cboMineralDimensions, SIGNAL(currentIndexChanged(int)),
+          this, SLOT(mineralsDimensionChanged(int)));
 
-    populateNutrientGroup(ui.grpBasicNutrients, basicNutrients, Nutrient::Categories::Basic);
-    populateNutrientGroup(ui.grpVitamins, vitamins, Nutrient::Categories::Vitamin);
-    populateNutrientGroup(ui.grpMinerals, minerals, Nutrient::Categories::Mineral);
+  populateNutrientGroup(ui.grpBasicNutrients, basicNutrients, Nutrient::Categories::Basic);
+  populateNutrientGroup(ui.grpVitamins, vitamins, Nutrient::Categories::Vitamin);
+  populateNutrientGroup(ui.grpMinerals, minerals, Nutrient::Categories::Mineral);
 
-    // Default Vitamin and Mineral dimensions to % RDI
+  // Default Vitamin and Mineral dimensions to % RDI
 
-    ui.cboVitaminDimensions->setCurrentIndex
-      (ui.cboVitaminDimensions->findData
-         (QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI)));
+  ui.cboVitaminDimensions->setCurrentIndex
+  (ui.cboVitaminDimensions->findData
+   (QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI)));
 
-    ui.cboMineralDimensions->setCurrentIndex
-      (ui.cboMineralDimensions->findData
-         (QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI)));
+  ui.cboMineralDimensions->setCurrentIndex
+  (ui.cboMineralDimensions->findData
+   (QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI)));
 
-    connect(ui.btnClose, SIGNAL(clicked()), this, SLOT(close()));
+  connect(ui.btnClose, SIGNAL(clicked()), this, SLOT(close()));
 
-    loadFoodInformation();
+  loadFoodInformation();
+
+  QSettings settings("Nerdland", "Nutrition Tracker");
+  settings.beginGroup("viewfood");
+  resize(settings.value("size", size()).toSize());
+  if (!settings.value("position").isNull()) {
+    move(settings.value("position", pos()).toPoint());
+  }
+  settings.endGroup();
 }
 
 ViewFood::~ViewFood()
 {
-
+  QSettings settings("Nerdland", "Nutrition Tracker");
+  settings.beginGroup("viewfood");
+  settings.setValue("size", size());
+  settings.setValue("position", pos());
+  settings.endGroup();
 }
 
 void ViewFood::populateUnitSelector(QComboBox* cboUnit)

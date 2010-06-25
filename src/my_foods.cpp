@@ -3,6 +3,7 @@
 #include "edit_composite_food.h"
 #include "edit_template.h"
 #include <QtGui/QMessageBox>
+#include <QSettings>
 
 MyFoods::MyFoods(QWidget *parent)
     : QDialog(parent)
@@ -25,10 +26,23 @@ MyFoods::MyFoods(QWidget *parent)
   connect(ui.btnClose, SIGNAL(clicked()), this, SLOT(close()));
 
   loadUserFoods();
+
+  QSettings settings("Nerdland", "Nutrition Tracker");
+  settings.beginGroup("myfoods");
+  resize(settings.value("size", size()).toSize());
+  if (!settings.value("position").isNull()) {
+    move(settings.value("position", pos()).toPoint());
+  }
+  settings.endGroup();
 }
 
 MyFoods::~MyFoods()
 {
+  QSettings settings("Nerdland", "Nutrition Tracker");
+  settings.beginGroup("myfoods");
+  settings.setValue("size", size());
+  settings.setValue("position", pos());
+  settings.endGroup();
 }
 
 void MyFoods::edit()

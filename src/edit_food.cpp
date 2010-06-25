@@ -3,10 +3,10 @@
 #include <QtGui/QDoubleValidator>
 #include <QtGui/QSpacerItem>
 #include <QtGui/QMessageBox>
+#include <QSettings>
 #include "data/unit.h"
 #include "data/group.h"
 #include "model/variant_value_item_model.h"
-#include <cassert>
 
 // The numeric database fields are DECIMAL(10,4), so 10 digits, 4 of which
 // appear after the decimal point.
@@ -17,72 +17,84 @@ const int EditFood::MAX_DECIMALS = 4;
 EditFood::EditFood(QWidget *parent, const QSharedPointer<SingleFood>& food)
     : QDialog(parent), food(food != NULL ? food : SingleFood::createNewFood())
 {
-	ui.setupUi(this);
+  ui.setupUi(this);
 
-    populateGroupSelector(ui.cboCategory);
-    populateSourceSelector(ui.cboSource);
-    populateUserSelector(ui.cboOwner);
+  populateGroupSelector(ui.cboCategory);
+  populateSourceSelector(ui.cboSource);
+  populateUserSelector(ui.cboOwner);
 
-    // TODO: Connect source and owner comboboxes when they are enabled
+  // TODO: Connect source and owner comboboxes when they are enabled
 
-    populateUnitSelector(ui.cboWeightUnit, Unit::Dimensions::Weight);
-    populateUnitSelector(ui.cboVolumeUnit, Unit::Dimensions::Volume);
+  populateUnitSelector(ui.cboWeightUnit, Unit::Dimensions::Weight);
+  populateUnitSelector(ui.cboVolumeUnit, Unit::Dimensions::Volume);
 
-	populateDimensionSelector(ui.cboNutrientDimensions);
-	connect(ui.cboNutrientDimensions, SIGNAL(currentIndexChanged(int)),
-	        this, SLOT(basicNutrientsDimensionChanged(int)));
+  populateDimensionSelector(ui.cboNutrientDimensions);
+  connect(ui.cboNutrientDimensions, SIGNAL(currentIndexChanged(int)),
+          this, SLOT(basicNutrientsDimensionChanged(int)));
 
-	populateDimensionSelector(ui.cboVitaminDimensions);
-    connect(ui.cboVitaminDimensions, SIGNAL(currentIndexChanged(int)),
-             this, SLOT(vitaminsDimensionChanged(int)));
+  populateDimensionSelector(ui.cboVitaminDimensions);
+  connect(ui.cboVitaminDimensions, SIGNAL(currentIndexChanged(int)),
+          this, SLOT(vitaminsDimensionChanged(int)));
 
-    populateDimensionSelector(ui.cboMineralDimensions);
-    connect(ui.cboMineralDimensions, SIGNAL(currentIndexChanged(int)),
-             this, SLOT(mineralsDimensionChanged(int)));
+  populateDimensionSelector(ui.cboMineralDimensions);
+  connect(ui.cboMineralDimensions, SIGNAL(currentIndexChanged(int)),
+          this, SLOT(mineralsDimensionChanged(int)));
 
-    QWidget* tabWidget = ui.cboNutrientDimensions;
+  QWidget* tabWidget = ui.cboNutrientDimensions;
 
-    tabWidget = populateNutrientGroup(ui.grpBasicNutrients, basicNutrients,
-                                      Nutrient::Categories::Basic, tabWidget);
+  tabWidget = populateNutrientGroup(ui.grpBasicNutrients, basicNutrients,
+                                    Nutrient::Categories::Basic, tabWidget);
 
-    QWidget::setTabOrder(tabWidget, ui.cboVitaminDimensions);
-    tabWidget = ui.cboVitaminDimensions;
+  QWidget::setTabOrder(tabWidget, ui.cboVitaminDimensions);
+  tabWidget = ui.cboVitaminDimensions;
 
-    tabWidget = populateNutrientGroup(ui.grpVitamins, vitamins,
-                                      Nutrient::Categories::Vitamin, tabWidget);
+  tabWidget = populateNutrientGroup(ui.grpVitamins, vitamins,
+                                    Nutrient::Categories::Vitamin, tabWidget);
 
-    QWidget::setTabOrder(tabWidget, ui.cboMineralDimensions);
-    tabWidget = ui.cboMineralDimensions;
+  QWidget::setTabOrder(tabWidget, ui.cboMineralDimensions);
+  tabWidget = ui.cboMineralDimensions;
 
-    tabWidget = populateNutrientGroup(ui.grpMinerals, minerals,
-                                      Nutrient::Categories::Mineral, tabWidget);
+  tabWidget = populateNutrientGroup(ui.grpMinerals, minerals,
+                                    Nutrient::Categories::Mineral, tabWidget);
 
-    QWidget::setTabOrder(tabWidget, ui.btnSaveAndClose);
-    QWidget::setTabOrder(ui.btnSaveAndClose, ui.btnSaveAndAdd);
-    QWidget::setTabOrder(ui.btnSaveAndAdd, ui.btnSave);
-    QWidget::setTabOrder(ui.btnSave, ui.btnCancel);
+  QWidget::setTabOrder(tabWidget, ui.btnSaveAndClose);
+  QWidget::setTabOrder(ui.btnSaveAndClose, ui.btnSaveAndAdd);
+  QWidget::setTabOrder(ui.btnSaveAndAdd, ui.btnSave);
+  QWidget::setTabOrder(ui.btnSave, ui.btnCancel);
 
-    // Default Vitamin and Mineral dimensions to % RDI
+  // Default Vitamin and Mineral dimensions to % RDI
 
-    ui.cboVitaminDimensions->setCurrentIndex
-      (ui.cboVitaminDimensions->findData
-         (QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI)));
+  ui.cboVitaminDimensions->setCurrentIndex
+  (ui.cboVitaminDimensions->findData
+   (QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI)));
 
-    ui.cboMineralDimensions->setCurrentIndex
-      (ui.cboMineralDimensions->findData
-         (QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI)));
+  ui.cboMineralDimensions->setCurrentIndex
+  (ui.cboMineralDimensions->findData
+   (QVariant::fromValue(NutrientAmountDisplay::DisplayModes::RDI)));
 
-    connect(ui.btnCancel, SIGNAL(clicked()), this, SLOT(close()));
-    connect(ui.btnSave, SIGNAL(clicked()), this, SLOT(saveFood()));
-    connect(ui.btnSaveAndAdd, SIGNAL(clicked()), this, SLOT(saveFoodAndClear()));
-    connect(ui.btnSaveAndClose, SIGNAL(clicked()), this, SLOT(saveFoodAndClose()));
+  connect(ui.btnCancel, SIGNAL(clicked()), this, SLOT(close()));
+  connect(ui.btnSave, SIGNAL(clicked()), this, SLOT(saveFood()));
+  connect(ui.btnSaveAndAdd, SIGNAL(clicked()), this, SLOT(saveFoodAndClear()));
+  connect(ui.btnSaveAndClose, SIGNAL(clicked()), this, SLOT(saveFoodAndClose()));
 
-    loadFoodInformation();
+  loadFoodInformation();
+
+  QSettings settings("Nerdland", "Nutrition Tracker");
+  settings.beginGroup("editfood");
+  resize(settings.value("size", size()).toSize());
+  if (!settings.value("position").isNull()) {
+    move(settings.value("position", pos()).toPoint());
+  }
+  settings.endGroup();
 }
 
 EditFood::~EditFood()
 {
-
+  QSettings settings("Nerdland", "Nutrition Tracker");
+  settings.beginGroup("editfood");
+  settings.setValue("size", size());
+  settings.setValue("position", pos());
+  settings.endGroup();
 }
 
 void EditFood::clearFood()

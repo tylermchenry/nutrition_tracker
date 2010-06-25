@@ -1,41 +1,55 @@
 #include "edit_template.h"
 #include <QtGui/QMessageBox>
+#include <QSettings>
 #include <QDebug>
 
 EditTemplate::EditTemplate(QWidget *parent,
                                const QSharedPointer<Template>& food)
     : QDialog(parent), food(food)
 {
-	ui.setupUi(this);
+  ui.setupUi(this);
 
-    populateUserSelector(ui.cboOwner);
+  populateUserSelector(ui.cboOwner);
 
-    // TODO: Connect owner combobox when it is enabled
+  // TODO: Connect owner combobox when it is enabled
 
-	ui.sfcResultsList->setAllowMealSelection(false);
+  ui.sfcResultsList->setAllowMealSelection(false);
 
-	connect(ui.fscSearch, SIGNAL(beginNewSearch()),
-	        ui.sfcResultsList, SLOT(clearFoodList()));
-	connect(ui.fscSearch, SIGNAL(newResult(const FoodSearchControl::Result&)),
-	        ui.sfcResultsList, SLOT(addToFoodList(const FoodSearchControl::Result&)));
+  connect(ui.fscSearch, SIGNAL(beginNewSearch()),
+          ui.sfcResultsList, SLOT(clearFoodList()));
+  connect(ui.fscSearch, SIGNAL(newResult(const FoodSearchControl::Result&)),
+          ui.sfcResultsList, SLOT(addToFoodList(const FoodSearchControl::Result&)));
 
-	connect(ui.sfcResultsList, SIGNAL(amountAdded(const FoodAmount&, int)),
-	        ui.ftComponents, SLOT(addFoodAmount(const FoodAmount&)));
+  connect(ui.sfcResultsList, SIGNAL(amountAdded(const FoodAmount&, int)),
+          ui.ftComponents, SLOT(addFoodAmount(const FoodAmount&)));
 
-	connect(ui.btnCancel, SIGNAL(clicked()), this, SLOT(close()));
-	connect(ui.btnSave, SIGNAL(clicked()), this, SLOT(saveFood()));
-	connect(ui.btnSaveAndAdd, SIGNAL(clicked()), this, SLOT(saveFoodAndClear()));
-	connect(ui.btnSaveAndClose, SIGNAL(clicked()), this, SLOT(saveFoodAndClose()));
+  connect(ui.btnCancel, SIGNAL(clicked()), this, SLOT(close()));
+  connect(ui.btnSave, SIGNAL(clicked()), this, SLOT(saveFood()));
+  connect(ui.btnSaveAndAdd, SIGNAL(clicked()), this, SLOT(saveFoodAndClear()));
+  connect(ui.btnSaveAndClose, SIGNAL(clicked()), this, SLOT(saveFoodAndClose()));
 
-	ui.ftComponents->setTemporary(true);
-	ui.ftComponents->setRootName("Template");
-	ui.ftComponents->initialize();
+  ui.ftComponents->setTemporary(true);
+  ui.ftComponents->setRootName("Template");
+  ui.ftComponents->initialize();
 
-	loadFoodInformation();
+  loadFoodInformation();
+
+  QSettings settings("Nerdland", "Nutrition Tracker");
+  settings.beginGroup("edittemplate");
+  resize(settings.value("size", size()).toSize());
+  if (!settings.value("position").isNull()) {
+    move(settings.value("position", pos()).toPoint());
+  }
+  settings.endGroup();
 }
 
 EditTemplate::~EditTemplate()
 {
+  QSettings settings("Nerdland", "Nutrition Tracker");
+  settings.beginGroup("edittemplatefood");
+  settings.setValue("size", size());
+  settings.setValue("position", pos());
+  settings.endGroup();
 }
 
 void EditTemplate::clearFood()
