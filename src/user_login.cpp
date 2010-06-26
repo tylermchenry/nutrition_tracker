@@ -1,4 +1,5 @@
 #include "user_login.h"
+#include "data/user.h"
 #include <QSettings>
 #include <QtSql/QSqlQuery>
 #include <QtGui/QMessageBox>
@@ -54,20 +55,19 @@ void UserLogin::logIn()
     QMessageBox::warning(this, "Login Failure", "You must enter a password.");
   } else if (!bCreate) {
 
-    QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-    QSqlQuery query(db);
+    QSharedPointer<const User> user = User::getUserByUsername(ui.txtUsername->text());
 
-    query.prepare("SELECT * FROM user WHERE User_Name=:username AND"
-        " PW_SHA1=SHA1(CONCAT(:password, :username2)) LIMIT 1");
-    query.bindValue(":username", ui.txtUsername->text());
-    query.bindValue(":username2", ui.txtUsername->text());
-    query.bindValue(":password", ui.txtPassword->text());
-
-    if (query.exec() && query.first()) {
-      success();
+    if (user) {
+      QString errorMessage;
+      if (User::logInAs(user, ui.txtPassword->text(), errorMessage)) {
+        success();
+      } else {
+        QMessageBox::warning(this, "Login Failure", "Cannot log in: " + errorMessage);
+      }
     } else {
       QMessageBox::warning
-        (this, "Login Failure", "The username or password you entered was not valid.");
+        (this, "Login Failure",
+         "Cannot log in: The username you entered does not exist.");
     }
 
   } else if (ui.txtConfirm->text() == "") {
@@ -76,29 +76,20 @@ void UserLogin::logIn()
     QMessageBox::warning(this, "Login Failure", "Passwords do not match.");
   } else {
 
-    QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-    QSqlQuery query(db);
+    QString errorMessage;
+    QSharedPointer<const User> user = User::createUser
+      (ui.txtUsername->text(), ui.txtPassword->text(), ui.txtRealName->text(),
+       errorMessage);
 
-    query.prepare("SELECT * FROM user WHERE User_Name=:username LIMIT 1");
-    query.bindValue(":username", ui.txtUsername->text());
-
-    if (query.exec() && query.first()) {
+    if (user) {
+      if (User::logInAs(user, ui.txtPassword->text(), errorMessage)) {
+        success();
+      } else {
+        QMessageBox::warning(this, "Login Failure", "Cannot log in: " + errorMessage);
+      }
+    } else {
       QMessageBox::warning
-        (this, "Login Failure", "The username you entered is already in use.");
-      return;
-    }
-
-    query.prepare("INSERT INTO user (User_Id, User_Name, Name, PW_SHA1) "
-                  " VALUES (NULL, :username, :name, "
-                  "         SHA1(CONCAT(:password, :username2)))");
-
-    query.bindValue(":username", ui.txtUsername->text());
-    query.bindValue(":username2", ui.txtUsername->text());
-    query.bindValue(":name", ui.txtRealName->text());
-    query.bindValue(":password", ui.txtPassword->text());
-
-    if (query.exec()) {
-      success();
+        (this, "Login Failure", "Cannot create user: " + errorMessage);
     }
   }
 }
