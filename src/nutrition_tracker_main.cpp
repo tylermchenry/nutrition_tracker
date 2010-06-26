@@ -7,6 +7,7 @@
 #include "instantiate_template.h"
 #include "my_foods.h"
 #include "database_information.h"
+#include "user_login.h"
 #include <data/single_food.h>
 #include <QtGui/QInputDialog>
 #include <QSettings>
@@ -72,6 +73,16 @@ void NutritionTrackerMain::show()
   }
 
   if (!(db = infoPrompt.getDatabase()).isOpen()) {
+    close();
+  }
+
+  UserLogin loginPrompt(this);
+
+  if (!loginPrompt.tryAutoLogIn()) {
+    loginPrompt.exec();
+  }
+
+  if (!loginPrompt.loggedIn()) {
     close();
   }
 
