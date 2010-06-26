@@ -35,7 +35,9 @@ FoodAmount FoodTreeAmountItem::getFoodAmount() const
 QString FoodTreeAmountItem::getName() const
 {
   if (foodAmount.isDefined()) {
-    return foodAmount.getFood()->getDisplayName();
+    return foodAmount.getFood()->getDisplayName() +
+        ((!foodAmount.includesRefuse() && foodAmount.getFood()->getPercentRefuse() > 0) ?
+          " [edible part only]" : "");
   } else {
     return "(Undefined Food Amount)";
   }

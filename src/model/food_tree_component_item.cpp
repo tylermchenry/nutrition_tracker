@@ -55,7 +55,7 @@ QString FoodTreeComponentItem::getName() const
   if (amt.isDefined()) {
     return amt.getFood()->getDisplayName() +
      ((!amt.includesRefuse() && amt.getFood()->getPercentRefuse() > 0) ?
-       " [excluding inedible parts]" : "");
+       " [edible part only]" : "");
   } else {
     return "(Undefined Component)";
   }
