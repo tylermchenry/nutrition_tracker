@@ -29,6 +29,7 @@
 #include <QSharedPointer>
 #include "data/food_amount.h"
 #include "data/unit.h"
+#include "data/specialized_unit.h"
 
 class FoodComponent; // Forward decl
 
@@ -83,6 +84,14 @@ class Food
       { return ""; }
 
     virtual QMap<QString, NutrientAmount> getNutrients() const = 0;
+
+    inline virtual QVector<QSharedPointer<const SpecializedUnit> >
+      getAllSpecializedUnits() const
+        { return QVector<QSharedPointer<const SpecializedUnit> >(); }
+
+    inline virtual QSharedPointer<const SpecializedUnit>
+      getSpecializedUnit(int) const
+        { return QSharedPointer<const SpecializedUnit>(); }
 
     void setName(const QString& name);
 

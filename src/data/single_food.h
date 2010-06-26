@@ -25,6 +25,7 @@
 #include "food.h"
 #include "unit.h"
 #include "group.h"
+#include "specialized_unit.h"
 #include <QMap>
 #include <QMultiMap>
 #include <QWeakPointer>
@@ -98,6 +99,14 @@ class SingleFood: public Food
 
     virtual NutrientAmount getCaloriesFromNutrientId
       (const QString& nutrId) const;
+
+    inline virtual QVector<QSharedPointer<const SpecializedUnit> >
+      getAllSpecializedUnits() const
+        { return SpecializedUnit::getAllSpecializedUnitsForFoodId(id); }
+
+    inline virtual QSharedPointer<const SpecializedUnit>
+      getSpecializedUnit(int sequence) const
+        { return SpecializedUnit::getSpecializedUnit(id, sequence); }
 
     void setEntrySource(EntrySources::EntrySource source);
 

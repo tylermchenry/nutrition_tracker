@@ -40,6 +40,8 @@ private:
     QMap<int, FoodSearchControl::Result> itemToResult;
     QSharedPointer<Food> selectedFood;
 
+    int specializedSeparatorRow;
+
     void initialize();
     void populateMealSelector(QComboBox* cbMeals);
 

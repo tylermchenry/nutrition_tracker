@@ -6,13 +6,13 @@
 #include <QDebug>
 
 SelectFoodControl::SelectFoodControl(QWidget *parent)
-  : QWidget(parent), selectMeals(true)
+  : QWidget(parent), selectMeals(true), specializedSeparatorRow(-1)
 {
   initialize();
 }
 
 SelectFoodControl::SelectFoodControl(bool selectMeals, QWidget *parent)
-  : QWidget(parent), selectMeals(selectMeals)
+  : QWidget(parent), selectMeals(selectMeals), specializedSeparatorRow(-1)
 {
   initialize();
 }
@@ -78,6 +78,25 @@ void SelectFoodControl::updateAddControls(QListWidgetItem* curSelectedItem)
         ui.cbUnit->addItem((*i)->getNameAndAbbreviation(), (*i)->getAbbreviation());
       }
     }
+
+    QVector<QSharedPointer<const SpecializedUnit> > specializedUnits =
+      selectedFood->getAllSpecializedUnits();
+
+    if (!specializedUnits.isEmpty()) {
+
+      specializedSeparatorRow = ui.cbUnit->count();
+      ui.cbUnit->insertSeparator(specializedSeparatorRow);
+
+      for (QVector<QSharedPointer<const SpecializedUnit> >::const_iterator i = specializedUnits.begin();
+           i != specializedUnits.end(); ++i)
+      {
+        ui.cbUnit->addItem((*i)->getNameAndAbbreviation(), (*i)->getSequence());
+      }
+
+    } else {
+      specializedSeparatorRow = -1;
+    }
+
   }
 
   bool enableControls = (selectedFood != NULL) && (curSelectedItem != NULL);
@@ -105,11 +124,29 @@ void SelectFoodControl::addClicked()
   qDebug() << "Add clicked";
   if (selectedFood != NULL) {
     qDebug() << "Emitting amountAdded for " << selectedFood->getName();
+
+    double amount;
+    QSharedPointer<const Unit> unit;
+
+    if (specializedSeparatorRow < 0 || ui.cbUnit->currentIndex() < specializedSeparatorRow) {
+      amount = ui.txtAmount->text().toDouble();
+      unit = Unit::getUnit(ui.cbUnit->itemData(ui.cbUnit->currentIndex()).toString());
+
+    } else {
+      QSharedPointer<const SpecializedUnit> specializedUnit =
+        selectedFood->getSpecializedUnit
+          (ui.cbUnit->itemData(ui.cbUnit->currentIndex()).toInt());
+
+      FoodAmount baseAmount = specializedUnit->getBaseAmount();
+
+      amount = baseAmount.getAmount() * ui.txtAmount->text().toDouble();
+      unit = baseAmount.getUnit();
+    }
+
     emit amountAdded
-      (FoodAmount(selectedFood, ui.txtAmount->text().toDouble(),
-                  Unit::getUnit(ui.cbUnit->itemData(ui.cbUnit->currentIndex()).toString()),
+      (FoodAmount(selectedFood, amount, unit,
                   !ui.chkIncludeRefuse->isEnabled() || ui.chkIncludeRefuse->isChecked()),
-       (selectMeals ? ui.cbMeal->itemData(ui.cbMeal->currentIndex()).toInt() : -1));
+                  (selectMeals ? ui.cbMeal->itemData(ui.cbMeal->currentIndex()).toInt() : -1));
   }
 }
 
