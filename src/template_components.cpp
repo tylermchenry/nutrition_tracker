@@ -38,13 +38,15 @@ QSharedPointer<FoodCollection> TemplateComponents::getCollection() const
 TemplateComponents::ComponentWidgetGroup::ComponentWidgetGroup
   (FoodAmount foodAmount, TemplateComponents* parent)
   : food(foodAmount.getFood()), lblFoodName(new QLabel(parent)),
-    txtAmount(new QLineEdit(parent)), cbUnit(new QComboBox(parent))
+    txtAmount(new QLineEdit(parent)), cbUnit(new QComboBox(parent)),
+    chkIncludeRefuse(new QCheckBox(parent))
 {
     int row = parent->ui.componentLayout->rowCount();
 
     parent->ui.componentLayout->addWidget(lblFoodName, row, 0);
     parent->ui.componentLayout->addWidget(txtAmount, row, 1);
     parent->ui.componentLayout->addWidget(cbUnit, row, 2);
+    parent->ui.componentLayout->addWidget(chkIncludeRefuse, row, 3);
 
     lblFoodName->setText(food->getDisplayName());
     lblFoodName->setWordWrap(true);
@@ -77,10 +79,16 @@ TemplateComponents::ComponentWidgetGroup::ComponentWidgetGroup
     }
 
     cbUnit->setCurrentIndex(cbUnit->findData(foodAmount.getUnit()->getAbbreviation()));
+
+    chkIncludeRefuse->setText("Including inedible parts");
+    chkIncludeRefuse->setChecked
+      (foodAmount.includesRefuse() && foodAmount.getFood()->getPercentRefuse() > 0);
+    chkIncludeRefuse->setEnabled(foodAmount.getFood()->getPercentRefuse() > 0);
 }
 
 FoodAmount TemplateComponents::ComponentWidgetGroup::getFoodAmount() const
 {
   return FoodAmount(food, txtAmount->text().toDouble(),
-                     Unit::getUnit(cbUnit->itemData(cbUnit->currentIndex()).toString()));
+                     Unit::getUnit(cbUnit->itemData(cbUnit->currentIndex()).toString()),
+                     !chkIncludeRefuse->isEnabled() || chkIncludeRefuse->isChecked());
 }

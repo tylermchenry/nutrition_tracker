@@ -5,6 +5,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
 #include <QtGui/QComboBox>
+#include <QtGui/QCheckBox>
 #include "ui_template_components.h"
 #include "data/template.h"
 #include "data/food_collection.h"
@@ -43,6 +44,7 @@ class TemplateComponents : public QWidget
         QLabel* lblFoodName;
         QLineEdit* txtAmount;
         QComboBox* cbUnit;
+        QCheckBox* chkIncludeRefuse;
     };
 
     QList<ComponentWidgetGroup> componentWidgetGroups;
