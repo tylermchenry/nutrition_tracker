@@ -8,17 +8,16 @@ DEPENDPATH += . \
     src
 INCLUDEPATH += . \
     src
-
 versiontarget.target = version.cpp
 versiontarget.commands = ./make_version.sh
 versiontarget.depends = FORCE
-
 PRE_TARGETDEPS += version.cpp
 QMAKE_EXTRA_TARGETS += versiontarget
 
 # Input
-HEADERS += version.h \
-	src/about.h \
+HEADERS += src/nutrition_tracker_application.h \
+    version.h \
+    src/about.h \
     src/data/user.h \
     src/user_login.h \
     src/data/specialized_unit.h \
@@ -81,8 +80,9 @@ FORMS += src/about.ui \
     src/food_search_control.ui \
     src/nutrition_tracker.ui \
     src/nutrition_tracker_main.ui
-SOURCES += version.cpp \
-	src/about.cpp \
+SOURCES += src/nutrition_tracker_application.cpp \
+    version.cpp \
+    src/about.cpp \
     src/data/user.cpp \
     src/user_login.cpp \
     src/data/specialized_unit.cpp \
