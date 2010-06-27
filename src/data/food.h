@@ -28,6 +28,7 @@
 #include <QString>
 #include <QSharedPointer>
 #include "data/food_amount.h"
+#include "data/user.h"
 #include "data/unit.h"
 #include "data/specialized_unit.h"
 
@@ -61,6 +62,11 @@ class Food
     inline QString getId() const { return id; }
 
     inline QString getName() const { return name; }
+
+    inline int getOwnerId() const { return ownerId; }
+
+    inline QSharedPointer<const User> getOwner() const
+      { return User::getUser(ownerId); }
 
     virtual inline QString getDisplayName() const { return name; }
 
@@ -116,8 +122,9 @@ class Food
 
   protected:
 
-    Food(const QString& id, const QString& name, double weightAmount,
-         double volumeAmount, double quantityAmount, double servingAmount);
+    Food(const QString& id, const QString& name, int ownerId,
+         double weightAmount, double volumeAmount, double quantityAmount,
+         double servingAmount);
 
     Food(const QString& id, const QSharedPointer<const Food>& copy);
 
@@ -132,6 +139,7 @@ class Food
 
     QString id;
     QString name;
+    int ownerId;
     QMap<Unit::Dimensions::Dimension, double> baseAmounts;
 
 };

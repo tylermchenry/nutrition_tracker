@@ -24,8 +24,8 @@ QMap<int, QWeakPointer<FoodCollection> > FoodCollection::foodCollectionCache;
 QSharedPointer<FoodCollection> FoodCollection::createFoodCollection(const QString& name)
 {
   QSharedPointer<FoodCollection> collection
-    (new FoodCollection(nextCollectionId++, name, QList<FoodComponent>(),
-                        0, 0, 0, 1));
+    (new FoodCollection(nextCollectionId++, name, User::getLoggedInUser()->getId(),
+                        QList<FoodComponent>(), 0, 0, 0, 1));
   foodCollectionCache[collection->id] = collection;
   return collection;
 }
@@ -74,10 +74,11 @@ QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
 }
 
 FoodCollection::FoodCollection(const QString& id, const QString& name,
+                             int ownerId,
                              const QList<FoodComponent>& components,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount)
-  : Food(id, name, weightAmount, volumeAmount,
+  : Food(id, name, ownerId, weightAmount, volumeAmount,
          quantityAmount, servingAmount), id(-1), nextTemporaryId(-1),
          bNeedsToBeReSaved(false)
 {
@@ -85,21 +86,22 @@ FoodCollection::FoodCollection(const QString& id, const QString& name,
 }
 
 FoodCollection::FoodCollection(const QString& id, const QString& name,
+                              int ownerId,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount)
-  : Food(id, name, weightAmount, volumeAmount,
+  : Food(id, name, ownerId, weightAmount, volumeAmount,
          quantityAmount, servingAmount), id(-1), nextTemporaryId(-1),
          bNeedsToBeReSaved(false)
 {
 }
 
-FoodCollection::FoodCollection(int id, const QString& name,
+FoodCollection::FoodCollection(int id, const QString& name, int ownerId,
                              const QList<FoodComponent>& components,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount)
-  : Food("COLLECTION_" + QString::number(id), name, weightAmount, volumeAmount,
-         quantityAmount, servingAmount), id(id), nextTemporaryId(-1),
-         bNeedsToBeReSaved(false)
+  : Food("COLLECTION_" + QString::number(id), name, ownerId, weightAmount,
+         volumeAmount, quantityAmount, servingAmount), id(id),
+         nextTemporaryId(-1), bNeedsToBeReSaved(false)
 {
   setComponents(components);
 }

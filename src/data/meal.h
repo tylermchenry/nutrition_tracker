@@ -49,7 +49,7 @@ class Meal : public FoodCollection
   public:
 
     static QMap<int, QString> getAllMealNames
-      (int creatorUserId = -1, bool includeGenerics = true);
+      (int creatorId = -1, bool includeGenerics = true);
 
     static QSharedPointer<Meal> createTemporaryMeal
       (int userId, const QDate& date, int mealId);
@@ -72,9 +72,10 @@ class Meal : public FoodCollection
 
     inline int getMealId() const { return id; }
 
-    inline int getCreatorUserId() const { return creatorUserId; }
+    inline int getCreatorId() const { return creatorId; }
 
-    inline int getUserId() const { return userId; }
+    inline QSharedPointer<const User> getCreator() const
+      { return User::getUser(creatorId); }
 
     inline QDate getDate() const { return date; }
 
@@ -90,16 +91,15 @@ class Meal : public FoodCollection
 
   private:
 
-    Meal(int id, int creatorUserId, const QString& name, int userId,
+    Meal(int id, int creatorId, const QString& name, int ownerId,
          const QDate& date, const QList<FoodComponent>& components,
          int temporaryId = -1);
 
-    Meal(int id, int creatorUserId, const QString& name, int userId,
+    Meal(int id, int creatorId, const QString& name, int ownerId,
          const QDate& date, int temporaryId = -1);
 
     int id;
-    int creatorUserId; // TODO: Replace with user object when created
-    int userId;        // TODO: Replace with user object when created
+    int creatorId;
     QDate date;
     int temporaryId;   // If >= 0, then temporary and not backed by database
 

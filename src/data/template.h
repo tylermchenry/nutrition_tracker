@@ -53,7 +53,7 @@ class Template : public FoodCollection
 
   private:
 
-    Template(int id, const QString& name,
+    Template(int id, const QString& name, int ownerId,
               const QList<FoodComponent>& components = QList<FoodComponent>());
 
     // Default or "Copy" constructor. If a food is passed in to copy, the

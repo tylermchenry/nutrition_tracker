@@ -110,12 +110,12 @@ class FoodCollection: public Food
 
   protected:
 
-    FoodCollection(const QString& id, const QString& name,
+    FoodCollection(const QString& id, const QString& name, int ownerId,
                     const QList<FoodComponent>& components,
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount);
 
-    FoodCollection(const QString& id, const QString& name,
+    FoodCollection(const QString& id, const QString& name, int ownerId,
                    double weightAmount, double volumeAmount,
                    double quantityAmount, double servingAmount);
 
@@ -157,7 +157,7 @@ class FoodCollection: public Food
 
   private:
 
-    FoodCollection(int id, const QString& name,
+    FoodCollection(int id, const QString& name, int ownerId,
                     const QList<FoodComponent>& components,
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount);

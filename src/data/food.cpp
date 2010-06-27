@@ -12,9 +12,10 @@
 #include <QDebug>
 #include <stdexcept>
 
-Food::Food(const QString& id, const QString& name, double weightAmount,
-           double volumeAmount, double quantityAmount, double servingAmount)
-: id(id), name(name)
+Food::Food(const QString& id, const QString& name, int ownerId,
+           double weightAmount, double volumeAmount, double quantityAmount,
+           double servingAmount)
+: id(id), name(name), ownerId(ownerId)
 {
   if (weightAmount > 0) {
     baseAmounts[Unit::Dimensions::Weight] = weightAmount;
@@ -34,7 +35,8 @@ Food::Food(const QString& id, const QString& name, double weightAmount,
 }
 
 Food::Food(const QString& id, const QSharedPointer<const Food>& copy)
-  : id(id), name(copy ? copy->name : "")
+  : id(id), name(copy ? copy->name : ""),
+    ownerId(copy ? copy->ownerId : User::getLoggedInUser()->getId())
 {
   if (copy) {
     baseAmounts = copy->baseAmounts;

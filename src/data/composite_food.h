@@ -98,7 +98,7 @@ class CompositeFood: public FoodCollection
 
   private:
 
-    CompositeFood(int id, const QString& name,
+    CompositeFood(int id, const QString& name, int ownerId,
                     const QList<FoodComponent>& components,
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount,
@@ -106,7 +106,7 @@ class CompositeFood: public FoodCollection
                     QDate expiryDate = QDate(),
                     bool nonce = false);
 
-    CompositeFood(int id, const QString& name,
+    CompositeFood(int id, const QString& name, int ownerId,
                     double weightAmount, double volumeAmount,
                     double quantityAmount, double servingAmount,
                     QDate creationDate = QDate::currentDate(),

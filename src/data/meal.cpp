@@ -21,19 +21,19 @@ int Meal::nextTemporaryId = 0;
 
 QMap<int, QWeakPointer<Meal> > Meal::temporaryMealCache;
 
-QMap<int, QString> Meal::getAllMealNames(int creatorUserId, bool includeGenerics)
+QMap<int, QString> Meal::getAllMealNames(int creatorId, bool includeGenerics)
 {
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
   QString queryText = "SELECT meal.Meal_Id, meal.Name FROM meal";
 
-  if (creatorUserId >= 0) {
+  if (creatorId >= 0) {
     queryText += " WHERE meal.CreatorUser_Id=:creatorId";
   }
 
   if (includeGenerics) {
-    if (creatorUserId >= 0) {
+    if (creatorId >= 0) {
       queryText += " OR";
     } else {
       queryText += " WHERE";
@@ -45,8 +45,8 @@ QMap<int, QString> Meal::getAllMealNames(int creatorUserId, bool includeGenerics
      qDebug() << "Query prepare failed: " << query.lastError();
    }
 
-   if (creatorUserId >= 0) {
-     query.bindValue(":creatorId", creatorUserId);
+   if (creatorId >= 0) {
+     query.bindValue(":creatorId", creatorId);
    }
 
    QMap<int, QString> mealNames;
@@ -168,14 +168,14 @@ QSharedPointer<Meal> Meal::createMealFromQueryResults(QSqlQuery& query)
 
     if (!mealCache[userId][date][id]) {
 
-      int creatorUserId = -1;
+      int creatorId = -1;
 
       if (!record.field("CreatorUser_Id").isNull()) {
-        creatorUserId = record.field("CreatorUser_Id").value().toInt();
+        creatorId = record.field("CreatorUser_Id").value().toInt();
       }
 
       meal = QSharedPointer<Meal>
-        (new Meal(id, creatorUserId,
+        (new Meal(id, creatorId,
                   record.field("Name").value().toString(),
                   userId, date));
 
@@ -206,31 +206,31 @@ Meal::~Meal()
 {
 }
 
-Meal::Meal(int id, int creatorUserId, const QString& name, int userId,
+Meal::Meal(int id, int creatorId, const QString& name, int ownerId,
            const QDate& date, const QList<FoodComponent>& components,
            int temporaryId)
   : FoodCollection((temporaryId >= 0 ? "TMPMEAL_" : "MEAL_") + QString::number(id) + "_" +
-                   QString::number(userId) + "_" + date.toString(Qt::ISODate),
-                   name, components, 0, 0, 0, 1),
-    id(id), creatorUserId(creatorUserId), userId(userId), date(date), temporaryId(temporaryId)
+                   QString::number(ownerId) + "_" + date.toString(Qt::ISODate),
+                   name, ownerId, components, 0, 0, 0, 1),
+    id(id), creatorId(creatorId), date(date), temporaryId(temporaryId)
 {
   if (!isTemporary() && needsToBeReSaved()) {
     saveToDatabase();
   }
 }
 
-Meal::Meal(int id, int creatorUserId, const QString& name, int userId,
+Meal::Meal(int id, int creatorId, const QString& name, int ownerId,
            const QDate& date, int temporaryId)
   : FoodCollection((temporaryId >= 0 ? "TMPMEAL_" : "MEAL_") + QString::number(id) + "_" +
-                   QString::number(userId) + "_" + date.toString(Qt::ISODate),
-                   name, 0, 0, 0, 1),
-    id(id), creatorUserId(creatorUserId), userId(userId), date(date), temporaryId(temporaryId)
+                   QString::number(ownerId) + "_" + date.toString(Qt::ISODate),
+                   name, ownerId, 0, 0, 0, 1),
+    id(id), creatorId(creatorId), date(date), temporaryId(temporaryId)
 {
 }
 
 QSharedPointer<Meal> Meal::getTemporaryClone() const
 {
-  QSharedPointer<Meal> tempClone = Meal::createTemporaryMeal(getUserId(), getDate(), getMealId());
+  QSharedPointer<Meal> tempClone = Meal::createTemporaryMeal(getOwnerId(), getDate(), getMealId());
   tempClone->replaceWith(getCanonicalSharedPointerToCollection());
   return tempClone;
 }
@@ -282,7 +282,7 @@ void Meal::saveToDatabase()
     query.bindValue(":linkId", i->getId() >= 0 ? QVariant(i->getId()) : QVariant());
 
     query.bindValue(":mealId", id);
-    query.bindValue(":userId", userId);
+    query.bindValue(":userId", getOwnerId());
     query.bindValue(":mealDate", date);
 
     if (!i->getFoodAmount().isDefined()) continue;
@@ -346,7 +346,7 @@ void Meal::deleteFromDatabase()
                  "WHERE Meal_Id=:mealId AND User_Id=:userId "
                  "      AND MealDate=:mealDate");
   query.bindValue(":mealId", id);
-  query.bindValue(":userId", userId);
+  query.bindValue(":userId", getOwnerId());
   query.bindValue(":mealDate", date);
 
   if (!query.exec()) {
@@ -354,7 +354,7 @@ void Meal::deleteFromDatabase()
   } else {
     clearComponents();
     deleteRemovedNonceFoods();
-    mealCache[userId][date][id].clear();
+    mealCache[getOwnerId()][date][id].clear();
   }
 }
 
@@ -363,7 +363,7 @@ QSharedPointer<Food> Meal::getCanonicalSharedPointer() const
   if (isTemporary()) {
     return temporaryMealCache[temporaryId].toStrongRef();
   } else {
-    return mealCache[userId][date][id].toStrongRef();
+    return mealCache[getOwnerId()][date][id].toStrongRef();
   }
 }
 

@@ -31,7 +31,7 @@ QSharedPointer<Template> Template::getTemplate(int id)
     return templateCache[id].toStrongRef();
   }
 
-  query.prepare("SELECT template.Template_Id, template.Description, "
+  query.prepare("SELECT template.Template_Id, template.User_Id, template.Description, "
                 "       template_link.TemplateLink_Id, template_link.Contained_Type, "
                 "       template_link.Contained_Id, template_link.Includes_Refuse, "
                 "       template_link.Magnitude, template_link.IntrafoodOrder, "
@@ -69,7 +69,9 @@ QSharedPointer<Template> Template::createTemplateFromQueryResults
 
     if (!templateCache[id]) {
       food = QSharedPointer<Template>
-        (new Template(id, record.field("Description").value().toString()));
+        (new Template(id,
+                      record.field("Description").value().toString(),
+                      record.field("User_Id").value().toInt()));
       templateCache[id] = food;
     } else {
       return templateCache[id].toStrongRef();
@@ -115,9 +117,9 @@ QMultiMap<QString, int> Template::getFoodsForUser(int userId)
   return foods;
 }
 
-Template::Template(int id, const QString& name,
+Template::Template(int id, const QString& name, int ownerId,
                       const QList<FoodComponent>& components)
-  : FoodCollection("TEMPLATE_" + QString::number(id), name, components,
+  : FoodCollection("TEMPLATE_" + QString::number(id), name, ownerId, components,
                    0, 0, 0, 0),
     id(id)
 {
@@ -155,9 +157,8 @@ void Template::saveToDatabase()
 
   query.bindValue(":id", (id >= 0 ? QVariant(id) : QVariant(QVariant::Int)));
 
-  // TOOD: Real user IDs when users are implemented
-  query.bindValue(":user_id", 1);
-  query.bindValue(":user_id2", 1);
+  query.bindValue(":user_id", getOwnerId());
+  query.bindValue(":user_id2", getOwnerId());
   query.bindValue(":name", getName());
   query.bindValue(":name2", getName());
 

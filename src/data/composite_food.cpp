@@ -64,7 +64,8 @@ QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
     return compositeFoodCache[id].toStrongRef();
   }
 
-  query.prepare("SELECT composite_food.Composite_Id, composite_food.Description, "
+  query.prepare("SELECT composite_food.Composite_Id, composite_food.User_Id, "
+                "       composite_food.Description, "
                 "       composite_food.User_Id, composite_food.IsNonce, "
                 "       composite_food.CreationDate, composite_food.ExpiryDate, "
                 "       composite_food.Weight_g, composite_food.Volume_floz, "
@@ -109,6 +110,7 @@ QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
       food = QSharedPointer<CompositeFood>
         (new CompositeFood(id,
                            record.field("Description").value().toString(),
+                           record.field("User_Id").value().toInt(),
                            record.field("Weight_g").value().toDouble(),
                            record.field("Volume_floz").value().toDouble(),
                            record.field("Quantity").value().toDouble(),
@@ -197,12 +199,12 @@ QString CompositeFood::generateExpirySuffix
   return suffix;
 }
 
-CompositeFood::CompositeFood(int id, const QString& name,
+CompositeFood::CompositeFood(int id, const QString& name, int ownerId,
                              const QList<FoodComponent>& components,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount,
                              QDate creationDate, QDate expiryDate, bool nonce)
-  : FoodCollection("COMPOSITE_" + QString::number(id), name, components,
+  : FoodCollection("COMPOSITE_" + QString::number(id), name, ownerId, components,
                    weightAmount, volumeAmount, quantityAmount, servingAmount),
     id(id), nonce(nonce), creationDate(creationDate), expiryDate(expiryDate)
 {
@@ -212,11 +214,11 @@ CompositeFood::CompositeFood(int id, const QString& name,
   }
 }
 
-CompositeFood::CompositeFood(int id, const QString& name,
+CompositeFood::CompositeFood(int id, const QString& name, int ownerId,
                              double weightAmount, double volumeAmount,
                              double quantityAmount, double servingAmount,
                              QDate creationDate, QDate expiryDate, bool nonce)
-  : FoodCollection("COMPOSITE_" + QString::number(id), name,
+  : FoodCollection("COMPOSITE_" + QString::number(id), name, ownerId,
                    weightAmount, volumeAmount, quantityAmount, servingAmount),
     id(id), nonce(nonce), creationDate(creationDate), expiryDate(expiryDate)
 {
@@ -284,9 +286,8 @@ void CompositeFood::saveToDatabase()
 
   query.bindValue(":id", (id >= 0 ? QVariant(id) : QVariant(QVariant::Int)));
 
-  // TOOD: Real user IDs when users are implemented
-  query.bindValue(":user_id", 1);
-  query.bindValue(":user_id2", 1);
+  query.bindValue(":user_id", getOwnerId());
+  query.bindValue(":user_id2", getOwnerId());
   query.bindValue(":name", getName());
   query.bindValue(":name2", getName());
 

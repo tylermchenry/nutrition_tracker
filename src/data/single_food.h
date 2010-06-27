@@ -124,7 +124,7 @@ class SingleFood: public Food
 
   private:
 
-    SingleFood(int id, const QString& name,
+    SingleFood(int id, const QString& name, int ownerId,
                 EntrySources::EntrySource entrySource,
                 const QSharedPointer<const Group>& group,
                 double percentRefuse, const QString& refuseDescription,

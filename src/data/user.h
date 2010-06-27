@@ -43,6 +43,9 @@ class User
 
     inline QString getRealName() const { return realName; }
 
+    inline QString getDisplayName() const
+      { return realName.isEmpty() ? username : realName; }
+
     virtual ~User();
 
   private:

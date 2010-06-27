@@ -35,7 +35,8 @@ QSharedPointer<SingleFood> SingleFood::getSingleFood(int id)
     return singleFoodCache[id].toStrongRef();
   }
 
-  query.prepare("SELECT food_description.Food_Id, food_description.Entry_Src, "
+  query.prepare("SELECT food_description.Food_Id, food_description.User_Id, "
+                "       food_description.Entry_Src, "
                 "       food_description.Long_Desc, food_description.Refuse,"
                 "       food_description.Ref_desc, food_description.Weight_g, "
                 "       food_description.Volume_floz, food_description.Quantity, "
@@ -92,6 +93,7 @@ QSharedPointer<SingleFood> SingleFood::createSingleFoodFromQueryResults(QSqlQuer
       QSharedPointer<SingleFood> food
         (new SingleFood(id,
                         record.field("Long_Desc").value().toString(),
+                        record.field("User_Id").value().toInt(),
                         EntrySources::fromHumanReadable(record.field("Entry_Src").value().toString()),
                         Group::createGroupFromRecord(record),
                         record.field("Refuse").value().toDouble(),
@@ -141,7 +143,8 @@ QMultiMap<QString, int> SingleFood::getFoodsForUser(int userId)
   return foods;
 }
 
-SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource entrySource,
+SingleFood::SingleFood(int id, const QString& name, int ownerId,
+                        EntrySources::EntrySource entrySource,
                         const QSharedPointer<const Group>& group,
                         double percentRefuse, const QString& refuseDescription,
                         const QMap<QString, NutrientAmount>& nutrients,
@@ -149,8 +152,8 @@ SingleFood::SingleFood(int id, const QString& name, EntrySources::EntrySource en
                         double quantityAmount, double servingAmount,
                         double calorieDensityFat, double calorieDensityCarbohydrate,
                         double calorieDensityProtien, double calorieDensityAlcohol)
-  : Food("SINGLE_" + QString::number(id), name, weightAmount, volumeAmount,
-         quantityAmount, servingAmount),
+  : Food("SINGLE_" + QString::number(id), name, ownerId,
+         weightAmount, volumeAmount, quantityAmount, servingAmount),
     id(id), entrySource(entrySource), group(group),
     percentRefuse(percentRefuse), refuseDescription(refuseDescription),
     nutrients(nutrients)
@@ -287,8 +290,8 @@ void SingleFood::saveToDatabase()
 
   query.bindValue(":id", (id >= 0 ? QVariant(id) : QVariant(QVariant::Int)));
 
-  query.bindValue(":userId", 1); // TODO: Real User ID
-  query.bindValue(":userId2", 1); // TODO: Real User ID
+  query.bindValue(":userId", getOwnerId());
+  query.bindValue(":userId2", getOwnerId());
   query.bindValue(":entrySource", EntrySources::toHumanReadable(entrySource));
   query.bindValue(":entrySource2", EntrySources::toHumanReadable(entrySource));
   query.bindValue(":group", group->getId());
