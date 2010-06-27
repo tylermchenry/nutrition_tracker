@@ -29,13 +29,13 @@ class NutrientAmountDisplay : public QObject
     explicit NutrientAmountDisplay(QWidget* widgetParent = NULL,
                                    const NutrientAmount& amount = NutrientAmount(),
                                    DisplayModes::DisplayMode mode = DisplayModes::Weight,
-                                   bool enabled = true);
+                                   bool writeable = true);
 
     NutrientAmountDisplay(QWidget* widgetParent,
                           const QSharedPointer<const Nutrient>& nutrient,
                           double amount,
                           DisplayModes::DisplayMode mode = DisplayModes::Weight,
-                          bool enabled = true);
+                          bool writeable = true);
 
     NutrientAmountDisplay(const NutrientAmountDisplay& copy);
 
@@ -62,7 +62,7 @@ class NutrientAmountDisplay : public QObject
     NutrientAmount nutrientAmount;
     DisplayModes::DisplayMode displayMode;
     bool supportsRDI;
-    bool enabled;
+    bool writeable;
 
     QLabel* lblName;
     QLineEdit* txtValue;
