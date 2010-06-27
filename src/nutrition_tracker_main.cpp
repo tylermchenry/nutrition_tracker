@@ -30,6 +30,7 @@ NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
 
   setStatusBar(new QStatusBar());
 
+  connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
   connect(ui.actionAdd_Food_s_to_Current_Day, SIGNAL(triggered()),
           this, SLOT(showAddFood()));
   connect(ui.actionAdd_Food_to_Current_Day_from_Template, SIGNAL(triggered()),
