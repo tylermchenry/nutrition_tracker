@@ -14,6 +14,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QStatusBar>
 #include <QSettings>
+#include <stdexcept>
 
 NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
     : QMainWindow(parent)

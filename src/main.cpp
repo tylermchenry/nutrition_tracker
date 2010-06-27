@@ -1,11 +1,11 @@
 #include "nutrition_tracker_main.h"
 
 #include <QtGui>
-#include <QApplication>
+#include "nutrition_tracker_application.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    NutritionTrackerApplication a(argc, argv);
     NutritionTrackerMain w;
 
     QCoreApplication::setOrganizationName("Nerdland");
