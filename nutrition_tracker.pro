@@ -17,7 +17,8 @@ PRE_TARGETDEPS += version.cpp
 QMAKE_EXTRA_TARGETS += versiontarget
 
 # Input
-HEADERS += src/about.h \
+HEADERS += version.h \
+	src/about.h \
     src/data/user.h \
     src/user_login.h \
     src/data/specialized_unit.h \
