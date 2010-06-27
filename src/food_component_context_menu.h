@@ -43,17 +43,18 @@ class FoodComponentContextMenu : public FoodContextMenu
 
     template<typename T>
       void createAction(QMap<QAction*, T>& actionMap, const QString& label,
-                          const T& mapVal, QMenu* menu = NULL);
+                          const T& mapVal, QMenu* menu = NULL, bool enabled = true);
 
-    void createAction(QAction*& action, const QString& label, QMenu* menu = NULL);
+    void createAction(QAction*& action, const QString& label, QMenu* menu = NULL,
+                        bool enabled = true);
 };
 
 template<typename T>
    void FoodComponentContextMenu::createAction(QMap<QAction*, T>& actionMap, const QString& label,
-                                           const T& mapVal, QMenu* menu)
+                                           const T& mapVal, QMenu* menu, bool enabled)
 {
   QAction* action;
-  createAction(action, label, menu);
+  createAction(action, label, menu, enabled);
   actionMap[action] = mapVal;
 }
 

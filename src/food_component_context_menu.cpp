@@ -46,18 +46,23 @@ FoodComponentContextMenu::FoodComponentContextMenu
 
   addMenu(mnuChangeUnit);
 
-  createAction(actEdit, "Edit...");
+  // TODO: Enable action when implemented
+  createAction(actEdit, "Edit...", this, false);
 
   addSeparator();
 
-  createAction(actDuplicate, "Duplicate");
+  // TODO: Enable action when implemented
+  createAction(actDuplicate, "Duplicate", this, false);
 
+  // TODO: Enable action when implemented
   mnuMoveToMeal = new QMenu("Move to Meal", this);
+  mnuMoveToMeal->setEnabled(false);
 
   QMap<int, QString> mealNames = Meal::getAllMealNames();
 
   for(QMap<int, QString>::const_iterator i = mealNames.begin(); i != mealNames.end(); ++i) {
-    createAction(actMoveToMeal, i.value(), i.key(), mnuMoveToMeal);
+    // TODO: Enable action when implemented
+    createAction(actMoveToMeal, i.value(), i.key(), mnuMoveToMeal, false);
   }
 
   addMenu(mnuMoveToMeal);
@@ -90,8 +95,10 @@ void FoodComponentContextMenu::actionTriggered(QAction* action)
   }
 }
 
-void FoodComponentContextMenu::createAction(QAction*& action, const QString& label, QMenu* menu)
+void FoodComponentContextMenu::createAction(QAction*& action, const QString& label,
+                                                  QMenu* menu, bool enabled)
 {
     action = new QAction(label, (menu ? menu : this));
+    action->setEnabled(enabled);
     (menu ? menu : this)->addAction(action);
 }
