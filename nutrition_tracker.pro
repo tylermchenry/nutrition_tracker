@@ -9,8 +9,16 @@ DEPENDPATH += . \
 INCLUDEPATH += . \
     src
 
+versiontarget.target = version.cpp
+versiontarget.commands = ./make_version.sh
+versiontarget.depends = FORCE
+
+PRE_TARGETDEPS += version.cpp
+QMAKE_EXTRA_TARGETS += versiontarget
+
 # Input
-HEADERS += src/data/user.h \
+HEADERS += src/about.h \
+    src/data/user.h \
     src/user_login.h \
     src/data/specialized_unit.h \
     src/fill_in.h \
@@ -54,7 +62,8 @@ HEADERS += src/data/user.h \
     src/food_search_control.h \
     src/nutrition_tracker.h \
     src/nutrition_tracker_main.h
-FORMS += src/user_login.ui \
+FORMS += src/about.ui \
+    src/user_login.ui \
     src/fill_in.ui \
     src/select_template.ui \
     src/template_components.ui \
@@ -71,7 +80,9 @@ FORMS += src/user_login.ui \
     src/food_search_control.ui \
     src/nutrition_tracker.ui \
     src/nutrition_tracker_main.ui
-SOURCES += src/data/user.cpp \
+SOURCES += version.cpp \
+	src/about.cpp \
+    src/data/user.cpp \
     src/user_login.cpp \
     src/data/specialized_unit.cpp \
     src/fill_in.cpp \

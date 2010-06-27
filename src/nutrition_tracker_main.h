@@ -26,6 +26,7 @@ class NutritionTrackerMain : public QMainWindow
     void showCreateCompositeFoodFromTemplate();
     void showCreateTemplate();
     void showMyFoods();
+    void showAbout();
 
   private:
 

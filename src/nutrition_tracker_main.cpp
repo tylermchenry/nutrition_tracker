@@ -6,6 +6,7 @@
 #include "select_template.h"
 #include "instantiate_template.h"
 #include "my_foods.h"
+#include "about.h"
 #include "database_information.h"
 #include "user_login.h"
 #include <data/single_food.h>
@@ -45,6 +46,8 @@ NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
           this, SLOT(showCreateTemplate()));
   connect(ui.actionManage_my_foods, SIGNAL(triggered()),
           this, SLOT(showMyFoods()));
+  connect(ui.actionAbout_Nutrition_Tracker, SIGNAL(triggered()),
+          this, SLOT(showAbout()));
 }
 
 NutritionTrackerMain::~NutritionTrackerMain()
@@ -158,6 +161,11 @@ void NutritionTrackerMain::showMyFoods()
 {
   QScopedPointer<QDialog>(new MyFoods(this))->exec();
   tracker->refresh();
+}
+
+void NutritionTrackerMain::showAbout()
+{
+  QScopedPointer<QDialog>(new About(this))->exec();
 }
 
 FoodAmount NutritionTrackerMain::promptForTemplateInstance
