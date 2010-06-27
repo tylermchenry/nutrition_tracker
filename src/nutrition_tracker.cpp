@@ -9,10 +9,15 @@
 NutritionTracker::NutritionTracker(QWidget *parent)
     : QWidget(parent)
 {
-	ui.setupUi(this);
+  ui.setupUi(this);
 
-	connect(ui.calCurrentDay, SIGNAL(selectionChanged()), this, SLOT(changeDay()));
-	connect(ui.ftFoodsForDay, SIGNAL(contentsModified()), this, SLOT(updateBalance()));
+  connect(ui.calCurrentDay, SIGNAL(selectionChanged()), this, SLOT(changeDay()));
+  connect(ui.ftFoodsForDay, SIGNAL(contentsModified()), this, SLOT(updateBalance()));
+
+  connect(ui.btnAddFood, SIGNAL(clicked()), this, SIGNAL(addFood()));
+  connect(ui.btnAddFoodFromTemplate, SIGNAL(clicked()), this, SIGNAL(addFoodFromTemplate()));
+  connect(ui.btnCreateFood, SIGNAL(clicked()), this, SIGNAL(createFood()));
+  connect(ui.btnCreateCompositeFood, SIGNAL(clicked()), this, SIGNAL(createCompositeFood()));
 }
 
 NutritionTracker::~NutritionTracker()

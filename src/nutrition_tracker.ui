@@ -191,14 +191,14 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="btnAddFood">
        <property name="text">
         <string>Add Food(s) to Current Day</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="btnAddFoodFromTemplate">
        <property name="text">
         <string>Add Template to Current Day</string>
        </property>
@@ -221,14 +221,14 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="btnCreateFood">
        <property name="text">
         <string>Enter New Food</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_4">
+      <widget class="QPushButton" name="btnCreateCompositeFood">
        <property name="text">
         <string>Enter New Composite Food</string>
        </property>

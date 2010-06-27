@@ -26,6 +26,14 @@ class NutritionTracker : public QWidget
 
     void addFoodToCurrentDay(const FoodAmount& foodAmount, int mealId);
 
+  signals:
+
+    void addFood();
+    void addFoodFromTemplate();
+    void createFood();
+    void createCompositeFood();
+
+
   private slots:
 
     void changeDay();

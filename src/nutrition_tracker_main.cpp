@@ -23,6 +23,11 @@ NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
 
   setCentralWidget(tracker);
 
+  connect(tracker, SIGNAL(addFood()), this, SLOT(showAddFood()));
+  connect(tracker, SIGNAL(addFoodFromTemplate()), this, SLOT(showAddFoodFromTemplate()));
+  connect(tracker, SIGNAL(createFood()), this, SLOT(showCreateFood()));
+  connect(tracker, SIGNAL(createCompositeFood()), this, SLOT(showCreateCompositeFood()));
+
   setStatusBar(new QStatusBar());
 
   connect(ui.actionAdd_Food_s_to_Current_Day, SIGNAL(triggered()),
