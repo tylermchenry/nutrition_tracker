@@ -32,7 +32,7 @@
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Show &quot;Old&quot; Composite Foods</string>
+        <string>Show composite foods past their expiration date</string>
        </property>
        <property name="checkable">
         <bool>true</bool>

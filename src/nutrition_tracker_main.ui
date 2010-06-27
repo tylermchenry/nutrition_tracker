@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -28,6 +28,9 @@
      <string>File</string>
     </property>
     <widget class="QMenu" name="menuImport_Nutrition_Data">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Import Nutrition Data</string>
      </property>
@@ -107,26 +110,41 @@
    </property>
   </action>
   <action name="actionExport_Nutrition_Data">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Export Nutrition Data...</string>
    </property>
   </action>
   <action name="actionDaily">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Daily Report...</string>
    </property>
   </action>
   <action name="actionWeekly_Report">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Weekly Report...</string>
    </property>
   </action>
   <action name="actionClear_today_s_entries">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Clear current day's entries</string>
    </property>
   </action>
   <action name="actionConstraint_Solver">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Constraint Solver...</string>
    </property>
