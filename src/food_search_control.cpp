@@ -1,4 +1,5 @@
 #include "food_search_control.h"
+#include "data/user.h"
 #include "data/group.h"
 #include "data/composite_food.h"
 #include "edit_food.h"
@@ -62,9 +63,15 @@ void FoodSearchControl::performSearch()
     }
 
     if (!ui.chkCustom->isChecked()) {
-      // TODO: Implement when users are implemented
-      // if (food_sourceRestrictions != "") food_sourceRestrictions += " AND ";
-      // food_sourceRestrictions = " (Entry_Src != 'Custom' OR User_Id != :userId)";
+      if (food_sourceRestrictions != "") food_sourceRestrictions += " AND ";
+      food_sourceRestrictions = " (Entry_Src != 'Custom' OR User_Id == "
+          + QString::number(User::getLoggedInUser()->getId()) + ")";
+    }
+
+    if (!ui.chkCustom->isChecked()) {
+      if (food_sourceRestrictions != "") food_sourceRestrictions += " AND ";
+      food_sourceRestrictions = " (Entry_Src != 'Custom' OR User_Id != "
+          + QString::number(User::getLoggedInUser()->getId()) + ")";
     }
 
     QString composite_sourceRestrictions;

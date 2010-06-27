@@ -162,11 +162,12 @@ void MyFoods::loadUserFoods()
 
   QVariant filter = ui.cbFilter->itemData(ui.cbFilter->currentIndex());
 
-  // TODO: Real user IDs
   if (filter.isNull() || !filter.canConvert<FoodCollection::ContainedTypes::ContainedType>()) {
-    foods = FoodCollection::getFoodsForUser(1);
+    foods = FoodCollection::getFoodsForUser(User::getLoggedInUser()->getId());
   } else {
-    foods = FoodCollection::getFoodsForUser(1, filter.value<FoodCollection::ContainedTypes::ContainedType>());
+    foods = FoodCollection::getFoodsForUser
+      (User::getLoggedInUser()->getId(),
+       filter.value<FoodCollection::ContainedTypes::ContainedType>());
   }
 
   for (QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >

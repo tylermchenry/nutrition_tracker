@@ -1,4 +1,5 @@
 #include "select_template.h"
+#include "data/user.h"
 #include <QSettings>
 
 SelectTemplate::SelectTemplate(QWidget *parent)
@@ -8,8 +9,8 @@ SelectTemplate::SelectTemplate(QWidget *parent)
 
   ui.btnSelect->setEnabled(false);
 
-  // TODO: Real user ID
-  QMultiMap<QString, int> userTemplates = Template::getFoodsForUser(1);
+  QMultiMap<QString, int> userTemplates = Template::getFoodsForUser
+    (User::getLoggedInUser()->getId());
 
   for (QMultiMap<QString, int>::iterator i = userTemplates.begin();
   i != userTemplates.end(); ++i)

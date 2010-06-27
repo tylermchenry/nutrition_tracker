@@ -173,7 +173,7 @@ void FoodTree::copyMealToDay(const QModelIndex&, const QSharedPointer<const Meal
                                  const QDate& date)
 {
   if (meal && !meal->isTemporary()) {
-    QSharedPointer<Meal> targetMeal = Meal::getOrCreateMeal(meal->getUserId(), date, meal->getMealId());
+    QSharedPointer<Meal> targetMeal = Meal::getOrCreateMeal(meal->getOwnerId(), date, meal->getMealId());
     targetMeal->merge(meal);
     targetMeal->saveToDatabase();
   }

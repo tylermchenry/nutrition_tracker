@@ -153,7 +153,7 @@ void ViewFood::loadFoodInformation()
   // TODO: Load source name. But currently this only works for single foods, and this
   // might be a composite or a meal
 
-  // TODO: Set user when users are supported
+  ui.txtOwner->setText(foodAmount.getFood()->getOwner()->getDisplayName());
 
   ui.txtAmount->setText(QString::number(foodAmount.getAmount()));
 

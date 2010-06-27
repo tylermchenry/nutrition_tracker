@@ -159,7 +159,15 @@ void EditCompositeFood::initialize()
 
 void EditCompositeFood::populateUserSelector(QComboBox* cboOwner)
 {
-  cboOwner->addItem("User");
+  // TODO: Maybe only load all users for administrator?
+
+  QVector<QSharedPointer<const User> > allUsers = User::getAllUsers();
+
+  for (QVector<QSharedPointer<const User> >::const_iterator i = allUsers.begin();
+       i != allUsers.end(); ++i)
+  {
+    cboOwner->addItem((*i)->getDisplayName(), (*i)->getId());
+  }
 }
 
 void EditCompositeFood::populateUnitSelector(QComboBox* cboUnit, Unit::Dimensions::Dimension dimension)
@@ -229,7 +237,7 @@ void EditCompositeFood::loadFoodInformation()
   ui.deExpires->setMinimumDate(creationDate);
   ui.deExpires->setDate(expiryDate);
 
-  // TODO: Set user when users are supported
+  ui.cboOwner->setCurrentIndex(ui.cboOwner->findData(food->getOwnerId()));
 
   loadAmountInformation(ui.txtWeight, ui.cboWeightUnit, Unit::Dimensions::Weight);
   loadAmountInformation(ui.txtVolume, ui.cboVolumeUnit, Unit::Dimensions::Volume);

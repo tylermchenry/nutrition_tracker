@@ -10,6 +10,8 @@
 #include "user_login.h"
 #include <data/single_food.h>
 #include <QtGui/QInputDialog>
+#include <QtGui/QLabel>
+#include <QtGui/QStatusBar>
 #include <QSettings>
 
 NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
@@ -20,6 +22,8 @@ NutritionTrackerMain::NutritionTrackerMain(QWidget *parent)
   tracker = new NutritionTracker(this);
 
   setCentralWidget(tracker);
+
+  setStatusBar(new QStatusBar());
 
   connect(ui.actionAdd_Food_s_to_Current_Day, SIGNAL(triggered()),
           this, SLOT(showAddFood()));
@@ -85,6 +89,15 @@ void NutritionTrackerMain::show()
   if (!loginPrompt.loggedIn()) {
     close();
   }
+
+  QString statusMessage;
+
+  statusMessage = "Using database " + db.databaseName() + " on " +
+    db.userName() + "@" + db.hostName() + ". Logged in as " +
+    User::getLoggedInUser()->getDisplayName() + ".";
+
+
+  statusBar()->addPermanentWidget(new QLabel(statusMessage, statusBar()), 100);
 
   static_cast<NutritionTracker*>(centralWidget())->initialize();
 }
