@@ -33,7 +33,7 @@ CREATE TABLE `composite_food` (
   `Quantity` decimal(10,4) DEFAULT NULL,
   `Servings` decimal(10,4) DEFAULT NULL,
   PRIMARY KEY (`Composite_Id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=49 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=54 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -52,7 +52,7 @@ CREATE TABLE `composite_food_link` (
   `Unit` char(7) NOT NULL,
   `IntrafoodOrder` int(11) DEFAULT NULL,
   PRIMARY KEY (`CompositeLink_Id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=299 DEFAULT CHARSET=latin1 COMMENT='Describes which individual foods are part of each compound f';
+) ENGINE=MyISAM AUTO_INCREMENT=320 DEFAULT CHARSET=latin1 COMMENT='Describes which individual foods are part of each compound f';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -193,7 +193,7 @@ CREATE TABLE `meal_link` (
   `Unit` char(7) NOT NULL,
   `IntramealOrder` int(11) DEFAULT NULL,
   PRIMARY KEY (`MealLink_Id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=438 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=469 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -269,7 +269,7 @@ CREATE TABLE `template` (
   `User_Id` int(11) NOT NULL,
   `Description` char(200) NOT NULL,
   PRIMARY KEY (`Template_Id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=43 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=45 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -288,7 +288,7 @@ CREATE TABLE `template_link` (
   `Unit` char(7) NOT NULL,
   `IntrafoodOrder` int(11) DEFAULT NULL,
   PRIMARY KEY (`TemplateLink_Id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=270 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=279 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -340,10 +340,11 @@ CREATE TABLE `usda_ndb_link` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `User_Id` int(11) NOT NULL AUTO_INCREMENT,
-  `Name` char(50) NOT NULL,
+  `User_Name` char(24) NOT NULL DEFAULT '',
+  `Name` char(100) DEFAULT NULL,
   `PW_SHA1` char(40) NOT NULL,
   PRIMARY KEY (`User_Id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -409,4 +410,4 @@ CREATE TABLE `weight_old` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-06-25 20:44:22
+-- Dump completed on 2010-06-27  8:49:02
