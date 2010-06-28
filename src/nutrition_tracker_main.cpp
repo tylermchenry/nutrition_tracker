@@ -91,6 +91,7 @@ void NutritionTrackerMain::show()
 
   if (!(db = infoPrompt.getDatabase()).isOpen()) {
     close();
+    return;
   }
 
   UserLogin loginPrompt(this);
