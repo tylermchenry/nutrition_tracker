@@ -11,12 +11,17 @@ DEPENDPATH += . \
     src
 INCLUDEPATH += . \
     src
+
+# Generate a few compiled-in strings that are used for version 
+# identification in the About box
+
 versiontarget.target = version.cpp
 win32 {
 	versiontarget.commands = make_version.bat
 } else {
 	versiontarget.commands = ./make_version.sh
 }
+
 versiontarget.depends = FORCE
 PRE_TARGETDEPS += version.cpp
 QMAKE_EXTRA_TARGETS += versiontarget
