@@ -163,6 +163,28 @@ User::~User()
 {
 }
 
+void User::setPassword(const QString& newPassword)
+{
+  pwSHA1_hex = QCryptographicHash::hash((newPassword + username).toUtf8(),
+                                        QCryptographicHash::Sha1).toHex();
+}
+
+void User::saveToDatabase()
+{
+  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
+  QSqlQuery query(db);
+
+  query.prepare("UPDATE user SET Name=:realName, PW_SHA1=:shapass "
+                " WHERE User_Id=:id");
+  query.bindValue(":realName", realName);
+  query.bindValue(":shapass", pwSHA1_hex);
+  query.bindValue(":id", id);
+
+  if (!query.exec()) {
+    qDebug() << "SQL Failure: " << query.lastError();
+  }
+}
+
 bool User::checkPassword(const QString& password) const
 {
   return QCryptographicHash::hash((password + username).toUtf8(), QCryptographicHash::Sha1).toHex() ==

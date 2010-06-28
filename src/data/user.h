@@ -46,6 +46,13 @@ class User
     inline QString getDisplayName() const
       { return realName.isEmpty() ? username : realName; }
 
+    inline void setRealName(const QString& newRealName)
+      { realName = newRealName; }
+
+    void setPassword(const QString& newPassword);
+
+    void saveToDatabase();
+
     virtual ~User();
 
   private:
