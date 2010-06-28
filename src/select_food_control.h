@@ -25,7 +25,7 @@ public slots:
 
     void clearFoodList();
     void addToFoodList(const FoodSearchControl::Result& result);
-    void updateAddControls(QListWidgetItem* curSelectedItem);
+    void updateAddControls();
 
 private slots:
 

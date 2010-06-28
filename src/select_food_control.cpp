@@ -46,8 +46,10 @@ void SelectFoodControl::addToFoodList(const FoodSearchControl::Result& result)
   itemToResult.insert(ui.lstResults->count()-1, result);
 }
 
-void SelectFoodControl::updateAddControls(QListWidgetItem* curSelectedItem)
+void SelectFoodControl::updateAddControls()
 {
+  QListWidgetItem* curSelectedItem = ui.lstResults->currentItem();
+
   if (curSelectedItem != NULL) {
 
     const FoodSearchControl::Result& result = itemToResult[ui.lstResults->currentIndex().row()];
@@ -165,8 +167,8 @@ void SelectFoodControl::initialize()
   ui.lblRefuse->setVisible(false);
   ui.lblRefuseDescription->setVisible(false);
 
-  connect(ui.lstResults, SIGNAL(itemActivated(QListWidgetItem*)),
-          this, SLOT(updateAddControls(QListWidgetItem*)));
+  connect(ui.lstResults, SIGNAL(itemSelectionChanged()),
+          this, SLOT(updateAddControls()));
   connect(ui.btnAdd, SIGNAL(clicked()), this, SLOT(addClicked()));
 
   QSettings settings("Nerdland", "Nutrition Tracker");
