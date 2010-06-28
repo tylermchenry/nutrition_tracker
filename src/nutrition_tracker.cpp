@@ -108,7 +108,8 @@ void NutritionTracker::updateBalance()
 
 void NutritionTracker::loadCurrentDayFoodsFromDatabase()
 {
-  QVector<QSharedPointer<Meal> > meals = Meal::getMealsForDay(1, getSelectedDate());
+  QVector<QSharedPointer<Meal> > meals = Meal::getMealsForDay
+    (User::getLoggedInUser()->getId(), getSelectedDate());
 
   qDebug() << "Got " << meals.size() << " meals for day " << getSelectedDate();
 
