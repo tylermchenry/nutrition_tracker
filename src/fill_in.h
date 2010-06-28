@@ -15,7 +15,7 @@ class FillIn : public QDialog
 
     FillIn
       (const QMap<QString, NutrientAmount>& originalNutrients,
-       QWidget *parent = 0);
+       int excludeSingleFoodId = -1, QWidget *parent = 0);
 
     ~FillIn();
 
@@ -36,6 +36,8 @@ class FillIn : public QDialog
     Ui::FillInUI ui;
 
     QMap<QString, NutrientAmount> originalNutrients;
+    int excludeSingleFoodId;
+
     QMap<QString, NutrientAmount> fillinNutrients;
     bool filledIn;
 

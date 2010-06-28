@@ -165,7 +165,7 @@ void EditFood::promptForFillIn()
   QSharedPointer<const Nutrient> calories = Nutrient::getNutrientByName(Nutrient::CALORIES_NAME);
   nutrientMap[calories->getId()] = NutrientAmount(calories, ui.txtCalories->text().toDouble());
 
-  QScopedPointer<FillIn> fillInPrompt(new FillIn(nutrientMap, this));
+  QScopedPointer<FillIn> fillInPrompt(new FillIn(nutrientMap, food->getSingleFoodId(), this));
   fillInPrompt->exec();
 
   QMap<QString, NutrientAmount> fillinAmounts = fillInPrompt->getFillinNutrients();

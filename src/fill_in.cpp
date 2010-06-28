@@ -7,8 +7,9 @@
 #include <cmath>
 
 FillIn::FillIn(const QMap<QString, NutrientAmount>& originalNutrients,
-                 QWidget *parent)
-  : QDialog(parent), originalNutrients(originalNutrients), filledIn(false)
+               int excludeSingleFoodId, QWidget *parent)
+  : QDialog(parent), originalNutrients(originalNutrients),
+    excludeSingleFoodId(excludeSingleFoodId), filledIn(false)
 {
   ui.setupUi(this);
 
@@ -58,8 +59,10 @@ void FillIn::clearFoodList()
 
 void FillIn::addToFoodList(const FoodSearchControl::Result& result)
 {
-  ui.lstResults->addItem(result.description);
-  itemToResult.insert(ui.lstResults->count()-1, result);
+  if (result.type != "Food" || result.id != excludeSingleFoodId) {
+    ui.lstResults->addItem(result.description);
+    itemToResult.insert(ui.lstResults->count()-1, result);
+  }
 }
 
 void FillIn::updateMetrics()
