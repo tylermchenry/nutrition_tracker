@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -74,6 +74,8 @@
      <string>Tools</string>
     </property>
     <addaction name="actionConstraint_Solver"/>
+    <addaction name="separator"/>
+    <addaction name="actionOptions"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -237,6 +239,11 @@
   <action name="actionAdd_Food_to_Current_Day_from_Template">
    <property name="text">
     <string>Add Food to Current Day from Template...</string>
+   </property>
+  </action>
+  <action name="actionOptions">
+   <property name="text">
+    <string>Options...</string>
    </property>
   </action>
  </widget>

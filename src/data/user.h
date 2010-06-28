@@ -34,7 +34,7 @@ class User
       (const QSharedPointer<const User>& user, const QString& password,
        QString& errorMessage);
 
-    inline static QSharedPointer<const User> getLoggedInUser()
+    inline static QSharedPointer<User> getLoggedInUser()
       { return loggedInUser; }
 
     inline int getId() const { return id; }

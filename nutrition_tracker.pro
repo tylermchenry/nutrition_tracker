@@ -15,7 +15,8 @@ PRE_TARGETDEPS += version.cpp
 QMAKE_EXTRA_TARGETS += versiontarget
 
 # Input
-HEADERS += src/nutrition_tracker_application.h \
+HEADERS += src/options.h \
+    src/nutrition_tracker_application.h \
     version.h \
     src/about.h \
     src/data/user.h \
@@ -62,7 +63,8 @@ HEADERS += src/nutrition_tracker_application.h \
     src/food_search_control.h \
     src/nutrition_tracker.h \
     src/nutrition_tracker_main.h
-FORMS += src/about.ui \
+FORMS += src/options.ui \
+    src/about.ui \
     src/user_login.ui \
     src/fill_in.ui \
     src/select_template.ui \
@@ -80,7 +82,8 @@ FORMS += src/about.ui \
     src/food_search_control.ui \
     src/nutrition_tracker.ui \
     src/nutrition_tracker_main.ui
-SOURCES += src/nutrition_tracker_application.cpp \
+SOURCES += src/options.cpp \
+    src/nutrition_tracker_application.cpp \
     version.cpp \
     src/about.cpp \
     src/data/user.cpp \
