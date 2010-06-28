@@ -36,6 +36,7 @@ private:
     Ui::SelectFoodControlUI ui;
 
     bool selectMeals;
+    bool includeRefuse;
 
     QMap<int, FoodSearchControl::Result> itemToResult;
     QSharedPointer<Food> selectedFood;

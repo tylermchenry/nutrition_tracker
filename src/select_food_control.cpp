@@ -4,6 +4,7 @@
 #include "data/composite_food.h"
 #include "data/meal.h"
 #include <QDebug>
+#include <QSettings>
 
 SelectFoodControl::SelectFoodControl(QWidget *parent)
   : QWidget(parent), selectMeals(true), specializedSeparatorRow(-1)
@@ -108,7 +109,7 @@ void SelectFoodControl::updateAddControls(QListWidgetItem* curSelectedItem)
 
   bool enableRefuse = enableControls && (selectedFood->getPercentRefuse() > 0);
 
-  ui.chkIncludeRefuse->setChecked(enableRefuse);
+  ui.chkIncludeRefuse->setChecked(enableRefuse && includeRefuse);
   ui.chkIncludeRefuse->setEnabled(enableRefuse);
   ui.lblRefuse->setVisible(enableRefuse);
   ui.lblRefuseDescription->setVisible(enableRefuse);
@@ -168,6 +169,11 @@ void SelectFoodControl::initialize()
           this, SLOT(updateAddControls(QListWidgetItem*)));
   connect(ui.btnAdd, SIGNAL(clicked()), this, SLOT(addClicked()));
 
+  QSettings settings("Nerdland", "Nutrition Tracker");
+
+  settings.beginGroup("preferences");
+  includeRefuse = settings.value("includerefuse", true).toBool();
+  settings.endGroup();
 }
 
 void SelectFoodControl::populateMealSelector(QComboBox* cbMeals)
