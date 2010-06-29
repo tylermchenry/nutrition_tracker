@@ -7,6 +7,7 @@
 
 #include "food_tree_model.h"
 #include "food_tree_amount_item.h"
+#include "data/user.h"
 #include <QDebug>
 #include <QtGui/QFont>
 #include <QtGui/QTreeView>
@@ -388,9 +389,10 @@ void FoodTreeModel::ensureMealRootExists(int mealId)
 
    if (!mealRoots.contains(mealId)) {
 
+     int ownerId = User::getLoggedInUser()->getId();
      QSharedPointer<Meal> newMeal =
-         temporaryMeals ? Meal::createTemporaryMeal(1, mealsDate, mealId) :
-                          Meal::getOrCreateMeal(1, mealsDate, mealId);
+         temporaryMeals ? Meal::createTemporaryMeal(ownerId, mealsDate, mealId) :
+                          Meal::getOrCreateMeal(ownerId, mealsDate, mealId);
 
      meals[mealId] = newMeal;
 
