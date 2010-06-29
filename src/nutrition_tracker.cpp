@@ -3,6 +3,9 @@
 #include "model/food_tree_model.h"
 #include "data/food_collection.h"
 #include "data/composite_food.h"
+#include "data/nutrient.h"
+#include "data/group.h"
+#include "data/unit.h"
 #include <QDebug>
 #include <QtGui/QCursor>
 
@@ -108,6 +111,15 @@ void NutritionTracker::updateBalance()
 
 void NutritionTracker::loadCurrentDayFoodsFromDatabase()
 {
+  static bool primed = false;
+
+  if (!primed) {
+    Nutrient::getAllNutrients();
+    Group::getAllGroups();
+    Unit::getAllUnits();
+    primed = true;
+  }
+
   QVector<QSharedPointer<Meal> > meals = Meal::getMealsForDay
     (User::getLoggedInUser()->getId(), getSelectedDate());
 
