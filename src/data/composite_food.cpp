@@ -72,15 +72,12 @@ QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
                 "       composite_food.Quantity, composite_food.Servings, "
                 "       composite_food_link.CompositeLink_Id, composite_food_link.Contained_Type, "
                 "       composite_food_link.Contained_Id, composite_food_link.Includes_Refuse,"
-                "       composite_food_link.Magnitude, composite_food_link.IntrafoodOrder, "
-                "       units.Unit, units.Type, "
-                "       units.Name AS UnitName, units.Factor "
+                "       composite_food_link.Magnitude, composite_food_link.Unit, "
+                "       composite_food_link.IntrafoodOrder "
                 "FROM"
                 "        composite_food "
                 "   LEFT JOIN composite_food_link "
                 "        ON composite_food.Composite_Id = composite_food_link.Composite_Id "
-                "   LEFT JOIN units "
-                "        ON composite_food_link.Unit = units.Unit "
                 "WHERE composite_food.Composite_Id = :id "
                 "ORDER BY composite_food_link.IntrafoodOrder ASC");
 

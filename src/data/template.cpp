@@ -34,15 +34,12 @@ QSharedPointer<Template> Template::getTemplate(int id)
   query.prepare("SELECT template.Template_Id, template.User_Id, template.Description, "
                 "       template_link.TemplateLink_Id, template_link.Contained_Type, "
                 "       template_link.Contained_Id, template_link.Includes_Refuse, "
-                "       template_link.Magnitude, template_link.IntrafoodOrder, "
-                "       units.Unit, units.Type, "
-                "       units.Name AS UnitName, units.Factor "
+                "       template_link.Magnitude, template_link.Unit, "
+                "       template_link.IntrafoodOrder "
                 "FROM"
                 "        template "
                 "   LEFT JOIN template_link "
                 "        ON template.Template_Id = template_link.Template_Id "
-                "   LEFT JOIN units "
-                "        ON template_link.Unit = units.Unit "
                 "WHERE template.Template_Id = :id "
                 "ORDER BY template_link.IntrafoodOrder ASC");
 

@@ -42,27 +42,13 @@ QSharedPointer<SingleFood> SingleFood::getSingleFood(int id)
                 "       food_description.Volume_floz, food_description.Quantity, "
                 "       food_description.Servings, food_description.Fat_Factor,"
                 "       food_description.CHO_Factor, food_description.Pro_Factor, "
-                "       food_description.N_Factor, nutrient_data.Nutr_Val, "
-                "       nutrient_definition.Nutr_No, nutrient_definition.Category, "
-                "       nutrient_definition.ShortName, nutrient_definition.RDI, "
-                "       units.Unit, units.Type, units.Name AS UnitName, units.Factor,"
-                "       group_description.FdGrp_Cd, group_description.FdGrp_Desc  "
+                "       food_description.N_Factor, food_description.FdGrp_Cd, "
+                "       nutrient_data.Nutr_No, nutrient_data.Nutr_Val "
                 "FROM "
                 "       food_description JOIN nutrient_data "
                 "           ON food_description.Food_Id = nutrient_data.Food_Id "
-                "   JOIN nutrient_definition "
-                "           ON nutrient_data.Nutr_No = nutrient_definition.Nutr_No "
-                "   JOIN units "
-                "           ON nutrient_definition.Units = units.Unit "
-                "   JOIN group_description "
-                "           ON food_description.FdGrp_Cd = group_description.FdGrp_Cd "
                 "WHERE "
-                "       nutrient_definition.Category != 'Hidden' "
-                "   AND food_description.Food_Id=:id "
-                "ORDER BY "
-                "   nutrient_definition.Category ASC, "
-                "   nutrient_definition.Disp_Order ASC, "
-                "   nutrient_definition.ShortName ASC");
+                "   food_description.Food_Id=:id ");
   query.bindValue(":id", id);
 
   if (query.exec()) {
@@ -78,7 +64,8 @@ QSharedPointer<SingleFood> SingleFood::createSingleFoodFromQueryResults(QSqlQuer
   QMap<QString, NutrientAmount> nutrients;
 
   while (query.next()) {
-    QSharedPointer<const Nutrient> nutrient = Nutrient::createNutrientFromRecord(query.record());
+    QSharedPointer<const Nutrient> nutrient =
+      Nutrient::getNutrient(query.record().field("Nutr_No").value().toString());
 
     if (nutrient != NULL) {
       nutrients[nutrient->getId()] = NutrientAmount
@@ -95,7 +82,7 @@ QSharedPointer<SingleFood> SingleFood::createSingleFoodFromQueryResults(QSqlQuer
                         record.field("Long_Desc").value().toString(),
                         record.field("User_Id").value().toInt(),
                         EntrySources::fromHumanReadable(record.field("Entry_Src").value().toString()),
-                        Group::createGroupFromRecord(record),
+                        Group::getGroup(record.field("FdGrp_Cd").value().toString()),
                         record.field("Refuse").value().toDouble(),
                         record.field("Ref_desc").value().toString(),
                         nutrients,

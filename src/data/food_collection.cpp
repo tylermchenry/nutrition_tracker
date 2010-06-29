@@ -423,7 +423,7 @@ QList<FoodComponent> FoodCollection::createComponentsFromQueryResults
           (containingCollection,
            record.field(componentIdField).value().toInt(),
            FoodAmount(containedFood, record.field("Magnitude").value().toDouble(),
-                      Unit::createUnitFromRecord(record),
+                      Unit::getUnit(record.field("Unit").value().toString()),
                       record.field("Includes_Refuse").value().toBool()),
            order));
     } else {
