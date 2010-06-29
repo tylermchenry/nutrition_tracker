@@ -67,7 +67,7 @@ class Group
     QString id;
     QString name;
 
-    static QMap<QString, QWeakPointer<const Group> > groupCache;
+    static QMap<QString, QSharedPointer<const Group> > groupCache;
 };
 
 #endif /* GROUP_H_ */

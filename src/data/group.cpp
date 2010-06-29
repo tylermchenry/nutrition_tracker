@@ -16,7 +16,7 @@
 
 const QString Group::DEFAULT_GROUP_ID = "9999";
 
-QMap<QString, QWeakPointer<const Group> > Group::groupCache;
+QMap<QString, QSharedPointer<const Group> > Group::groupCache;
 
 QSharedPointer<const Group> Group::getDefaultGroup()
 {
@@ -29,7 +29,7 @@ QSharedPointer<const Group> Group::getGroup(const QString& id)
   QSqlQuery query(db);
 
   if (groupCache[id]) {
-    return groupCache[id].toStrongRef();
+    return groupCache[id];
   }
 
   query.prepare("SELECT FdGrp_Cd, FdGrp_Desc FROM group_description WHERE FdGrp_cd=:id "
@@ -66,7 +66,7 @@ QSharedPointer<const Group> Group::createGroupFromRecord(const QSqlRecord& recor
       groupCache[id] = group;
       return group;
     } else {
-      return groupCache[id].toStrongRef();
+      return groupCache[id];
     }
   } else {
     return QSharedPointer<const Group>();
