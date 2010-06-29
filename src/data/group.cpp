@@ -17,6 +17,7 @@
 const QString Group::DEFAULT_GROUP_ID = "9999";
 
 QMap<QString, QSharedPointer<const Group> > Group::groupCache;
+QMap<QString, QSharedPointer<const Group> > Group::groupCacheByName;
 
 QSharedPointer<const Group> Group::getDefaultGroup()
 {
@@ -28,7 +29,7 @@ QSharedPointer<const Group> Group::getGroup(const QString& id)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  if (groupCache[id]) {
+  if (groupCache.contains(id)) {
     return groupCache[id];
   }
 
@@ -45,11 +46,19 @@ QSharedPointer<const Group> Group::getGroup(const QString& id)
 
 QVector<QSharedPointer<const Group> > Group::getAllGroups()
 {
+  static bool gotAll = false;
+
+  if (gotAll) {
+    // TODO: Make this method return a QList so this conversion is unnecessary
+    return groupCacheByName.values().toVector();
+  }
+
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
   if (query.exec("SELECT FdGrp_Cd, FdGrp_Desc FROM group_description "
                   "ORDER BY FdGrp_Desc ASC")) {
+    gotAll = true;
     return createGroupsFromQueryResults(query);
   } else {
     return QVector<QSharedPointer<const Group> >();
@@ -60,10 +69,11 @@ QSharedPointer<const Group> Group::createGroupFromRecord(const QSqlRecord& recor
 {
   if (!record.isEmpty()) {
     QString id = record.field("FdGrp_Cd").value().toString();
-    if (!groupCache[id]) {
+    if (!groupCache.contains(id)) {
       QSharedPointer<const Group> group
         (new Group(id, record.field("FdGrp_Desc").value().toString()));
       groupCache[id] = group;
+      groupCacheByName[group->getName()] = group;
       return group;
     } else {
       return groupCache[id];

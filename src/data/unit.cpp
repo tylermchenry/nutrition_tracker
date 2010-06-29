@@ -15,6 +15,7 @@
 #include <stdexcept>
 
 QMap<QString, QSharedPointer<const Unit> > Unit::unitCache;
+QMap<QString, QSharedPointer<const Unit> > Unit::unitCacheByName;
 
 QSharedPointer<const Unit> Unit::getPreferredUnit(Dimensions::Dimension dimension)
 {
@@ -26,7 +27,7 @@ QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  if (unitCache[abbreviation]) {
+  if (unitCache.contains(abbreviation)) {
     return unitCache[abbreviation];
   }
 
@@ -43,10 +44,18 @@ QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
 
 QVector<QSharedPointer<const Unit> > Unit::getAllUnits()
 {
+  static bool gotAll = false;
+
+  if (gotAll) {
+    // TODO: Make this method return a QList so this conversion is unnecessary
+    return unitCacheByName.values().toVector();
+  }
+
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
   if (query.exec("SELECT Unit, Type, Name AS UnitName, Factor FROM units ORDER BY Name")) {
+    gotAll = true;
     return createUnitsFromQueryResults(query);
   } else {
     return QVector<QSharedPointer<const Unit> >();
@@ -72,13 +81,14 @@ QSharedPointer<const Unit> Unit::createUnitFromRecord(const QSqlRecord& record)
 {
   if (!record.isEmpty()) {
     QString abbrev = record.field("Unit").value().toString();
-    if (!unitCache[abbrev]) {
+    if (!unitCache.contains(abbrev)) {
       QSharedPointer<const Unit> unit
       (new Unit(abbrev,
                 record.field("UnitName").value().toString(),
                 Dimensions::fromHumanReadable(record.field("Type").value().toString()),
                 record.field("Factor").value().toDouble()));
       unitCache[abbrev] = unit;
+      unitCacheByName[unit->getName()] = unit;
       return unit;
     } else {
       return unitCache[abbrev];

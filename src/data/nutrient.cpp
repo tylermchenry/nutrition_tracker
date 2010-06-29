@@ -21,28 +21,16 @@ const QString Nutrient::PROTEIN_NAME = "Protein";
 const QString Nutrient::ALCOHOL_NAME = "Alcohol";
 
 QMap<QString, QSharedPointer<const Nutrient> > Nutrient::nutrientCache;
-
-QMap<QString, QString> Nutrient::nameToId;
+QMap<QString, QSharedPointer<const Nutrient> > Nutrient::nutrientCacheByName;
 
 QSharedPointer<const Nutrient> Nutrient::getNutrientByName(const QString& name)
 {
-  if (nameToId.empty()) {
-
-    QVector<QSharedPointer<const Nutrient> > allNutrients = getAllNutrients();
-
-    for (QVector<QSharedPointer<const Nutrient> >::const_iterator i = allNutrients.begin();
-        i != allNutrients.end(); ++i)
-    {
-      if ((*i)->getName() != "" && (*i)->getId() != "") {
-        qDebug() << "Added to NTI map: " << (*i)->getName() << " -> " << (*i)->getId();
-        nameToId[(*i)->getName()] = (*i)->getId();
-      }
-    }
-
+  if (!nutrientCacheByName.contains(name)) {
+    getAllNutrients();
   }
 
-  if (nameToId.contains(name)) {
-    return getNutrient(nameToId[name]);
+  if (nutrientCacheByName.contains(name)) {
+    return nutrientCacheByName[name];
   } else {
     return QSharedPointer<const Nutrient>();
   }
@@ -53,7 +41,7 @@ QSharedPointer<const Nutrient> Nutrient::getNutrient(const QString& id)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  if (nutrientCache[id]) {
+  if (nutrientCache.contains(id)) {
     return nutrientCache[id];
   }
 
@@ -76,6 +64,13 @@ QSharedPointer<const Nutrient> Nutrient::getNutrient(const QString& id)
 
 QVector<QSharedPointer<const Nutrient> > Nutrient::getAllNutrients()
 {
+  static bool gotAll = false;
+
+  if (gotAll) {
+    // TODO: Make this method return a QList so this conversion is unnecessary
+    return nutrientCacheByName.values().toVector();
+  }
+
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
@@ -90,6 +85,7 @@ QVector<QSharedPointer<const Nutrient> > Nutrient::getAllNutrients()
 
   if (query.exec()) {
     nutrients = createNutrientsFromQueryResults(query);
+    gotAll = true;
   }
 
   return nutrients;
@@ -125,7 +121,7 @@ QSharedPointer<const Nutrient> Nutrient::createNutrientFromRecord
 {
   if (!record.isEmpty()) {
     QString id = record.field("Nutr_No").value().toString();
-    if (!nutrientCache[id]) {
+    if (!nutrientCache.contains(id)) {
       QSharedPointer<const Nutrient> nutrient
       (new Nutrient(id,
                     record.field("ShortName").value().toString(),
@@ -134,6 +130,7 @@ QSharedPointer<const Nutrient> Nutrient::createNutrientFromRecord
                     record.field("RDI").value().toDouble()));
       qDebug() << "Added nutrient named " << nutrient->getName() << " to cache at ID " << id;
       nutrientCache[id] = nutrient;
+      nutrientCacheByName[nutrient->getName()] = nutrient;
       return nutrient;
     } else {
       return nutrientCache[id];

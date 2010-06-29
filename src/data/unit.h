@@ -132,6 +132,7 @@ class Unit
       (Dimensions::Dimension dimension);
 
     static QMap<QString, QSharedPointer<const Unit> > unitCache;
+    static QMap<QString, QSharedPointer<const Unit> > unitCacheByName;
 };
 
 #endif /* UNIT_H_ */
