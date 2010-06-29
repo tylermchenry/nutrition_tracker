@@ -109,7 +109,7 @@ class Nutrient
     QSharedPointer<const Unit> standardUnit;
     double rdi; // RDI in terms of standard unit
 
-    static QMap<QString, QWeakPointer<const Nutrient> > nutrientCache;
+    static QMap<QString, QSharedPointer<const Nutrient> > nutrientCache;
     static QMap<QString, QString> nameToId;
 };
 

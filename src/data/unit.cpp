@@ -14,7 +14,7 @@
 #include <QtSql/QSqlError>
 #include <stdexcept>
 
-QMap<QString, QWeakPointer<const Unit> > Unit::unitCache;
+QMap<QString, QSharedPointer<const Unit> > Unit::unitCache;
 
 QSharedPointer<const Unit> Unit::getPreferredUnit(Dimensions::Dimension dimension)
 {
@@ -27,7 +27,7 @@ QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
   QSqlQuery query(db);
 
   if (unitCache[abbreviation]) {
-    return unitCache[abbreviation].toStrongRef();
+    return unitCache[abbreviation];
   }
 
   query.prepare("SELECT Unit, Type, Name AS UnitName, Factor FROM units WHERE Unit=:abbrev "
@@ -81,7 +81,7 @@ QSharedPointer<const Unit> Unit::createUnitFromRecord(const QSqlRecord& record)
       unitCache[abbrev] = unit;
       return unit;
     } else {
-      return unitCache[abbrev].toStrongRef();
+      return unitCache[abbrev];
     }
   } else {
     return QSharedPointer<const Unit>();

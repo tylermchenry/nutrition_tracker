@@ -20,7 +20,7 @@ const QString Nutrient::CARBOHYDRATE_NAME = "Total Carbohydrate";
 const QString Nutrient::PROTEIN_NAME = "Protein";
 const QString Nutrient::ALCOHOL_NAME = "Alcohol";
 
-QMap<QString, QWeakPointer<const Nutrient> > Nutrient::nutrientCache;
+QMap<QString, QSharedPointer<const Nutrient> > Nutrient::nutrientCache;
 
 QMap<QString, QString> Nutrient::nameToId;
 
@@ -54,7 +54,7 @@ QSharedPointer<const Nutrient> Nutrient::getNutrient(const QString& id)
   QSqlQuery query(db);
 
   if (nutrientCache[id]) {
-    return nutrientCache[id].toStrongRef();
+    return nutrientCache[id];
   }
 
   query.prepare("SELECT nutrient_definition.Nutr_No, nutrient_definition.Category, "
@@ -136,7 +136,7 @@ QSharedPointer<const Nutrient> Nutrient::createNutrientFromRecord
       nutrientCache[id] = nutrient;
       return nutrient;
     } else {
-      return nutrientCache[id].toStrongRef();
+      return nutrientCache[id];
     }
   } else {
     return QSharedPointer<const Nutrient>();

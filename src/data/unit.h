@@ -131,7 +131,7 @@ class Unit
     static QSharedPointer<const Unit> getBasicUnit
       (Dimensions::Dimension dimension);
 
-    static QMap<QString, QWeakPointer<const Unit> > unitCache;
+    static QMap<QString, QSharedPointer<const Unit> > unitCache;
 };
 
 #endif /* UNIT_H_ */
