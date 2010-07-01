@@ -5,7 +5,18 @@ CONFIG += dll \
 VERSION = 0.1.0
 QT += core \
     sql
-HEADERS += libnutrition/data/amount.h \
+HEADERS += libnutrition/data/impl/composite_food_impl.h \
+    libnutrition/data/impl/food_collection_impl.h \
+    libnutrition/data/impl/food_impl.h \
+    libnutrition/data/impl/group_impl.h \
+    libnutrition/data/impl/meal_impl.h \
+    libnutrition/data/impl/nutrient_impl.h \
+    libnutrition/data/impl/single_food_impl.h \
+    libnutrition/data/impl/specialized_unit_impl.h \
+    libnutrition/data/impl/template_impl.h \
+    libnutrition/data/impl/unit_impl.h \
+    libnutrition/data/impl/user_impl.h \
+    libnutrition/data/amount.h \
     libnutrition/data/composite_food.h \
     libnutrition/data/food.h \
     libnutrition/data/food_amount.h \
@@ -20,8 +31,18 @@ HEADERS += libnutrition/data/amount.h \
     libnutrition/data/template.h \
     libnutrition/data/unit.h \
     libnutrition/data/user.h
-SOURCES += libnutrition/data/composite_food.cpp \
-    libnutrition/data/food.cpp \
+SOURCES += libnutrition/data/impl/composite_food_impl.cpp \
+    libnutrition/data/impl/food_collection_impl.cpp \
+    libnutrition/data/impl/food_impl.cpp \
+    libnutrition/data/impl/group_impl.cpp \
+    libnutrition/data/impl/meal_impl.cpp \
+    libnutrition/data/impl/nutrient_impl.cpp \
+    libnutrition/data/impl/single_food_impl.cpp \
+    libnutrition/data/impl/specialized_unit_impl.cpp \
+    libnutrition/data/impl/template_impl.cpp \
+    libnutrition/data/impl/unit_impl.cpp \
+    libnutrition/data/impl/user_impl.cpp \
+    libnutrition/data/composite_food.cpp \
     libnutrition/data/food_amount.cpp \
     libnutrition/data/food_collection.cpp \
     libnutrition/data/food_component.cpp \

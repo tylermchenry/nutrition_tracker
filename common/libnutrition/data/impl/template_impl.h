@@ -19,41 +19,36 @@
  * Copyright © 2010 Tyler McHenry <tyler@nerdland.net>
  */
 
-#ifndef TEMPLATE_H_
-#define TEMPLATE_H_
+#ifndef TEMPLATE_IMPL_H_
+#define TEMPLATE_IMPL_H_
 
-#include "food_collection.h"
+#include "food_collection_impl.h"
+#include "libnutrition/data/template.h"
 
-class Template : virtual public FoodCollection
+class TemplateImpl : public FoodCollectionImpl, virtual public Template
 {
   public:
 
-    static QSharedPointer<Template> createNewTemplate
-      (const QSharedPointer<const Template>& copy =
-       QSharedPointer<const Template>());
+    TemplateImpl(int id, const QString& name, int ownerId,
+                   const QList<FoodComponent>& components = QList<FoodComponent>());
 
-    static QSharedPointer<Template> getTemplate(int id);
+    // Default or "Copy" constructor. If a food is passed in to copy, the
+    // attributes of the food object are copied, but the constructed food
+    // is still assigned a new, temporary ID.
+    TemplateImpl(const QSharedPointer<const Template>& copy =
+                   QSharedPointer<const Template>());
 
-    static QSharedPointer<Template>
-      createTemplateFromQueryResults(QSqlQuery& query);
+    virtual ~TemplateImpl();
 
-    static QMultiMap<QString, int> getFoodsForUser(int userId);
+    virtual inline int getTemplateId() const { return id; }
 
-    virtual ~Template() {};
+    virtual void saveToDatabase();
 
-    virtual int getTemplateId() const = 0;
-
-  protected:
-
-    virtual QSharedPointer<Food> getCanonicalSharedPointer() const;
+    virtual void deleteFromDatabase();
 
   private:
 
-    static int tempId;
-
-    static QMap<int, QWeakPointer<Template> > templateCache;
-
-    friend class TemplateImpl;
+    int id;
 };
 
-#endif /* TEMPLATE_H_ */
+#endif /* TEMPLATE_IMPL_H_ */

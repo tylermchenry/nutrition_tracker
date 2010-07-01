@@ -49,7 +49,7 @@
  * in case external code passes in (e.g. to removeComponent()) a component
  * object that is still carrying the now-defunct temporary ID.
  */
-class FoodCollection: public Food
+class FoodCollection : virtual public Food
 {
   public:
 
@@ -75,79 +75,47 @@ class FoodCollection: public Food
     static QMultiMap<QString, QPair<ContainedTypes::ContainedType, int> >
       getFoodsForUser(int userId, ContainedTypes::ContainedType type);
 
-    virtual ~FoodCollection();
+    virtual ~FoodCollection() {};
 
-    virtual QVector<FoodAmount> getComponentAmounts() const;
-
-    virtual QList<FoodComponent> getComponents() const;
-
-    virtual QMap<QString, NutrientAmount> getNutrients() const;
-
-    virtual NutrientAmount getCaloriesFromNutrientId
-      (const QString& nutrId) const;
-
-    virtual FoodComponent addComponent(const FoodAmount& foodAmount);
+    virtual FoodComponent addComponent(const FoodAmount& foodAmount) = 0;
 
     virtual QVector<FoodComponent> addComponents
-      (const QVector<FoodAmount>& components);
+      (const QVector<FoodAmount>& components) = 0;
 
     virtual FoodComponent changeComponentAmount
-      (const FoodComponent& component, const FoodAmount& amount);
+      (const FoodComponent& component, const FoodAmount& amount) = 0;
 
-    virtual void removeComponent(const FoodComponent& component);
+    virtual void removeComponent(const FoodComponent& component) = 0;
 
-    virtual void clearComponents();
+    virtual void clearComponents() = 0;
 
     virtual QVector<FoodComponent> merge
-      (const QSharedPointer<const FoodCollection>& otherFC);
+      (const QSharedPointer<const FoodCollection>& otherFC) = 0;
 
     virtual void replaceWith
-      (const QSharedPointer<const FoodCollection>& otherFC);
-
-    virtual void saveToDatabase();
-
-    virtual void deleteFromDatabase();
+      (const QSharedPointer<const FoodCollection>& otherFC) = 0;
 
   protected:
 
-    FoodCollection(const QString& id, const QString& name, int ownerId,
-                    const QList<FoodComponent>& components,
-                    double weightAmount, double volumeAmount,
-                    double quantityAmount, double servingAmount);
-
-    FoodCollection(const QString& id, const QString& name, int ownerId,
-                   double weightAmount, double volumeAmount,
-                   double quantityAmount, double servingAmount);
-
-    FoodCollection(const QString& id,
-                   const QSharedPointer<const FoodCollection>& copy);
-
-    // If the subclass chooses not to pass components to the constructor,
-    // they can be set later through this method
-    void setComponents(const QList<FoodComponent>& components);
-
-    // Derived classes call to replace a component that has been newly
-    // saved to the database with one that has the DB-assigned ID.
-    void replaceComponent(const FoodComponent& oldComponent,
-                             const FoodComponent& newComponent);
-
-    inline const QSet<int>& getRemovedIds() const { return removedIds; }
-
-    inline const QList<QSharedPointer<Food> >& getRemovedNonceFoods() const
-      { return removedNonceFoods; }
-
-    void deleteRemovedNonceFoods();
-
-    inline void clearRemovedIds() { removedIds.clear(); }
-
-    inline void clearRemovedNonceFoods() { removedNonceFoods.clear(); }
-
-    virtual QSharedPointer<Food> getCanonicalSharedPointer() const;
+    virtual QSharedPointer<Food>
+      getCanonicalSharedPointer() const;
 
     virtual QSharedPointer<FoodCollection>
       getCanonicalSharedPointerToCollection() const;
 
-    inline bool needsToBeReSaved() const { return bNeedsToBeReSaved; }
+    virtual int getFoodCollectionId() const = 0;
+
+    virtual void setComponents(const QList<FoodComponent>& components) = 0;
+
+    virtual bool needsToBeReSaved() const = 0;
+
+    virtual int getNextTemporaryId() const = 0;
+
+    virtual const QMap<int, FoodComponent>& getRawComponents() const = 0;
+
+    virtual const QMap<int, int>& getNewIds() const = 0;
+
+    virtual const QSet<int>& getRemovedIds() const = 0;
 
     static QList<FoodComponent> createComponentsFromQueryResults
       (QSqlQuery& query,
@@ -157,41 +125,11 @@ class FoodCollection: public Food
 
   private:
 
-    FoodCollection(int id, const QString& name, int ownerId,
-                    const QList<FoodComponent>& components,
-                    double weightAmount, double volumeAmount,
-                    double quantityAmount, double servingAmount);
-
-    void addComponents(const QList<FoodComponent>& components);
-
-    inline bool hasComponent(const FoodComponent& component)
-    {
-      return components.contains(component.getOrder()) &&
-              components[component.getOrder()] == component;
-    }
-
-    int id;
-    QMap<int, FoodComponent> components;
-
-    // Temporary IDs for components not yet saved to the database
-    int nextTemporaryId;
-
-    // Maps DB-assigned IDs to old temporary IDs, in case removeComponent is
-    // passed and old temporary ID after saving to the DB
-    QMap<int, int> newIds;
-
-    QSet<int> removedIds;
-    QList<QSharedPointer<Food> > removedNonceFoods;
-
-    bool bNeedsToBeReSaved;
-
-    static QMap<QString, NutrientAmount>& mergeNutrients
-      (QMap<QString, NutrientAmount>& nutrients,
-       const QMap<QString, NutrientAmount>& newNutrients);
-
     static int nextCollectionId;
 
     static QMap<int, QWeakPointer<FoodCollection> > foodCollectionCache;
+
+    friend class FoodCollectionImpl;
 };
 
 Q_DECLARE_METATYPE(FoodCollection::ContainedTypes::ContainedType);

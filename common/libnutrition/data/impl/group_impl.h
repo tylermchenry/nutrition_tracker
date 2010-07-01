@@ -19,52 +19,39 @@
  * Copyright © 2010 Tyler McHenry <tyler@nerdland.net>
  */
 
-#ifndef GROUP_H_
-#define GROUP_H_
+#ifndef GROUP_IMPL_H_
+#define GROUP_IMPL_H_
 
+#include "libnutrition/data/group.h"
+#include <QString>
 #include <QVector>
 #include <QMap>
 #include <QSharedPointer>
-#include <QWeakPointer>
-#include <QtSql/QSqlQuery>
 
 /* A food group (or category) is a USDA-defined classification of a single
  * (non-composite) food, such as "Vegetables", "Fast Food", "Milk and Cheese",
  * etc. All single foods have exactly one group. A group is a simple tag; it is
  * composed of an ID and a name.
  */
-class Group
+class GroupImpl : virtual public Group
 {
   public:
 
-    static const QString DEFAULT_GROUP_ID;
+    GroupImpl(const QString& id, const QString& name);
 
-    static QSharedPointer<const Group> getDefaultGroup();
+    virtual ~GroupImpl();
 
-    static QSharedPointer<const Group> getGroup(const QString& id);
+    virtual inline QString getId() const { return id; }
 
-    static QVector<QSharedPointer<const Group> > getAllGroups();
+    virtual inline QString getName() const { return name; }
 
-    static QSharedPointer<const Group> createGroupFromRecord
-      (const QSqlRecord& record);
-
-    static QVector<QSharedPointer<const Group> >
-      createGroupsFromQueryResults(QSqlQuery& query);
-
-    virtual ~Group() {};
-
-    virtual QString getId() const = 0;
-
-    virtual QString getName() const = 0;
-
-    virtual bool operator== (const Group& rhs) const = 0;
+    virtual inline bool operator== (const Group& rhs) const
+      { return (id == rhs.getId()); }
 
   private:
 
-    static QMap<QString, QSharedPointer<const Group> > groupCache;
-    static QMap<QString, QSharedPointer<const Group> > groupCacheByName;
-
-    friend class GroupImpl;
+    QString id;
+    QString name;
 };
 
-#endif /* GROUP_H_ */
+#endif /* GROUP_IMPL_H_ */

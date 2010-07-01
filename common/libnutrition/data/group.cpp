@@ -7,6 +7,7 @@
  */
 
 #include "group.h"
+#include "impl/group_impl.h"
 #include <QVariant>
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
@@ -71,7 +72,7 @@ QSharedPointer<const Group> Group::createGroupFromRecord(const QSqlRecord& recor
     QString id = record.field("FdGrp_Cd").value().toString();
     if (!groupCache.contains(id)) {
       QSharedPointer<const Group> group
-        (new Group(id, record.field("FdGrp_Desc").value().toString()));
+        (new GroupImpl(id, record.field("FdGrp_Desc").value().toString()));
       groupCache[id] = group;
       groupCacheByName[group->getName()] = group;
       return group;
@@ -93,14 +94,4 @@ QVector<QSharedPointer<const Group> > Group::createGroupsFromQueryResults
   }
 
   return groups;
-}
-
-Group::Group(const QString& id, const QString& name)
-  : id(id), name(name)
-{
-  qDebug() << "Created a food group with ID " << id << " named " << name;
-}
-
-Group::~Group()
-{
 }

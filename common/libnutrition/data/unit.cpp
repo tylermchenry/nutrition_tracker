@@ -6,6 +6,7 @@
  */
 
 #include "unit.h"
+#include "impl/unit_impl.h"
 #include <QVariant>
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
@@ -83,10 +84,10 @@ QSharedPointer<const Unit> Unit::createUnitFromRecord(const QSqlRecord& record)
     QString abbrev = record.field("Unit").value().toString();
     if (!unitCache.contains(abbrev)) {
       QSharedPointer<const Unit> unit
-      (new Unit(abbrev,
-                record.field("UnitName").value().toString(),
-                Dimensions::fromHumanReadable(record.field("Type").value().toString()),
-                record.field("Factor").value().toDouble()));
+      (new UnitImpl(abbrev,
+                    record.field("UnitName").value().toString(),
+                    Dimensions::fromHumanReadable(record.field("Type").value().toString()),
+                    record.field("Factor").value().toDouble()));
       unitCache[abbrev] = unit;
       unitCacheByName[unit->getName()] = unit;
       return unit;
@@ -107,40 +108,6 @@ QVector<QSharedPointer<const Unit> > Unit::createUnitsFromQueryResults(QSqlQuery
   }
 
   return units;
-}
-
-Unit::Unit(const QString& abbreviation, const QString& name,
-           Dimensions::Dimension dimension, double basicConversionFactor)
-  : abbreviation(abbreviation), name(name), dimension(dimension),
-    basicConversionFactor(basicConversionFactor)
-{
-  qDebug() << "Created unit of " << Dimensions::toHumanReadable(dimension)
-           << ", " << getNameAndAbbreviation() << ", factor = " << basicConversionFactor;
-}
-
-Unit::~Unit()
-{
-  qDebug() << "Unit abbreviated " << abbreviation << " was destroyed.";
-}
-
-double Unit::getConversionFactor(const QSharedPointer<const Unit>& otherUnit) const
-{
-  const QSharedPointer<const Unit> basicUnit = getBasicUnit(dimension);
-
-  if ((otherUnit == NULL) || (*otherUnit == *basicUnit)) {
-    return basicConversionFactor;
-  } else if (*otherUnit == *this) {
-    return 1;
-  } else if (*this == *basicUnit) {
-    return 1 / otherUnit->basicConversionFactor;
-  } else if (otherUnit->getDimension() != dimension) {
-    throw std::logic_error("Attempted to convert units of different dimensions.");
-  } else {
-    // This unit is in terms of Foo, other unit is in terms of Bar, and basic unit is Baz.
-    // The conversion factor z that we multiply x Foo by to get an equivalent y Bar is:
-    // z = (Bar / Foo) = (Baz / Foo) * (Bar / Baz)
-    return basicConversionFactor * basicUnit->getConversionFactor(otherUnit);
-  }
 }
 
 QSharedPointer<const Unit> Unit::getBasicUnit(Dimensions::Dimension dimension)

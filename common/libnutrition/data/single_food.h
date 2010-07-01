@@ -54,7 +54,7 @@
  * or Custom if the user transcribed the nutrition label directly into the
  * tracker.
  */
-class SingleFood: public Food
+class SingleFood : virtual public Food
 {
   public:
 
@@ -79,79 +79,35 @@ class SingleFood: public Food
 
     static QMultiMap<QString, int> getFoodsForUser(int userId);
 
-    virtual ~SingleFood();
+    virtual int getSingleFoodId() const = 0;
 
-    inline int getSingleFoodId() const { return id; }
+    virtual EntrySources::EntrySource getEntrySource() const = 0;
 
-    inline EntrySources::EntrySource getEntrySource() const
-      { return entrySource; }
+    virtual QSharedPointer<const Group> getGroup() const = 0;
 
-    inline QSharedPointer<const Group> getGroup() const
-      { return group; }
+    virtual double getPercentRefuse() const = 0;
 
-    inline virtual double getPercentRefuse() const
-      { return percentRefuse; }
+    virtual QString getRefuseDescription() const = 0;
 
-    inline virtual QString getRefuseDescription() const
-      { return refuseDescription; }
+    virtual QVector<QSharedPointer<const SpecializedUnit> >
+      getAllSpecializedUnits() const = 0;
 
-    virtual QMap<QString, NutrientAmount> getNutrients() const;
+    virtual QSharedPointer<const SpecializedUnit>
+      getSpecializedUnit(int sequence) const = 0;
 
-    virtual NutrientAmount getCaloriesFromNutrientId
-      (const QString& nutrId) const;
+    virtual void setEntrySource(EntrySources::EntrySource source) = 0;
 
-    inline virtual QVector<QSharedPointer<const SpecializedUnit> >
-      getAllSpecializedUnits() const
-        { return SpecializedUnit::getAllSpecializedUnitsForFoodId(id); }
+    virtual void setGroup(const QSharedPointer<const Group>& group) = 0;
 
-    inline virtual QSharedPointer<const SpecializedUnit>
-      getSpecializedUnit(int sequence) const
-        { return SpecializedUnit::getSpecializedUnit(id, sequence); }
-
-    void setEntrySource(EntrySources::EntrySource source);
-
-    void setGroup(const QSharedPointer<const Group>& group);
-
-    void setNutrient(const NutrientAmount& nutrientAmount);
-
-    virtual void saveToDatabase();
-
-    virtual void deleteFromDatabase();
+    virtual void setNutrient(const NutrientAmount& nutrientAmount) = 0;
 
   protected:
 
     virtual QSharedPointer<Food> getCanonicalSharedPointer() const;
 
+    virtual const QMap<QString, double>& getCalorieDensities() const = 0;
+
   private:
-
-    SingleFood(int id, const QString& name, int ownerId,
-                EntrySources::EntrySource entrySource,
-                const QSharedPointer<const Group>& group,
-                double percentRefuse, const QString& refuseDescription,
-                const QMap<QString, NutrientAmount>& nutrients,
-                double weightAmount, double volumeAmount,
-                double quantityAmount, double servingAmount,
-                double energyDensityFat, double energyDensityCarbohydrate,
-                double energyDensityProtien, double energyDensityAlcohol);
-
-    // Default or "Copy" constructor. If a food is passed in to copy, the
-    // attributes of the food object are copied, but the constructed food
-    // is still assigned a new, temporary ID.
-    SingleFood(const QSharedPointer<const SingleFood>& copy =
-                 QSharedPointer<const SingleFood>());
-
-    int id;
-    EntrySources::EntrySource entrySource;
-    QSharedPointer<const Group> group;
-    double percentRefuse;
-    QString refuseDescription;
-    QMap<QString, NutrientAmount> nutrients;
-    QSet<QString> modifiedNutrients;
-    QMap<QString, double> calorieDensities;
-
-    void setCalorieDensity(const QString& nutrientName, double density);
-
-    void sanityCheckCalorieDensities();
 
     static int tempId;
 
@@ -159,6 +115,8 @@ class SingleFood: public Food
       createNutrientsFromQueryResults(QSqlQuery& query);
 
     static QMap<int, QWeakPointer<SingleFood> > singleFoodCache;
+
+    friend class SingleFoodImpl;
 };
 
 #endif /* SINGLE_FOOD_H_ */

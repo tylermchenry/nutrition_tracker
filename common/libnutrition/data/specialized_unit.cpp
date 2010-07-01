@@ -7,6 +7,7 @@
  */
 
 #include "specialized_unit.h"
+#include "impl/specialized_unit_impl.h"
 #include "single_food.h"
 #include <QVariant>
 #include <QDebug>
@@ -69,9 +70,9 @@ QSharedPointer<const SpecializedUnit>
     QPair<int, int> cacheIndex = qMakePair(foodId, sequence);
     if (!specializedUnitCache[cacheIndex]) {
       QSharedPointer<const SpecializedUnit> spUnit
-      (new SpecializedUnit(foodId, sequence,
-                           record.field("Msre_Desc").value().toString(),
-                           record.field("Gm_Wgt").value().toDouble()));
+      (new SpecializedUnitImpl(foodId, sequence,
+                               record.field("Msre_Desc").value().toString(),
+                               record.field("Gm_Wgt").value().toDouble()));
       specializedUnitCache[cacheIndex] = spUnit;
       return spUnit;
     } else {
@@ -94,17 +95,3 @@ QVector<QSharedPointer<const SpecializedUnit> >
   return spUnits;
 }
 
-SpecializedUnit::SpecializedUnit
-  (int foodId, int sequence, const QString& name, double amountInGrams)
-  : foodId(foodId), sequence(sequence), name(name), amountInGrams(amountInGrams)
-{
-}
-
-SpecializedUnit::~SpecializedUnit()
-{
-}
-
-QSharedPointer<Food> SpecializedUnit::getFood() const
-{
-  return SingleFood::getSingleFood(foodId);
-}

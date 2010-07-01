@@ -19,14 +19,13 @@
  * Copyright © 2010 Tyler McHenry <tyler@nerdland.net>
  */
 
-#ifndef UNIT_H_
-#define UNIT_H_
+#ifndef UNIT_IMPL_H_
+#define UNIT_IMPL_H_
 
+#include "libnutrition/data/unit.h"
 #include <QString>
 #include <QVector>
 #include <QSharedPointer>
-#include <QWeakPointer>
-#include <QtSql/QSqlQuery>
 
 /* A unit object represents a unit of measurement such as a gram, a fluid ounce,
  * a serving, or a kilocalorie.
@@ -63,72 +62,49 @@
  * describe a Quantity of milk, since amounts of milk are continuous (you would
  * instead describe a Volume, Weight, or Serving of milk).
  */
-class Unit
+class UnitImpl : virtual public Unit
 {
   public:
 
-    struct Dimensions {
-      enum Dimension {
-          Weight,
-          Volume,
-          Quantity,
-          Serving,
-          Energy,
-          IU
-      };
-      static const Dimension PREFERRED_DIMENSION = Dimensions::Weight;
-      static const QVector<Dimension>& getAllDimensions();
-      static Dimension fromHumanReadable(const QString& str);
-      static QString toHumanReadable(Dimension dim);
-    };
+    using Unit::Dimensions;
 
-    static QSharedPointer<const Unit> getPreferredUnit
-      (Dimensions::Dimension dimension = Dimensions::PREFERRED_DIMENSION);
+    UnitImpl(const QString& abbreviation, const QString& name,
+              Dimensions::Dimension dimension, double basicConversionFactor);
 
-    static QSharedPointer<const Unit> getUnit(const QString& abbreviation);
+    virtual ~UnitImpl();
 
-    static QVector<QSharedPointer<const Unit> > getAllUnits();
+    virtual inline QString getAbbreviation() const
+      { return abbreviation; }
 
-    static QVector<QSharedPointer<const Unit> > getAllUnits
-      (Dimensions::Dimension dimension);
+    virtual inline QString getName() const
+      { return name; }
 
-    static QSharedPointer<const Unit> createUnitFromRecord
-      (const QSqlRecord& record);
+    virtual inline QString getNameAndAbbreviation() const
+      { return name + " (" + abbreviation + ")"; }
 
-    static QVector<QSharedPointer<const Unit> >
-      createUnitsFromQueryResults(QSqlQuery& query);
-
-    virtual ~Unit() {};
-
-    virtual QString getAbbreviation() const = 0;
-
-    virtual QString getName() const = 0;
-
-    virtual QString getNameAndAbbreviation() const = 0;
-
-    virtual Dimensions::Dimension getDimension() const = 0;
+    virtual inline Dimensions::Dimension getDimension() const
+      { return dimension; }
 
     // Conversion factor is what you need to multiply an amount in unit by
     // in order to get the amount in terms of otherUnit.
     virtual double getConversionFactor
       (const QSharedPointer<const Unit>& otherUnit =
-        QSharedPointer<const Unit>()) const = 0;
+        QSharedPointer<const Unit>()) const;
 
-    virtual bool operator==(const Unit& rhs) const = 0;
+    virtual inline bool operator==(const Unit& rhs) const
+      { return abbreviation == rhs.getAbbreviation(); }
 
   protected:
 
-    virtual double getBasicConversionFactor() const = 0;
+    virtual inline double getBasicConversionFactor() const
+      { return basicConversionFactor; }
 
   private:
 
-    static QSharedPointer<const Unit> getBasicUnit
-      (Dimensions::Dimension dimension);
-
-    static QMap<QString, QSharedPointer<const Unit> > unitCache;
-    static QMap<QString, QSharedPointer<const Unit> > unitCacheByName;
-
-    friend class UnitImpl;
+    QString abbreviation;
+    QString name;
+    Dimensions::Dimension dimension;
+    double basicConversionFactor;
 };
 
-#endif /* UNIT_H_ */
+#endif /* UNIT_IMPL_H_ */

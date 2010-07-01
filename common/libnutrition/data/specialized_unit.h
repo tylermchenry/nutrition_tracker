@@ -28,27 +28,21 @@ class SpecializedUnit
     static QVector<QSharedPointer<const SpecializedUnit> >
       getAllSpecializedUnitsForFoodId(int foodId);
 
-    virtual ~SpecializedUnit();
+    virtual ~SpecializedUnit() {};
 
-    inline int getFoodId() const
-      { return foodId; }
+    virtual int getFoodId() const = 0;
 
-    QSharedPointer<Food> getFood() const;
+    virtual QSharedPointer<Food> getFood() const = 0;
 
-    inline int getSequence() const
-      { return sequence; }
+    virtual int getSequence() const = 0;
 
-    inline QString getName() const
-      { return name; }
+    virtual QString getName() const = 0;
 
-    inline QString getAbbreviation() const
-      { return QString::number(amountInGrams, 'f', 0) + " g"; }
+    virtual QString getAbbreviation() const = 0;
 
-    inline QString getNameAndAbbreviation() const
-      { return getName() + " (" + getAbbreviation() + ")"; }
+    virtual QString getNameAndAbbreviation() const = 0;
 
-    inline FoodAmount getBaseAmount() const
-      { return FoodAmount(getFood(), amountInGrams, Unit::getUnit("g")); }
+    virtual FoodAmount getBaseAmount() const = 0;
 
   private:
 
@@ -58,17 +52,10 @@ class SpecializedUnit
     static QVector<QSharedPointer<const SpecializedUnit> >
       createSpecializedUnitsFromQueryResults(QSqlQuery& query);
 
-    SpecializedUnit(int foodId, int sequence, const QString& name,
-                      double amountInGrams);
-
-    int foodId;
-    int sequence;
-    QString name;
-    double amountInGrams;
-
     static QMap<QPair<int, int>, QWeakPointer<const SpecializedUnit> >
       specializedUnitCache;
 
+    friend class SpecializedUnitImpl;
 };
 
 #endif /* SPECIALIZED_UNIT_H_ */

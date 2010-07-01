@@ -19,20 +19,20 @@
  * Copyright © 2010 Tyler McHenry <tyler@nerdland.net>
  */
 
-#ifndef FOOD_H_
-#define FOOD_H_
+#ifndef FOOD_IMPL_H_
+#define FOOD_IMPL_H_
 
 #include <QVector>
 #include <QMap>
 #include <QSet>
 #include <QString>
 #include <QSharedPointer>
+#include "libnutrition/data/food.h"
+#include "libnutrition/data/food_component.h"
 #include "libnutrition/data/food_amount.h"
 #include "libnutrition/data/user.h"
 #include "libnutrition/data/unit.h"
 #include "libnutrition/data/specialized_unit.h"
-
-class FoodComponent; // Forward decl
 
 /* The Food class is the parent class for all edible objects: single foods,
  * composite foods, collections, and meals. The concept of the Food class is
@@ -53,56 +53,65 @@ class FoodComponent; // Forward decl
  *
  * This is an abstract base class and cannot be instantiated.
  */
-class Food
+class FoodImpl : virtual public Food
 {
   public:
 
-    virtual ~Food() {};
+    FoodImpl(const QString& id, const QString& name, int ownerId,
+              double weightAmount, double volumeAmount, double quantityAmount,
+              double servingAmount);
 
-    virtual QString getId() const = 0;
+    FoodImpl(const QString& id, const QSharedPointer<const Food>& copy);
 
-    virtual QString getName() const = 0;
+    virtual ~FoodImpl();
 
-    virtual int getOwnerId() const = 0;
+    virtual inline QString getId() const { return id; }
 
-    virtual QSharedPointer<const User> getOwner() const = 0;
+    virtual inline QString getName() const { return name; }
 
-    virtual QString getDisplayName() const = 0;
+    virtual inline int getOwnerId() const { return ownerId; }
 
-    virtual QList<Unit::Dimensions::Dimension>
-      getValidDimensions() const = 0;
+    virtual inline QSharedPointer<const User> getOwner() const
+      { return User::getUser(ownerId); }
 
-    virtual FoodAmount getBaseAmount() const = 0;
+    virtual inline QString getDisplayName() const { return name; }
 
-    virtual FoodAmount getBaseAmount
-      (Unit::Dimensions::Dimension dimension) const = 0;
+    virtual QList<Unit::Dimensions::Dimension> getValidDimensions() const;
+
+    virtual FoodAmount getBaseAmount() const;
+
+    virtual FoodAmount getBaseAmount(Unit::Dimensions::Dimension dimension) const;
 
     virtual void setBaseAmount
-      (double amount, const QSharedPointer<const Unit>& unit) = 0;
+      (double amount, const QSharedPointer<const Unit>& unit);
 
-    virtual QList<FoodComponent> getComponents() const = 0;
+    virtual QList<FoodComponent> getComponents() const;
 
-    virtual QVector<FoodAmount> getComponentAmounts() const = 0;
+    virtual QVector<FoodAmount> getComponentAmounts() const;
 
-    virtual double getPercentRefuse() const = 0;
+    inline virtual double getPercentRefuse() const
+      { return 0; }
 
-    virtual QString getRefuseDescription() const = 0;
+    inline virtual QString getRefuseDescription() const
+      { return ""; }
 
     virtual QMap<QString, NutrientAmount> getNutrients() const = 0;
 
-    virtual QVector<QSharedPointer<const SpecializedUnit> >
-      getAllSpecializedUnits() const = 0;
+    inline virtual QVector<QSharedPointer<const SpecializedUnit> >
+      getAllSpecializedUnits() const
+        { return QVector<QSharedPointer<const SpecializedUnit> >(); }
 
-    virtual QSharedPointer<const SpecializedUnit>
-      getSpecializedUnit(int) const = 0;
+    inline virtual QSharedPointer<const SpecializedUnit>
+      getSpecializedUnit(int) const
+        { return QSharedPointer<const SpecializedUnit>(); }
 
-    virtual void setName(const QString& name) = 0;
+    virtual void setName(const QString& name);
 
     virtual NutrientAmount getCaloriesFromNutrient
-      (const QSharedPointer<const Nutrient>& nutrient) const = 0;
+      (const QSharedPointer<const Nutrient>& nutrient) const;
 
     virtual NutrientAmount getCaloriesFromNutrientName
-      (const QString& nutrName) const = 0;
+      (const QString& nutrName) const;
 
     virtual NutrientAmount getCaloriesFromNutrientId
       (const QString& nutrId) const = 0;
@@ -111,23 +120,31 @@ class Food
 
     virtual void deleteFromDatabase() = 0;
 
-    virtual bool isNonce() const = 0;
+    virtual inline bool isNonce() const { return false; }
 
-    virtual QSharedPointer<Food> cloneNonce() const = 0;
+    // cloneNonce() needs to be re-implemented only if isNonce() == true
+    virtual inline QSharedPointer<Food> cloneNonce() const
+      { return QSharedPointer<Food>(); }
 
   protected:
 
-    virtual QSharedPointer<Food>
-      getCanonicalSharedPointer() const = 0;
+    void bindBaseAmount
+      (QSqlQuery& query, const QString& placeholder,
+       Unit::Dimensions::Dimension dimension) const;
 
-    virtual const QMap<Unit::Dimensions::Dimension, double>&
-      getBaseAmounts() const = 0;
+    virtual inline const QMap<Unit::Dimensions::Dimension, double>&
+      getBaseAmounts() const
+        { return baseAmounts; }
 
-    virtual void setNonce(bool nonce) = 0;
+    virtual inline void setNonce(bool) { /* Ignored by default */ };
 
   private:
 
-    friend class FoodImpl;
+    QString id;
+    QString name;
+    int ownerId;
+    QMap<Unit::Dimensions::Dimension, double> baseAmounts;
+
 };
 
-#endif /* FOOD_H_ */
+#endif /* FOOD_IMPL_H_ */

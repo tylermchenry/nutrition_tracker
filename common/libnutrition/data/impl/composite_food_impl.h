@@ -19,10 +19,11 @@
  * Copyright © 2010 Tyler McHenry <tyler@nerdland.net>
  */
 
-#ifndef COMPOSITE_FOOD_H_
-#define COMPOSITE_FOOD_H_
+#ifndef COMPOSITE_FOOD_IMPL_H_
+#define COMPOSITE_FOOD_IMPL_H_
 
-#include "food_collection.h"
+#include "food_collection_impl.h"
+#include "libnutrition/data/composite_food.h"
 #include <QDate>
 
 /* A CompositeFood is a food made up of one or more other foods, which
@@ -49,50 +50,68 @@
  * insertion of a Meal or a FoodCollection into a CompositeFood, but such
  * objects cannot be saved to the database, and so will not be persisted.
  */
-class CompositeFood : virtual public FoodCollection
+class CompositeFoodImpl
+  : public FoodCollectionImpl, virtual public CompositeFood
 {
   public:
 
-    static QSharedPointer<CompositeFood> createNewCompositeFood
-      (const QSharedPointer<const CompositeFood>& copy =
-       QSharedPointer<const CompositeFood>());
+    CompositeFoodImpl(int id, const QString& name, int ownerId,
+                        const QList<FoodComponent>& components,
+                        double weightAmount, double volumeAmount,
+                        double quantityAmount, double servingAmount,
+                        QDate creationDate = QDate::currentDate(),
+                        QDate expiryDate = QDate(),
+                        bool nonce = false);
 
-    static QSharedPointer<CompositeFood> createNewNonceCompositeFood
-      (const FoodAmount& basisAmount = FoodAmount());
+    CompositeFoodImpl(int id, const QString& name, int ownerId,
+                        double weightAmount, double volumeAmount,
+                        double quantityAmount, double servingAmount,
+                        QDate creationDate = QDate::currentDate(),
+                        QDate expiryDate = QDate(),
+                        bool nonce = false);
 
-    static QSharedPointer<CompositeFood> getCompositeFood(int id);
+    // Default or "Copy" constructor. If a food is passed in to copy, the
+    // attributes of the food object are copied, but the constructed food
+    // is still assigned a new, temporary ID.
+    CompositeFoodImpl(const QSharedPointer<const CompositeFood>& copy =
+                        QSharedPointer<const CompositeFood>());
 
-    static QSharedPointer<CompositeFood>
-      createCompositeFoodFromQueryResults(QSqlQuery& query);
+    virtual ~CompositeFoodImpl();
 
-    static QMultiMap<QString, int> getFoodsForUser(int userId);
+    virtual QString getDisplayName() const;
 
-    static QString generateExpirySuffix
-      (const QDate& creation, const QDate& expiry);
+    virtual inline int getCompositeFoodId() const { return id; }
 
-    virtual ~CompositeFood() {};
+    virtual inline QDate getCreationDate() const { return creationDate; }
 
-    virtual int getCompositeFoodId() const = 0;
+    virtual inline QDate getExpiryDate() const { return expiryDate; }
 
-    virtual QDate getCreationDate() const = 0;
+    virtual void setCreationDate(const QDate& date);
 
-    virtual QDate getExpiryDate() const = 0;
+    virtual void setExpiryDate(const QDate& date);
 
-    virtual void setCreationDate(const QDate& date) = 0;
+    virtual void saveToDatabase();
 
-    virtual void setExpiryDate(const QDate& date) = 0;
+    virtual void deleteFromDatabase();
+
+    virtual inline bool isNonce() const { return nonce; }
+
+    virtual QSharedPointer<Food> cloneNonce() const;
 
   protected:
 
-    virtual QSharedPointer<Food> getCanonicalSharedPointer() const;
-
-    int assignNewId(int newId);
-
-    void removeFromCache();
+    virtual inline void setNonce(bool nonce) { this->nonce = nonce; }
 
   private:
 
-    static QMap<int, QWeakPointer<CompositeFood> > compositeFoodCache;
+    void validateExpiryDate();
+
+    int id;
+    bool nonce;
+    QDate creationDate;
+    QDate expiryDate;
+
+    static int tempId;
 };
 
-#endif /* COMPOUND_FOOD_H_ */
+#endif /* COMPOSITE_FOOD_IMPL_H_ */

@@ -7,13 +7,14 @@
  */
 
 #include "meal.h"
+#include "impl/meal_impl.h"
+#include "single_food.h"
+#include "composite_food.h"
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
-#include "single_food.h"
-#include "composite_food.h"
 
 QMap<int, QMap<QDate, QMap<int, QWeakPointer<Meal> > > > Meal::mealCache;
 
@@ -67,10 +68,10 @@ QMap<int, QString> Meal::getAllMealNames(int creatorId, bool includeGenerics)
 QSharedPointer<Meal> Meal::createTemporaryMeal(int userId, const QDate& date, int mealId)
 {
   QSharedPointer<Meal> meal
-    (new Meal(mealId, userId,
-              getAllMealNames()[mealId],
-              userId, date, QList<FoodComponent>(), nextTemporaryId++));
-  temporaryMealCache[meal->temporaryId] = meal;
+    (new MealImpl(mealId, userId,
+                  getAllMealNames()[mealId],
+                  userId, date, QList<FoodComponent>(), nextTemporaryId++));
+  temporaryMealCache[meal->getTemporaryId()] = meal;
   return meal;
 }
 
@@ -80,9 +81,9 @@ QSharedPointer<Meal> Meal::getOrCreateMeal(int userId, const QDate& date, int me
 
   if (meal == NULL) {
     QSharedPointer<Meal> newMeal
-      (new Meal(mealId, userId,
-                getAllMealNames()[mealId],
-                userId, date, QList<FoodComponent>()));
+      (new MealImpl(mealId, userId,
+                    getAllMealNames()[mealId],
+                    userId, date, QList<FoodComponent>()));
     mealCache[userId][date][mealId] = newMeal;
     meal = newMeal;
   }
@@ -172,9 +173,9 @@ QSharedPointer<Meal> Meal::createMealFromQueryResults(QSqlQuery& query)
       }
 
       meal = QSharedPointer<Meal>
-        (new Meal(id, creatorId,
-                  record.field("Name").value().toString(),
-                  userId, date));
+        (new MealImpl(id, creatorId,
+                      record.field("Name").value().toString(),
+                      userId, date));
 
       mealCache[userId][date][id] = meal;
 
@@ -199,168 +200,12 @@ QSharedPointer<Meal> Meal::createMealFromQueryResults(QSqlQuery& query)
   return meal;
 }
 
-Meal::~Meal()
-{
-}
-
-Meal::Meal(int id, int creatorId, const QString& name, int ownerId,
-           const QDate& date, const QList<FoodComponent>& components,
-           int temporaryId)
-  : FoodCollection((temporaryId >= 0 ? "TMPMEAL_" : "MEAL_") + QString::number(id) + "_" +
-                   QString::number(ownerId) + "_" + date.toString(Qt::ISODate),
-                   name, ownerId, components, 0, 0, 0, 1),
-    id(id), creatorId(creatorId), date(date), temporaryId(temporaryId)
-{
-  if (!isTemporary() && needsToBeReSaved()) {
-    saveToDatabase();
-  }
-}
-
-Meal::Meal(int id, int creatorId, const QString& name, int ownerId,
-           const QDate& date, int temporaryId)
-  : FoodCollection((temporaryId >= 0 ? "TMPMEAL_" : "MEAL_") + QString::number(id) + "_" +
-                   QString::number(ownerId) + "_" + date.toString(Qt::ISODate),
-                   name, ownerId, 0, 0, 0, 1),
-    id(id), creatorId(creatorId), date(date), temporaryId(temporaryId)
-{
-}
-
-QSharedPointer<Meal> Meal::getTemporaryClone() const
-{
-  QSharedPointer<Meal> tempClone = Meal::createTemporaryMeal(getOwnerId(), getDate(), getMealId());
-  tempClone->replaceWith(getCanonicalSharedPointerToCollection());
-  return tempClone;
-}
-
-void Meal::saveToDatabase()
-{
-  if (isTemporary()) {
-    throw std::logic_error("Attempted to save a temporary meal to the database.");
-  }
-
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-  QSqlQuery query(db);
-
-  // This needs to work either for a new food or an update to an existing food
-
-  QSet<int> removedLinkIds = getRemovedIds();
-
-  for (QSet<int>::const_iterator i = removedLinkIds.begin(); i != removedLinkIds.end(); ++i)
-  {
-    query.prepare("DELETE FROM meal_link WHERE MealLink_Id=:linkId");
-
-    query.bindValue(":linkId", *i);
-
-    if (!query.exec()) {
-      qDebug() << "Failed to delete removed meal item: " << query.lastError();
-      return;
-    }
-  }
-
-  deleteRemovedNonceFoods();
-
-  QList<FoodComponent> components = getComponents();
-  for (QList<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
-  {
-    if (i->getFoodAmount().getFood()->isNonce()) {
-      i->getFoodAmount().getFood()->saveToDatabase();
-    }
-
-    query.prepare("INSERT INTO meal_link "
-                   "  (MealLink_Id, Meal_Id, User_Id, MealDate, Contained_Type, "
-                   "   Contained_Id, Includes_Refuse, Magnitude, Unit, IntramealOrder) "
-                   "VALUES "
-                   "  (:linkId, :mealId, :userId, :mealDate, :containedType, "
-                   "   :containedId, :includesRefuse, :magnitude, :unit, :order) "
-                   "ON DUPLICATE KEY UPDATE "
-                   "  Includes_Refuse=:includesRefuse2, Magnitude=:magnitude2, "
-                   "  Unit=:unit2, IntramealOrder=:order2");
-
-    query.bindValue(":linkId", i->getId() >= 0 ? QVariant(i->getId()) : QVariant());
-
-    query.bindValue(":mealId", id);
-    query.bindValue(":userId", getOwnerId());
-    query.bindValue(":mealDate", date);
-
-    if (!i->getFoodAmount().isDefined()) continue;
-
-    QSharedPointer<const Food> food = i->getFoodAmount().getFood();
-
-    QSharedPointer<const SingleFood> singleFood;
-    QSharedPointer<const CompositeFood> compositeFood;
-
-    FoodCollection::ContainedTypes::ContainedType containedType;
-    int containedId;
-
-    if ((singleFood = food.dynamicCast<const SingleFood>()) != NULL) {
-      containedType = FoodCollection::ContainedTypes::SingleFood;
-      containedId = singleFood->getSingleFoodId();
-    } else if ((compositeFood = food.dynamicCast<const CompositeFood>()) != NULL) {
-      containedType = FoodCollection::ContainedTypes::CompositeFood;
-      containedId = compositeFood->getCompositeFoodId();
-    } else {
-      continue;
-    }
-
-    query.bindValue(":containedType", FoodCollection::ContainedTypes::toHumanReadable(containedType));
-    query.bindValue(":containedId", containedId);
-
-    query.bindValue(":includesRefuse", i->getFoodAmount().includesRefuse());
-    query.bindValue(":magnitude", i->getFoodAmount().getAmount());
-    query.bindValue(":unit", i->getFoodAmount().getUnit()->getAbbreviation());
-    query.bindValue(":order", i->getOrder());
-
-    query.bindValue(":includesRefuse2", i->getFoodAmount().includesRefuse());
-    query.bindValue(":magnitude2", i->getFoodAmount().getAmount());
-    query.bindValue(":unit2", i->getFoodAmount().getUnit()->getAbbreviation());
-    query.bindValue(":order2", i->getOrder());
-
-    if (!query.exec()) {
-      qDebug() << "Failed to save " << food->getName() << " to meal: " << query.lastError();
-    } else {
-      if (i->getId() < 0) {
-        int newId = query.lastInsertId().toInt();
-        qDebug() << "Assigned real ID " << newId
-                  << " to food component with temp ID " << i->getId();
-        replaceComponent
-          (*i, FoodComponent(getCanonicalSharedPointerToCollection(),
-                             newId, i->getFoodAmount(), i->getOrder()));
-      }
-    }
-  }
-}
-
-void Meal::deleteFromDatabase()
-{
-  if (isTemporary()) {
-    throw std::logic_error("Attempted to save a temporary meal from the database.");
-  }
-
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-  QSqlQuery query(db);
-
-  query.prepare("DELETE FROM meal_link "
-                 "WHERE Meal_Id=:mealId AND User_Id=:userId "
-                 "      AND MealDate=:mealDate");
-  query.bindValue(":mealId", id);
-  query.bindValue(":userId", getOwnerId());
-  query.bindValue(":mealDate", date);
-
-  if (!query.exec()) {
-    qDebug() << "Failed to delete meal: " << query.lastError();
-  } else {
-    clearComponents();
-    deleteRemovedNonceFoods();
-    mealCache[getOwnerId()][date][id].clear();
-  }
-}
-
 QSharedPointer<Food> Meal::getCanonicalSharedPointer() const
 {
   if (isTemporary()) {
-    return temporaryMealCache[temporaryId].toStrongRef();
+    return temporaryMealCache[getTemporaryId()].toStrongRef();
   } else {
-    return mealCache[getOwnerId()][date][id].toStrongRef();
+    return mealCache[getOwnerId()][getDate()][getMealId()].toStrongRef();
   }
 }
 

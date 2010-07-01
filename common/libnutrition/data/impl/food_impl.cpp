@@ -5,16 +5,17 @@
  *      Author: tmchenry
  */
 
-#include "food.h"
-#include "food_component.h"
-#include "food_collection.h"
+#include "food_impl.h"
+#include "libnutrition/data/food_component.h"
+#include "libnutrition/data/food_collection.h"
 #include <QVariant>
 #include <QDebug>
 #include <stdexcept>
 
-Food::Food(const QString& id, const QString& name, int ownerId,
-           double weightAmount, double volumeAmount, double quantityAmount,
-           double servingAmount)
+FoodImpl::FoodImpl
+  (const QString& id, const QString& name, int ownerId,
+   double weightAmount, double volumeAmount, double quantityAmount,
+   double servingAmount)
 : id(id), name(name), ownerId(ownerId)
 {
   if (weightAmount > 0) {
@@ -34,26 +35,26 @@ Food::Food(const QString& id, const QString& name, int ownerId,
   }
 }
 
-Food::Food(const QString& id, const QSharedPointer<const Food>& copy)
-  : id(id), name(copy ? copy->name : ""),
-    ownerId(copy ? copy->ownerId : User::getLoggedInUser()->getId())
+FoodImpl::FoodImpl(const QString& id, const QSharedPointer<const Food>& copy)
+  : id(id), name(copy ? copy->getName() : ""),
+    ownerId(copy ? copy->getOwnerId() : User::getLoggedInUser()->getId())
 {
   if (copy) {
-    baseAmounts = copy->baseAmounts;
+    baseAmounts = copy->getBaseAmounts();
   }
 }
 
-Food::~Food()
+FoodImpl::~FoodImpl()
 {
   qDebug() << "Food ID " << id << " was destroyed.";
 }
 
-QList<Unit::Dimensions::Dimension> Food::getValidDimensions() const
+QList<Unit::Dimensions::Dimension> FoodImpl::getValidDimensions() const
 {
   return baseAmounts.keys();
 }
 
-FoodAmount Food::getBaseAmount() const
+FoodAmount FoodImpl::getBaseAmount() const
 {
   for (QVector<Unit::Dimensions::Dimension>::const_iterator i = Unit::Dimensions::getAllDimensions().begin();
       i != Unit::Dimensions::getAllDimensions().end(); ++i)
@@ -66,7 +67,7 @@ FoodAmount Food::getBaseAmount() const
   return FoodAmount();
 }
 
-FoodAmount Food::getBaseAmount(Unit::Dimensions::Dimension dimension) const
+FoodAmount FoodImpl::getBaseAmount(Unit::Dimensions::Dimension dimension) const
 {
   if (baseAmounts.contains(dimension)) {
     return FoodAmount(getCanonicalSharedPointer(), baseAmounts[dimension],
@@ -76,7 +77,7 @@ FoodAmount Food::getBaseAmount(Unit::Dimensions::Dimension dimension) const
   }
 }
 
-void Food::setBaseAmount(double amount, const QSharedPointer<const Unit>& unit)
+void FoodImpl::setBaseAmount(double amount, const QSharedPointer<const Unit>& unit)
 {
   if (unit != NULL) {
     if (amount > 0) {
@@ -89,12 +90,12 @@ void Food::setBaseAmount(double amount, const QSharedPointer<const Unit>& unit)
   }
 }
 
-void Food::setName(const QString& name)
+void FoodImpl::setName(const QString& name)
 {
   this->name = name;
 }
 
-NutrientAmount Food::getCaloriesFromNutrient
+NutrientAmount FoodImpl::getCaloriesFromNutrient
   (const QSharedPointer<const Nutrient>& nutrient) const
 {
   if (nutrient) {
@@ -104,23 +105,23 @@ NutrientAmount Food::getCaloriesFromNutrient
   }
 }
 
-NutrientAmount Food::getCaloriesFromNutrientName
+NutrientAmount FoodImpl::getCaloriesFromNutrientName
   (const QString& nutrName) const
 {
   return getCaloriesFromNutrient(Nutrient::getNutrientByName(nutrName));
 }
 
-QList<FoodComponent> Food::getComponents() const
+QList<FoodComponent> FoodImpl::getComponents() const
 {
   return QList<FoodComponent>();
 }
 
-QVector<FoodAmount> Food::getComponentAmounts() const
+QVector<FoodAmount> FoodImpl::getComponentAmounts() const
 {
   return QVector<FoodAmount>();
 }
 
-void Food::bindBaseAmount
+void FoodImpl::bindBaseAmount
   (QSqlQuery& query, const QString& placeholder, Unit::Dimensions::Dimension dimension) const
 {
   FoodAmount amount = getBaseAmount(dimension);

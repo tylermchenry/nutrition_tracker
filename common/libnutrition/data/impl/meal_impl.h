@@ -19,10 +19,11 @@
  * Copyright © 2010 Tyler McHenry <tyler@nerdland.net>
  */
 
-#ifndef MEAL_H_
-#define MEAL_H_
+#ifndef MEAL_IMPL_H_
+#define MEAL_IMPL_H_
 
-#include "food_collection.h"
+#include "food_collection_impl.h"
+#include "libnutrition/data/meal.h"
 #include <QDate>
 #include <QMap>
 
@@ -44,57 +45,46 @@
  * like Breakfast, Lunch, or Dinner, and will usually match the userId if it is
  * a custom meal, but this distinction allows for future expansion.
  */
-class Meal : virtual public FoodCollection
+class MealImpl : public FoodCollectionImpl, virtual public Meal
 {
   public:
 
-    static QMap<int, QString> getAllMealNames
-      (int creatorId = -1, bool includeGenerics = true);
+    MealImpl(int id, int creatorId, const QString& name, int ownerId,
+              const QDate& date, const QList<FoodComponent>& components,
+              int temporaryId = -1);
 
-    static QSharedPointer<Meal> createTemporaryMeal
-      (int userId, const QDate& date, int mealId);
+    MealImpl(int id, int creatorId, const QString& name, int ownerId,
+              const QDate& date, int temporaryId = -1);
 
-    static QSharedPointer<Meal> getOrCreateMeal
-      (int userId, const QDate& date, int mealId);
+    virtual ~MealImpl();
 
-    static QSharedPointer<Meal> getMeal
-      (int userId, const QDate& date, int mealId);
+    virtual inline bool isTemporary() const { return (temporaryId >= 0); }
 
-    static QVector<QSharedPointer<Meal> > getMealsForDay
-      (int userId, const QDate& date);
+    virtual inline int getMealId() const { return id; }
 
-    static QSharedPointer<Meal> createMealFromQueryResults
-      (QSqlQuery& query);
+    virtual inline int getCreatorId() const { return creatorId; }
 
-    virtual bool isTemporary() const = 0;
+    virtual inline QSharedPointer<const User> getCreator() const
+      { return User::getUser(creatorId); }
 
-    virtual int getMealId() const = 0;
+    virtual inline QDate getDate() const { return date; }
 
-    virtual int getCreatorId() const = 0;
+    virtual QSharedPointer<Meal> getTemporaryClone() const;
 
-    virtual QSharedPointer<const User> getCreator() const = 0;
+    virtual void saveToDatabase();
 
-    virtual QDate getDate() const = 0;
-
-    virtual QSharedPointer<Meal> getTemporaryClone() const = 0;
+    virtual void deleteFromDatabase();
 
   protected:
 
-    virtual QSharedPointer<Food> getCanonicalSharedPointer() const;
-
-    virtual int getTemporaryId() const = 0;
+    virtual inline int getTemporaryId() const { return temporaryId; }
 
   private:
 
-    static QMap<int, QMap<QDate, QMap<int, QWeakPointer<Meal> > > > mealCache;
-
-    static int nextTemporaryId;
-
-    // Even though they are not backed by the database, a cache is needed for
-    // temporary meals because they still require canonical pointers
-    static QMap<int, QWeakPointer<Meal> > temporaryMealCache;
-
-    friend class MealImpl;
+    int id;
+    int creatorId;
+    QDate date;
+    int temporaryId;   // If >= 0, then temporary and not backed by database
 };
 
-#endif /* MEAL_H_ */
+#endif /* MEAL_IMPL_H_ */

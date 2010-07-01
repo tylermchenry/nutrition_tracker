@@ -37,23 +37,25 @@ class User
     inline static QSharedPointer<User> getLoggedInUser()
       { return loggedInUser; }
 
-    inline int getId() const { return id; }
-
-    inline QString getUsername() const { return username; }
-
-    inline QString getRealName() const { return realName; }
-
-    inline QString getDisplayName() const
-      { return realName.isEmpty() ? username : realName; }
-
-    inline void setRealName(const QString& newRealName)
-      { realName = newRealName; }
-
-    void setPassword(const QString& newPassword);
-
-    void saveToDatabase();
-
     virtual ~User();
+
+    virtual int getId() const = 0;
+
+    virtual QString getUsername() const = 0;
+
+    virtual QString getRealName() const = 0;
+
+    virtual QString getDisplayName() const = 0;
+
+    virtual void setRealName(const QString& newRealName) = 0;
+
+    virtual void setPassword(const QString& newPassword) = 0;
+
+    virtual void saveToDatabase() = 0;
+
+  protected:
+
+    virtual bool checkPassword(const QString& password) const = 0;
 
   private:
 
@@ -63,18 +65,10 @@ class User
     static QVector<QSharedPointer<const User> >
       createUsersFromQueryResults(QSqlQuery& query);
 
-    User(int id, const QString& username, const QString& realName,
-         const QString& pwSHA1_hex);
-
-    bool checkPassword(const QString& password) const;
-
-    int id;
-    QString username;
-    QString realName;
-    QString pwSHA1_hex;
-
     static QMap<int, QWeakPointer<User> > userCache;
     static QSharedPointer<User> loggedInUser;
+
+    friend class UserImpl;
 };
 
 #endif /* USER_H_ */

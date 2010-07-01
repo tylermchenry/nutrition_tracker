@@ -19,15 +19,14 @@
  * Copyright © 2010 Tyler McHenry <tyler@nerdland.net>
  */
 
-#ifndef NUTRIENT_H_
-#define NUTRIENT_H_
+#ifndef NUTRIENT_IMPL_H_
+#define NUTRIENT_IMPL_H_
 
+#include "libnutrition/data/nutrient.h"
+#include "libnutrition/data/unit.h"
 #include <QString>
 #include <QMap>
 #include <QSharedPointer>
-#include <QWeakPointer>
-#include <QtSql/QSqlQuery>
-#include "libnutrition/data/unit.h"
 
 /* A nutrient object describes a particular sort of nutrient that may be found
  * in a food. Nutrients are divided into several categories, mainly for display
@@ -47,63 +46,39 @@
  * average person consume in a given day. For nutrients that do not have RDIs
  * defined by the USDA, this value will be 0.
  */
-class Nutrient
+class NutrientImpl : virtual public Nutrient
 {
   public:
 
-    struct Categories {
-      enum Category {
-          Energy,
-          Basic,
-          Vitamin,
-          Mineral,
-          Additional,
-          Hidden
-      };
-      static Category fromHumanReadable(const QString& str);
-      static QString toHumanReadable(Category cat);
-    };
+    using Nutrient::Categories;
 
-    static const QString CALORIES_NAME;
-    static const QString FAT_NAME;
-    static const QString CARBOHYDRATE_NAME;
-    static const QString PROTEIN_NAME;
-    static const QString ALCOHOL_NAME;
+    NutrientImpl
+      (const QString& id, const QString& name, Categories::Category category,
+       const QSharedPointer<const Unit>& standardUnit, double rdi);
 
-    static QSharedPointer<const Nutrient> getNutrient(const QString& id);
+    virtual ~NutrientImpl();
 
-    static QSharedPointer<const Nutrient> getNutrientByName(const QString& name);
+    virtual inline QString getId() const { return id; }
 
-    static QVector<QSharedPointer<const Nutrient> > getAllNutrients();
+    virtual inline QString getName() const { return name; }
 
-    static QVector<QSharedPointer<const Nutrient> > getAllNutrients
-      (Categories::Category category);
+    virtual inline Categories::Category getCategory() const
+      { return category; }
 
-    static QSharedPointer<const Nutrient> createNutrientFromRecord(const QSqlRecord& record);
+    virtual inline QSharedPointer<const Unit> getStandardUnit() const
+      { return standardUnit; }
 
-    static QVector<QSharedPointer<const Nutrient> > createNutrientsFromQueryResults
-      (QSqlQuery& query);
+    virtual inline double getRDI() const { return rdi; }
 
-    virtual ~Nutrient() {};
-
-    virtual QString getId() const = 0;
-
-    virtual QString getName() const = 0;
-
-    virtual Categories::Category getCategory() const = 0;
-
-    virtual QSharedPointer<const Unit> getStandardUnit() const = 0;
-
-    virtual double getRDI() const = 0;
-
-    virtual double getDefaultCalorieDensity() const = 0; // in kcal/g
+    virtual double getDefaultCalorieDensity() const; // in kcal/g
 
   private:
 
-    static QMap<QString, QSharedPointer<const Nutrient> > nutrientCache;
-    static QMap<QString, QSharedPointer<const Nutrient> > nutrientCacheByName;
-
-    friend class NutrientImpl;
+    QString id;
+    QString name;
+    Categories::Category category;
+    QSharedPointer<const Unit> standardUnit;
+    double rdi; // RDI in terms of standard unit
 };
 
-#endif /* NUTRIENT_H_ */
+#endif /* NUTRIENT_IMPL_H_ */

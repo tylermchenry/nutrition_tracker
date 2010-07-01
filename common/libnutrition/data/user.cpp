@@ -7,7 +7,7 @@
  */
 
 #include "user.h"
-#include <QCryptographicHash>
+#include "impl/user_impl.h"
 #include <QVariant>
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
@@ -120,6 +120,11 @@ bool User::logInAs
 
   return false;
 }
+
+User::~User()
+{
+}
+
 QSharedPointer<const User> User::createUserFromRecord
   (const QSqlRecord& record)
 {
@@ -127,10 +132,10 @@ QSharedPointer<const User> User::createUserFromRecord
     int id = record.field("User_Id").value().toInt();
     if (!userCache[id]) {
       QSharedPointer<User> user
-      (new User(id,
-                record.field("User_Name").value().toString(),
-                record.field("Name").value().toString(),
-                record.field("PW_SHA1").value().toString()));
+      (new UserImpl(id,
+                    record.field("User_Name").value().toString(),
+                    record.field("Name").value().toString(),
+                    record.field("PW_SHA1").value().toString()));
       userCache[id] = user;
       return user;
     } else {
@@ -152,42 +157,3 @@ QVector<QSharedPointer<const User> > User::createUsersFromQueryResults
 
   return users;
 }
-
-User::User(int id, const QString& username, const QString& realName,
-            const QString& pwSHA1_hex)
-  : id(id), username(username), realName(realName), pwSHA1_hex(pwSHA1_hex)
-{
-}
-
-User::~User()
-{
-}
-
-void User::setPassword(const QString& newPassword)
-{
-  pwSHA1_hex = QCryptographicHash::hash((newPassword + username).toUtf8(),
-                                        QCryptographicHash::Sha1).toHex();
-}
-
-void User::saveToDatabase()
-{
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-  QSqlQuery query(db);
-
-  query.prepare("UPDATE user SET Name=:realName, PW_SHA1=:shapass "
-                " WHERE User_Id=:id");
-  query.bindValue(":realName", realName);
-  query.bindValue(":shapass", pwSHA1_hex);
-  query.bindValue(":id", id);
-
-  if (!query.exec()) {
-    qDebug() << "SQL Failure: " << query.lastError();
-  }
-}
-
-bool User::checkPassword(const QString& password) const
-{
-  return QCryptographicHash::hash((password + username).toUtf8(), QCryptographicHash::Sha1).toHex() ==
-    pwSHA1_hex.toUtf8();
-}
-
