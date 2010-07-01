@@ -5,8 +5,8 @@
 #include <QtSql/QSqlDatabase>
 #include <QDate>
 #include "ui_add_food.h"
-#include "data/food_collection.h"
-#include "data/meal.h"
+#include "libnutrition/data/food_collection.h"
+#include "libnutrition/data/meal.h"
 
 class AddFood : public QDialog
 {

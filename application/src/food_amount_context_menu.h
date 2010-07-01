@@ -11,7 +11,7 @@
 
 #include "food_context_menu.h"
 #include <QModelIndex>
-#include "data/food_amount.h"
+#include "libnutrition/data/food_amount.h"
 
 class FoodAmountContextMenu : public FoodContextMenu
 {

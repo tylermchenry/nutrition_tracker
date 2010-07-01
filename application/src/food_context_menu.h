@@ -10,9 +10,9 @@
 
 #include <QtGui/QMenu>
 #include <QModelIndex>
-#include "data/food_amount.h"
-#include "data/food_component.h"
-#include "data/meal.h"
+#include "libnutrition/data/food_amount.h"
+#include "libnutrition/data/food_component.h"
+#include "libnutrition/data/meal.h"
 
 class FoodContextMenu : public QMenu
 {

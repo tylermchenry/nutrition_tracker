@@ -7,8 +7,8 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QCheckBox>
 #include "ui_template_components.h"
-#include "data/template.h"
-#include "data/food_collection.h"
+#include "libnutrition/data/template.h"
+#include "libnutrition/data/food_collection.h"
 
 class TemplateComponents : public QWidget
 {

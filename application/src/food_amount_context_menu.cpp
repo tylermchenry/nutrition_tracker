@@ -7,8 +7,8 @@
  */
 
 #include "food_amount_context_menu.h"
-#include "data/food.h"
-#include "data/food_collection.h"
+#include "libnutrition/data/food.h"
+#include "libnutrition/data/food_collection.h"
 
 FoodAmountContextMenu::FoodAmountContextMenu
   (const QModelIndex& index, const FoodAmount& foodAmount, QWidget* parent)

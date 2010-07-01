@@ -1,5 +1,5 @@
 #include "user_login.h"
-#include "data/user.h"
+#include "libnutrition/data/user.h"
 #include <QSettings>
 #include <QtSql/QSqlQuery>
 #include <QtGui/QMessageBox>

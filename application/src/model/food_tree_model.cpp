@@ -7,7 +7,7 @@
 
 #include "food_tree_model.h"
 #include "food_tree_amount_item.h"
-#include "data/user.h"
+#include "libnutrition/data/user.h"
 #include <QDebug>
 #include <QtGui/QFont>
 #include <QtGui/QTreeView>

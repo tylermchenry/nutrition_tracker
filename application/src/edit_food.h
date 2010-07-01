@@ -4,8 +4,8 @@
 #include <QtGui/QDialog>
 #include "ui_edit_food.h"
 #include "nutrient_amount_display.h"
-#include "data/single_food.h"
-#include "data/nutrient.h"
+#include "libnutrition/data/single_food.h"
+#include "libnutrition/data/nutrient.h"
 
 class EditFood : public QDialog
 {

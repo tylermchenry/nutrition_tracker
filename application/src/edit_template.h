@@ -3,7 +3,7 @@
 
 #include <QtGui/QDialog>
 #include "ui_edit_template.h"
-#include "data/template.h"
+#include "libnutrition/data/template.h"
 
 class EditTemplate : public QDialog
 {

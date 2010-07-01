@@ -1,8 +1,8 @@
 #include "select_food_control.h"
-#include "data/unit.h"
-#include "data/single_food.h"
-#include "data/composite_food.h"
-#include "data/meal.h"
+#include "libnutrition/data/unit.h"
+#include "libnutrition/data/single_food.h"
+#include "libnutrition/data/composite_food.h"
+#include "libnutrition/data/meal.h"
 #include <QDebug>
 #include <QSettings>
 

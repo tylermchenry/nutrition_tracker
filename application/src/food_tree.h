@@ -8,8 +8,8 @@
 #include <QString>
 #include <QVector>
 #include <QDate>
-#include "data/meal.h"
-#include "data/food_collection.h"
+#include "libnutrition/data/meal.h"
+#include "libnutrition/data/food_collection.h"
 #include "model/food_tree_model.h"
 #include "ui_food_tree.h"
 

@@ -10,7 +10,7 @@
 #include "about.h"
 #include "database_information.h"
 #include "user_login.h"
-#include <data/single_food.h>
+#include "libnutrition/data/single_food.h"
 #include <QtGui/QInputDialog>
 #include <QtGui/QLabel>
 #include <QtGui/QStatusBar>

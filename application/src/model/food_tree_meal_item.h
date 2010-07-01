@@ -10,7 +10,7 @@
 
 #include "food_tree_item.h"
 #include "food_tree_component_item.h"
-#include "data/meal.h"
+#include "libnutrition/data/meal.h"
 
 class FoodTreeMealItem : public FoodTreeItem
 {

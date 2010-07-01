@@ -27,10 +27,10 @@
 #include <QSet>
 #include <QString>
 #include <QSharedPointer>
-#include "data/food_amount.h"
-#include "data/user.h"
-#include "data/unit.h"
-#include "data/specialized_unit.h"
+#include "libnutrition/data/food_amount.h"
+#include "libnutrition/data/user.h"
+#include "libnutrition/data/unit.h"
+#include "libnutrition/data/specialized_unit.h"
 
 class FoodComponent; // Forward decl
 

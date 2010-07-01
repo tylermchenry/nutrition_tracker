@@ -12,8 +12,8 @@
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
-#include "data/single_food.h"
-#include "data/composite_food.h"
+#include "single_food.h"
+#include "composite_food.h"
 
 QMap<int, QMap<QDate, QMap<int, QWeakPointer<Meal> > > > Meal::mealCache;
 

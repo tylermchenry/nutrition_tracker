@@ -3,8 +3,8 @@
 
 #include <QtGui/QDialog>
 #include "ui_fill_in.h"
-#include "data/nutrient_amount.h"
-#include "data/food.h"
+#include "libnutrition/data/nutrient_amount.h"
+#include "libnutrition/data/food.h"
 #include <QMap>
 
 class FillIn : public QDialog

@@ -4,7 +4,7 @@
 #include <QtGui/QWidget>
 #include "ui_select_food_control.h"
 #include "food_search_control.h" // TODO: Get rid of dependence on this widget
-#include "data/food.h"
+#include "libnutrition/data/food.h"
 
 class SelectFoodControl : public QWidget
 {

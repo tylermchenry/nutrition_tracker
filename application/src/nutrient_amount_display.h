@@ -8,8 +8,8 @@
 #ifndef NUTRIENT_AMOUNT_DISPLAY_H_
 #define NUTRIENT_AMOUNT_DISPLAY_H_
 
-#include "data/nutrient.h"
-#include "data/nutrient_amount.h"
+#include "libnutrition/data/nutrient.h"
+#include "libnutrition/data/nutrient_amount.h"
 #include <QObject>
 #include <QVariant>
 #include <QtGui/QWidget>

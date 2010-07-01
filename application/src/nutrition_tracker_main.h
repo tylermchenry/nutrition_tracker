@@ -5,7 +5,7 @@
 #include <QtSql/QSqlDatabase>
 #include "ui_nutrition_tracker_main.h"
 #include "nutrition_tracker.h"
-#include "data/food_amount.h"
+#include "libnutrition/data/food_amount.h"
 
 class NutritionTrackerMain : public QMainWindow
 {

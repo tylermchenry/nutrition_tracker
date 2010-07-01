@@ -9,7 +9,7 @@
 #define FOOD_TREE_COMPONENT_ITEM_H_
 
 #include "food_tree_item.h"
-#include "data/food_component.h"
+#include "libnutrition/data/food_component.h"
 
 class FoodTreeComponentItem : public FoodTreeItem
 {

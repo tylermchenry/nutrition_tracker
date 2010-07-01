@@ -3,7 +3,7 @@
 
 #include <QtGui/QDialog>
 #include "ui_edit_composite_food.h"
-#include "data/composite_food.h"
+#include "libnutrition/data/composite_food.h"
 
 class EditCompositeFood : public QDialog
 {

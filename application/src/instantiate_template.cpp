@@ -1,5 +1,5 @@
 #include "instantiate_template.h"
-#include "data/meal.h"
+#include "libnutrition/data/meal.h"
 #include <QSettings>
 
 InstantiateTemplate::InstantiateTemplate

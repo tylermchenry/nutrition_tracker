@@ -22,8 +22,8 @@
 #ifndef NUTRIENT_AMOUNT_H_
 #define NUTRIENT_AMOUNT_H_
 
-#include "data/nutrient.h"
-#include "data/amount.h"
+#include "libnutrition/data/nutrient.h"
+#include "libnutrition/data/amount.h"
 
 /* NutrientAmount is an Amount where the substance is a Nutrient.
  *

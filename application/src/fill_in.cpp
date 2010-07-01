@@ -1,6 +1,6 @@
 #include "fill_in.h"
-#include "data/single_food.h"
-#include "data/composite_food.h"
+#include "libnutrition/data/single_food.h"
+#include "libnutrition/data/composite_food.h"
 #include <QSettings>
 #include <QSet>
 #include <QDebug>

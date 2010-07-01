@@ -1,6 +1,6 @@
 #include "edit_composite_food.h"
-#include "data/group.h"
-#include "data/unit.h"
+#include "libnutrition/data/group.h"
+#include "libnutrition/data/unit.h"
 #include <QtGui/QMessageBox>
 #include <QDebug>
 #include <QSettings>

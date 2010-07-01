@@ -6,8 +6,8 @@
  */
 
 #include "food_tree_amount_item.h"
-#include "data/food.h"
-#include "data/food_collection.h"
+#include "libnutrition/data/food.h"
+#include "libnutrition/data/food_collection.h"
 
 FoodTreeAmountItem::FoodTreeAmountItem
   (const QAbstractItemModel* model, const FoodAmount& foodAmount, FoodTreeItem* parent)

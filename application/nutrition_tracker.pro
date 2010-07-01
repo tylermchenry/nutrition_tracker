@@ -8,9 +8,11 @@ win32 {
 TEMPLATE = app
 TARGET = 
 DEPENDPATH += . \
-    src
+    src \
+    ../common/
 INCLUDEPATH += . \
-    src
+    src \
+    ../common/
 
 # Generate a few compiled-in strings that are used for version 
 # identification in the About box
@@ -26,20 +28,19 @@ versiontarget.depends = FORCE
 PRE_TARGETDEPS += version.cpp
 QMAKE_EXTRA_TARGETS += versiontarget
 
+LIBS += -L../common -lnutrition
+
 # Input
 HEADERS += src/options.h \
     src/nutrition_tracker_application.h \
     version.h \
     src/about.h \
-    src/data/user.h \
     src/user_login.h \
-    src/data/specialized_unit.h \
     src/fill_in.h \
     src/select_template.h \
     src/template_components.h \
     src/instantiate_template.h \
     src/edit_template.h \
-    src/data/template.h \
     src/my_foods.h \
     src/meal_context_menu.h \
     src/food_component_context_menu.h \
@@ -52,22 +53,10 @@ HEADERS += src/options.h \
     src/model/food_tree_component_item.h \
     src/model/food_tree_meal_item.h \
     src/food_context_menu.h \
-    src/data/food_component.h \
-    src/data/food_collection.h \
-    src/data/meal.h \
     src/model/food_tree_model.h \
     src/model/food_tree_item.h \
     src/nutrient_amount_display.h \
     src/model/variant_value_item_model.h \
-    src/data/group.h \
-    src/data/composite_food.h \
-    src/data/amount.h \
-    src/data/single_food.h \
-    src/data/nutrient_amount.h \
-    src/data/nutrient.h \
-    src/data/unit.h \
-    src/data/food_amount.h \
-    src/data/food.h \
     src/edit_food.h \
     src/select_food_control.h \
     src/database_information.h \
@@ -98,15 +87,12 @@ SOURCES += src/options.cpp \
     src/nutrition_tracker_application.cpp \
     version.cpp \
     src/about.cpp \
-    src/data/user.cpp \
     src/user_login.cpp \
-    src/data/specialized_unit.cpp \
     src/fill_in.cpp \
     src/select_template.cpp \
     src/template_components.cpp \
     src/instantiate_template.cpp \
     src/edit_template.cpp \
-    src/data/template.cpp \
     src/my_foods.cpp \
     src/meal_context_menu.cpp \
     src/food_component_context_menu.cpp \
@@ -119,20 +105,9 @@ SOURCES += src/options.cpp \
     src/model/food_tree_component_item.cpp \
     src/model/food_tree_meal_item.cpp \
     src/food_context_menu.cpp \
-    src/data/food_component.cpp \
-    src/data/food_collection.cpp \
-    src/data/meal.cpp \
     src/model/food_tree_model.cpp \
     src/model/food_tree_item.cpp \
     src/nutrient_amount_display.cpp \
-    src/data/group.cpp \
-    src/data/composite_food.cpp \
-    src/data/single_food.cpp \
-    src/data/nutrient_amount.cpp \
-    src/data/nutrient.cpp \
-    src/data/unit.cpp \
-    src/data/food_amount.cpp \
-    src/data/food.cpp \
     src/edit_food.cpp \
     src/select_food_control.cpp \
     src/database_information.cpp \

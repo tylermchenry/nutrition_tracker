@@ -27,7 +27,7 @@
 #include <QSharedPointer>
 #include <QWeakPointer>
 #include <QtSql/QSqlQuery>
-#include "data/unit.h"
+#include "libnutrition/data/unit.h"
 
 /* A nutrient object describes a particular sort of nutrient that may be found
  * in a food. Nutrients are divided into several categories, mainly for display

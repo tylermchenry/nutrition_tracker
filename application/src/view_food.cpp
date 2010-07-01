@@ -4,8 +4,8 @@
 #include <QtGui/QSpacerItem>
 #include <QtGui/QMessageBox>
 #include <QSettings>
-#include "data/unit.h"
-#include "data/group.h"
+#include "libnutrition/data/unit.h"
+#include "libnutrition/data/group.h"
 #include "model/variant_value_item_model.h"
 
 // The numeric database fields are DECIMAL(10,4), so 10 digits, 4 of which

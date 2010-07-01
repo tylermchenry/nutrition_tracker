@@ -3,7 +3,7 @@
 
 #include <QtGui/QDialog>
 #include "ui_select_template.h"
-#include "data/template.h"
+#include "libnutrition/data/template.h"
 #include <QMap>
 
 class SelectTemplate : public QDialog

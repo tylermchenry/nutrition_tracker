@@ -3,7 +3,7 @@
 
 #include <QtGui/QWidget>
 #include "ui_my_foods.h"
-#include "data/food_collection.h"
+#include "libnutrition/data/food_collection.h"
 
 class MyFoods : public QDialog
 {

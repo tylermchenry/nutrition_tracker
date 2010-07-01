@@ -1,5 +1,5 @@
 #include "select_template.h"
-#include "data/user.h"
+#include "libnutrition/data/user.h"
 #include <QSettings>
 
 SelectTemplate::SelectTemplate(QWidget *parent)

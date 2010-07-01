@@ -3,7 +3,7 @@
 
 #include <QtGui/QWidget>
 #include "ui_nutrition_tracker.h"
-#include "data/meal.h"
+#include "libnutrition/data/meal.h"
 
 class NutritionTracker : public QWidget
 {

@@ -1,11 +1,11 @@
 #include "nutrition_tracker.h"
 #include "food_context_menu.h"
 #include "model/food_tree_model.h"
-#include "data/food_collection.h"
-#include "data/composite_food.h"
-#include "data/nutrient.h"
-#include "data/group.h"
-#include "data/unit.h"
+#include "libnutrition/data/food_collection.h"
+#include "libnutrition/data/composite_food.h"
+#include "libnutrition/data/nutrient.h"
+#include "libnutrition/data/group.h"
+#include "libnutrition/data/unit.h"
 #include <QDebug>
 #include <QtGui/QCursor>
 

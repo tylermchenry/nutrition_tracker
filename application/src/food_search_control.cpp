@@ -1,7 +1,7 @@
 #include "food_search_control.h"
-#include "data/user.h"
-#include "data/group.h"
-#include "data/composite_food.h"
+#include "libnutrition/data/user.h"
+#include "libnutrition/data/group.h"
+#include "libnutrition/data/composite_food.h"
 #include "edit_food.h"
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>

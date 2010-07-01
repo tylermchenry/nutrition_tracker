@@ -6,9 +6,9 @@
  */
 
 #include "food_component_context_menu.h"
-#include "data/food.h"
-#include "data/food_collection.h"
-#include "data/meal.h"
+#include "libnutrition/data/food.h"
+#include "libnutrition/data/food_collection.h"
+#include "libnutrition/data/meal.h"
 #include <stdexcept>
 #include <QDebug>
 #include <QtGui/QMessageBox>

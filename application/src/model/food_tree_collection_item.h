@@ -11,7 +11,7 @@
 #include "food_tree_item.h"
 #include "food_tree_meal_item.h"
 #include "food_tree_component_item.h"
-#include "data/food_collection.h"
+#include "libnutrition/data/food_collection.h"
 
 class FoodTreeCollectionItem : public FoodTreeItem
 {

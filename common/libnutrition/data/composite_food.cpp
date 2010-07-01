@@ -6,9 +6,9 @@
  */
 
 #include "composite_food.h"
-#include "data/nutrient_amount.h"
-#include "data/food_amount.h"
-#include "data/single_food.h"
+#include "nutrient_amount.h"
+#include "food_amount.h"
+#include "single_food.h"
 #include <QVariant>
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
