@@ -2,7 +2,7 @@
 #include "libnutrition/data/user.h"
 #include "libnutrition/data/group.h"
 #include "libnutrition/data/composite_food.h"
-#include "edit_food.h"
+#include "dialogs/edit_food.h"
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>

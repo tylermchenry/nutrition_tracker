@@ -267,7 +267,7 @@
   <customwidget>
    <class>FoodTree</class>
    <extends>QWidget</extends>
-   <header>food_tree.h</header>
+   <header>widgets/food_tree.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

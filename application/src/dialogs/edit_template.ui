@@ -129,19 +129,19 @@
   <customwidget>
    <class>FoodSearchControl</class>
    <extends>QWidget</extends>
-   <header>food_search_control.h</header>
+   <header>widgets/food_search_control.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>SelectFoodControl</class>
    <extends>QWidget</extends>
-   <header>select_food_control.h</header>
+   <header>widgets/select_food_control.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>FoodTree</class>
    <extends>QWidget</extends>
-   <header>food_tree.h</header>
+   <header>widgets/food_tree.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

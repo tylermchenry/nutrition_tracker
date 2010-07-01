@@ -3,8 +3,8 @@
 
 #include <QtGui/QDialog>
 #include "ui_instantiate_template.h"
+#include "widgets/template_components.h"
 #include "libnutrition/data/template.h"
-#include "template_components.h"
 
 class InstantiateTemplate : public QDialog
 {

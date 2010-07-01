@@ -10,8 +10,8 @@
 #include <QDebug>
 #include "libnutrition/data/food.h"
 #include "libnutrition/data/food_collection.h"
-#include "food_context_menu.h"
-#include "food_amount_context_menu.h"
+#include "menus/food_context_menu.h"
+#include "menus/food_amount_context_menu.h"
 
 FoodTreeItem::FoodTreeItem(const QAbstractItemModel* model, FoodTreeItem* parentItem)
   : model(model), parentItem(parentItem)

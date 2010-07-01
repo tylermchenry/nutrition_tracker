@@ -3,7 +3,7 @@
 
 #include <QtGui/QDialog>
 #include "ui_edit_food.h"
-#include "nutrient_amount_display.h"
+#include "widgets/nutrient_amount_display.h"
 #include "libnutrition/data/single_food.h"
 #include "libnutrition/data/nutrient.h"
 

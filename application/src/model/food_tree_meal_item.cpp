@@ -7,7 +7,7 @@
 
 #include "food_tree_meal_item.h"
 #include "food_tree_component_item.h"
-#include "meal_context_menu.h"
+#include "menus/meal_context_menu.h"
 
 FoodTreeMealItem::FoodTreeMealItem
   (const QAbstractItemModel* model, const QSharedPointer<Meal>& meal, FoodTreeItem* parent)

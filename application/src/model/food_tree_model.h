@@ -11,7 +11,7 @@
 #include "food_tree_item.h"
 #include "food_tree_collection_item.h"
 #include "food_tree_meal_item.h"
-#include "food_context_menu.h"
+#include "menus/food_context_menu.h"
 #include "libnutrition/data/meal.h"
 #include "libnutrition/data/food_collection.h"
 #include <QAbstractItemModel>

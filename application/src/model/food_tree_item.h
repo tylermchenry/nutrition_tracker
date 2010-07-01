@@ -8,7 +8,7 @@
 #ifndef FOOD_TREE_ITEM_H_
 #define FOOD_TREE_ITEM_H_
 
-#include "food_context_menu.h"
+#include "menus/food_context_menu.h"
 #include "libnutrition/data/food_amount.h"
 #include <QList>
 #include <QtGui/QMenu>

@@ -1,5 +1,5 @@
 #include "food_tree.h"
-#include "view_food.h"
+#include "dialogs/view_food.h"
 #include <QDebug>
 #include <QtGui/QInputDialog>
 

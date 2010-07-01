@@ -6,7 +6,7 @@
  */
 
 #include "nutrient_amount_display.h"
-#include "edit_food.h"
+#include "dialogs/edit_food.h"
 #include <QDebug>
 
 NutrientAmountDisplay::NutrientAmountDisplay

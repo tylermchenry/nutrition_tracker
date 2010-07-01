@@ -7,7 +7,7 @@
 
 #include "food_tree_component_item.h"
 #include "food_tree_amount_item.h"
-#include "food_component_context_menu.h"
+#include "menus/food_component_context_menu.h"
 #include "libnutrition/data/food.h"
 #include "libnutrition/data/food_collection.h"
 #include <QDebug>
