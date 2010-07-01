@@ -5,7 +5,8 @@ CONFIG += dll \
 VERSION = 0.1.0
 QT += core \
     sql
-HEADERS += libnutrition/data/impl/composite_food_impl.h \
+HEADERS += libnutrition/backend/back_end.h \
+    libnutrition/data/impl/composite_food_impl.h \
     libnutrition/data/impl/food_collection_impl.h \
     libnutrition/data/impl/food_impl.h \
     libnutrition/data/impl/group_impl.h \
