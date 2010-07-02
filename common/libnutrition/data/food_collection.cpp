@@ -8,6 +8,7 @@
 
 #include "food_collection.h"
 #include "impl/food_collection_impl.h"
+#include "data_cache.h"
 #include "single_food.h"
 #include "composite_food.h"
 #include "template.h"
@@ -20,14 +21,13 @@
 
 int FoodCollection::nextCollectionId = 0;
 
-QMap<int, QWeakPointer<FoodCollection> > FoodCollection::foodCollectionCache;
-
 QSharedPointer<FoodCollection> FoodCollection::createFoodCollection(const QString& name)
 {
   QSharedPointer<FoodCollection> collection
     (new FoodCollectionImpl(nextCollectionId++, name, User::getLoggedInUser()->getId(),
                             QList<FoodComponent>(), 0, 0, 0, 1));
-  foodCollectionCache[collection->getFoodCollectionId()] = collection;
+  DataCache<FoodCollection>::getInstance().insert
+    (collection->getFoodCollectionId(), collection);
   return collection;
 }
 
@@ -76,11 +76,7 @@ QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
 
 QSharedPointer<Food> FoodCollection::getCanonicalSharedPointer() const
 {
-  if (foodCollectionCache.contains(getFoodCollectionId())) {
-    return foodCollectionCache[getFoodCollectionId()].toStrongRef();
-  } else {
-    return QSharedPointer<Food>();
-  }
+  return DataCache<FoodCollection>::getInstance().get(getFoodCollectionId());
 }
 
 QSharedPointer<FoodCollection> FoodCollection::getCanonicalSharedPointerToCollection() const

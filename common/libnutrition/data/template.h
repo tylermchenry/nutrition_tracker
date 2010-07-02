@@ -28,6 +28,11 @@ class Template : virtual public FoodCollection
 {
   public:
 
+    // Definitions to make this class cacheable with DataCache
+    typedef int cache_key_type;
+    typedef Template cache_object_type;
+    static const bool cache_strong = false;
+
     static QSharedPointer<Template> createNewTemplate
       (const QSharedPointer<const Template>& copy =
        QSharedPointer<const Template>());
@@ -50,8 +55,6 @@ class Template : virtual public FoodCollection
   private:
 
     static int tempId;
-
-    static QMap<int, QWeakPointer<Template> > templateCache;
 
     friend class TemplateImpl;
 };

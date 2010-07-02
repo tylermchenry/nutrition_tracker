@@ -6,6 +6,7 @@
  */
 
 #include "single_food_impl.h"
+#include "libnutrition/data/data_cache.h"
 #include <QVariant>
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
@@ -189,8 +190,7 @@ void SingleFoodImpl::saveToDatabase()
 
   if (id < 0) {
     int newId = query.lastInsertId().toInt();
-    singleFoodCache[newId] = singleFoodCache[id];
-    singleFoodCache.remove(id);
+    DataCache<SingleFood>::getInstance().changeKey(id, newId);
     qDebug() << "Assigned real ID " << newId << " to food with temp ID " << id;
     id = newId;
   }
@@ -255,7 +255,7 @@ void SingleFoodImpl::deleteFromDatabase()
     throw std::runtime_error("Failed to delete food from database.");
   }
 
-  singleFoodCache[id].clear();
+  DataCache<SingleFood>::getInstance().remove(id);
 }
 
 void SingleFoodImpl::setCalorieDensity(const QString& nutrientName, double density)

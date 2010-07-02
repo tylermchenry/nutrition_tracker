@@ -48,6 +48,22 @@ class Meal : virtual public FoodCollection
 {
   public:
 
+    struct MealIdTuple
+    {
+      int userId;
+      QDate date;
+      int mealId;
+
+      MealIdTuple(int uid, const QDate& d, int mid);
+
+      bool operator< (const MealIdTuple& rhs) const;
+    };
+
+    // Definitions to make this class cacheable with DataCache
+    typedef MealIdTuple cache_key_type;
+    typedef Meal cache_object_type;
+    static const bool cache_strong = false;
+
     static QMap<int, QString> getAllMealNames
       (int creatorId = -1, bool includeGenerics = true);
 
@@ -70,6 +86,9 @@ class Meal : virtual public FoodCollection
 
     virtual int getMealId() const = 0;
 
+    MealIdTuple getMealIdTuple() const
+      { return MealIdTuple(getOwnerId(), getDate(), getMealId()); }
+
     virtual int getCreatorId() const = 0;
 
     virtual QSharedPointer<const User> getCreator() const = 0;
@@ -86,13 +105,21 @@ class Meal : virtual public FoodCollection
 
   private:
 
-    static QMap<int, QMap<QDate, QMap<int, QWeakPointer<Meal> > > > mealCache;
+    struct TemporaryMeal {
+
+      // This is a dummy struct to force a seperate instantiation of
+      // DataCache for temporary meals (as opposed to non-temporary meals)
+
+      // Even though they are not backed by the database, a cache is needed for
+      // temporary meals because they still require canonical pointers
+
+      // Definitions to make this class cacheable with DataCache
+      typedef int cache_key_type;
+      typedef Meal cache_object_type;
+      static const bool cache_strong = false;
+    };
 
     static int nextTemporaryId;
-
-    // Even though they are not backed by the database, a cache is needed for
-    // temporary meals because they still require canonical pointers
-    static QMap<int, QWeakPointer<Meal> > temporaryMealCache;
 
     friend class MealImpl;
 };

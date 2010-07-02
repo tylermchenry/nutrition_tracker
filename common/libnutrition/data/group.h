@@ -37,6 +37,13 @@ class Group
 {
   public:
 
+    // Definitions to make this class cacheable with DataCache
+    typedef QString cache_key_type;
+    typedef const Group cache_object_type;
+    typedef QString cache_sort_key_type;
+    static QString (Group::* const cache_get_sort_key)() const;
+    static const bool cache_strong = true;
+
     static const QString DEFAULT_GROUP_ID;
 
     static QSharedPointer<const Group> getDefaultGroup();
@@ -60,9 +67,6 @@ class Group
     virtual bool operator== (const Group& rhs) const = 0;
 
   private:
-
-    static QMap<QString, QSharedPointer<const Group> > groupCache;
-    static QMap<QString, QSharedPointer<const Group> > groupCacheByName;
 
     friend class GroupImpl;
 };

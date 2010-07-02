@@ -1,4 +1,5 @@
 #include "template_impl.h"
+#include "libnutrition/data/data_cache.h"
 #include "libnutrition/data/nutrient_amount.h"
 #include "libnutrition/data/food_amount.h"
 #include "libnutrition/data/single_food.h"
@@ -63,8 +64,7 @@ void TemplateImpl::saveToDatabase()
 
   if (id < 0) {
     int newId = query.lastInsertId().toInt();
-    templateCache[newId] = templateCache[id];
-    templateCache.remove(id);
+    DataCache<Template>::getInstance().changeKey(id, newId);
     qDebug() << "Assigned real ID " << newId << " to template with temp ID " << id;
     id = newId;
   }
@@ -176,5 +176,5 @@ void TemplateImpl::deleteFromDatabase()
   }
 
   clearComponents();
-  templateCache[id].clear();
+  DataCache<Template>::getInstance().remove(id);
 }

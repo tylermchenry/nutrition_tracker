@@ -7,6 +7,7 @@
  */
 
 #include "meal_impl.h"
+#include "libnutrition/data/data_cache.h"
 #include "libnutrition/data/single_food.h"
 #include "libnutrition/data/composite_food.h"
 #include <QDebug>
@@ -169,7 +170,7 @@ void MealImpl::deleteFromDatabase()
   } else {
     clearComponents();
     deleteRemovedNonceFoods();
-    mealCache[getOwnerId()][date][id].clear();
+    DataCache<Meal>::getInstance().remove(getMealIdTuple());
   }
 }
 

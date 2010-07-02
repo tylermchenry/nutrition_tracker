@@ -51,6 +51,13 @@ class Nutrient
 {
   public:
 
+    // Definitions to make this class cacheable with DataCache
+    typedef QString cache_key_type;
+    typedef const Nutrient cache_object_type;
+    typedef QString cache_sort_key_type;
+    static QString (Nutrient::* const cache_get_sort_key)() const;
+    static const bool cache_strong = true;
+
     struct Categories {
       enum Category {
           Energy,
@@ -99,9 +106,6 @@ class Nutrient
     virtual double getDefaultCalorieDensity() const = 0; // in kcal/g
 
   private:
-
-    static QMap<QString, QSharedPointer<const Nutrient> > nutrientCache;
-    static QMap<QString, QSharedPointer<const Nutrient> > nutrientCacheByName;
 
     friend class NutrientImpl;
 };

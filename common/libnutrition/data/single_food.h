@@ -58,6 +58,11 @@ class SingleFood : virtual public Food
 {
   public:
 
+    // Definitions to make this class cacheable with DataCache
+    typedef int cache_key_type;
+    typedef SingleFood cache_object_type;
+    static const bool cache_strong = false;
+
     struct EntrySources {
       enum EntrySource {
           USDA,
@@ -113,8 +118,6 @@ class SingleFood : virtual public Food
 
     static QMap<QString, QSharedPointer<const Unit> >
       createNutrientsFromQueryResults(QSqlQuery& query);
-
-    static QMap<int, QWeakPointer<SingleFood> > singleFoodCache;
 
     friend class SingleFoodImpl;
 };

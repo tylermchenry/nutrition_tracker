@@ -8,6 +8,7 @@
 
 #include "group.h"
 #include "impl/group_impl.h"
+#include "data_cache.h"
 #include <QVariant>
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
@@ -17,8 +18,7 @@
 
 const QString Group::DEFAULT_GROUP_ID = "9999";
 
-QMap<QString, QSharedPointer<const Group> > Group::groupCache;
-QMap<QString, QSharedPointer<const Group> > Group::groupCacheByName;
+QString (Group::* const Group::cache_get_sort_key)() const = &Group::getName;
 
 QSharedPointer<const Group> Group::getDefaultGroup()
 {
@@ -30,8 +30,8 @@ QSharedPointer<const Group> Group::getGroup(const QString& id)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  if (groupCache.contains(id)) {
-    return groupCache[id];
+  if (DataCache<Group>::getInstance().contains(id)) {
+    return DataCache<Group>::getInstance().get(id);
   }
 
   query.prepare("SELECT FdGrp_Cd, FdGrp_Desc FROM group_description WHERE FdGrp_cd=:id "
@@ -50,8 +50,13 @@ QVector<QSharedPointer<const Group> > Group::getAllGroups()
   static bool gotAll = false;
 
   if (gotAll) {
-    // TODO: Make this method return a QList so this conversion is unnecessary
-    return groupCacheByName.values().toVector();
+    static QVector<QSharedPointer<const Group> > groupsByName;
+
+    if (groupsByName.empty()) {
+      groupsByName = DataCache<Group>::getInstance().getAll().toVector();
+    }
+
+    return groupsByName;
   }
 
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
@@ -70,14 +75,13 @@ QSharedPointer<const Group> Group::createGroupFromRecord(const QSqlRecord& recor
 {
   if (!record.isEmpty()) {
     QString id = record.field("FdGrp_Cd").value().toString();
-    if (!groupCache.contains(id)) {
+    if (!DataCache<Group>::getInstance().contains(id)) {
       QSharedPointer<const Group> group
         (new GroupImpl(id, record.field("FdGrp_Desc").value().toString()));
-      groupCache[id] = group;
-      groupCacheByName[group->getName()] = group;
+      DataCache<Group>::getInstance().insert(id, group);
       return group;
     } else {
-      return groupCache[id];
+      return DataCache<Group>::getInstance().get(id);
     }
   } else {
     return QSharedPointer<const Group>();

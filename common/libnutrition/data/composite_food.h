@@ -53,6 +53,11 @@ class CompositeFood : virtual public FoodCollection
 {
   public:
 
+    // Definitions to make this class cacheable with DataCache
+    typedef int cache_key_type;
+    typedef CompositeFood cache_object_type;
+    static const bool cache_strong = false;
+
     static QSharedPointer<CompositeFood> createNewCompositeFood
       (const QSharedPointer<const CompositeFood>& copy =
        QSharedPointer<const CompositeFood>());

@@ -8,6 +8,7 @@
 
 #include "specialized_unit.h"
 #include "impl/specialized_unit_impl.h"
+#include "data_cache.h"
 #include "single_food.h"
 #include <QVariant>
 #include <QDebug>
@@ -16,8 +17,9 @@
 #include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
 
-QMap<QPair<int, int>, QWeakPointer<const SpecializedUnit> >
-   SpecializedUnit::specializedUnitCache;
+SpecializedUnit::SpecializedUnitIdTuple
+  (SpecializedUnit::* const SpecializedUnit::cache_get_sort_key)() const =
+     &SpecializedUnit::getSpecializedUnitIdTuple;
 
 QSharedPointer<const SpecializedUnit>
   SpecializedUnit::getSpecializedUnit(int foodId, int sequence)
@@ -25,10 +27,10 @@ QSharedPointer<const SpecializedUnit>
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  QPair<int, int> cacheIndex = qMakePair(foodId, sequence);
+  SpecializedUnitIdTuple idTuple(foodId, sequence);
 
-  if (specializedUnitCache[cacheIndex]) {
-    return specializedUnitCache[cacheIndex].toStrongRef();
+  if (DataCache<SpecializedUnit>::getInstance().contains(idTuple)) {
+    return DataCache<SpecializedUnit>::getInstance().get(idTuple);
   }
 
   query.prepare("SELECT Food_Id, Seq, Amount, Msre_Desc, Gm_Wgt "
@@ -67,16 +69,16 @@ QSharedPointer<const SpecializedUnit>
   if (!record.isEmpty()) {
     int foodId = record.field("Food_Id").value().toInt();
     int sequence = record.field("Seq").value().toInt();
-    QPair<int, int> cacheIndex = qMakePair(foodId, sequence);
-    if (!specializedUnitCache[cacheIndex]) {
+    SpecializedUnitIdTuple idTuple(foodId, sequence);
+    if (!DataCache<SpecializedUnit>::getInstance().contains(idTuple)) {
       QSharedPointer<const SpecializedUnit> spUnit
       (new SpecializedUnitImpl(foodId, sequence,
                                record.field("Msre_Desc").value().toString(),
                                record.field("Gm_Wgt").value().toDouble()));
-      specializedUnitCache[cacheIndex] = spUnit;
+      DataCache<SpecializedUnit>::getInstance().insert(idTuple, spUnit);
       return spUnit;
     } else {
-      return specializedUnitCache[cacheIndex].toStrongRef();
+      return DataCache<SpecializedUnit>::getInstance().get(idTuple);
     }
   } else {
     return QSharedPointer<const SpecializedUnit>();
@@ -95,3 +97,15 @@ QVector<QSharedPointer<const SpecializedUnit> >
   return spUnits;
 }
 
+SpecializedUnit::SpecializedUnitIdTuple::SpecializedUnitIdTuple
+  (int fid, int s)
+  : foodId(fid), sequence(s)
+{
+}
+
+bool SpecializedUnit::SpecializedUnitIdTuple::operator<
+  (const SpecializedUnitIdTuple& rhs) const
+{
+  return foodId < rhs.foodId ||
+    (foodId == rhs.foodId && sequence < rhs.sequence);
+}

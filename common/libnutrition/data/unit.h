@@ -67,6 +67,13 @@ class Unit
 {
   public:
 
+    // Definitions to make this class cacheable with DataCache
+    typedef QString cache_key_type;
+    typedef const Unit cache_object_type;
+    typedef QString cache_sort_key_type;
+    static QString (Unit::* const cache_get_sort_key)() const;
+    static const bool cache_strong = true;
+
     struct Dimensions {
       enum Dimension {
           Weight,
@@ -124,9 +131,6 @@ class Unit
 
     static QSharedPointer<const Unit> getBasicUnit
       (Dimensions::Dimension dimension);
-
-    static QMap<QString, QSharedPointer<const Unit> > unitCache;
-    static QMap<QString, QSharedPointer<const Unit> > unitCacheByName;
 
     friend class UnitImpl;
 };

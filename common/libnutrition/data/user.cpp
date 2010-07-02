@@ -8,6 +8,7 @@
 
 #include "user.h"
 #include "impl/user_impl.h"
+#include "data_cache.h"
 #include <QVariant>
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
@@ -15,7 +16,8 @@
 #include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
 
-QMap<int, QWeakPointer<User> > User::userCache;
+QString (User::* const User::cache_get_sort_key)() const = &User::getDisplayName;
+
 QSharedPointer<User> User::loggedInUser;
 
 QSharedPointer<const User> User::getUser(int id)
@@ -23,8 +25,8 @@ QSharedPointer<const User> User::getUser(int id)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  if (userCache[id]) {
-    return userCache[id].toStrongRef();
+  if (DataCache<User>::getInstance().contains(id)) {
+    return DataCache<User>::getInstance().get(id);
   }
 
   query.prepare("SELECT User_Id, User_Name, Name, PW_SHA1 FROM user "
@@ -114,7 +116,7 @@ bool User::logInAs
   } else if (!user->checkPassword(password)){
     errorMessage = "Incorrect password";
   } else {
-    loggedInUser = userCache[user->getId()].toStrongRef();
+    loggedInUser = DataCache<User>::getInstance().get(user->getId());
     return true;
   }
 
@@ -130,16 +132,16 @@ QSharedPointer<const User> User::createUserFromRecord
 {
   if (!record.isEmpty()) {
     int id = record.field("User_Id").value().toInt();
-    if (!userCache[id]) {
+    if (!DataCache<User>::getInstance().contains(id)) {
       QSharedPointer<User> user
       (new UserImpl(id,
                     record.field("User_Name").value().toString(),
                     record.field("Name").value().toString(),
                     record.field("PW_SHA1").value().toString()));
-      userCache[id] = user;
+      DataCache<User>::getInstance().insert(id, user);
       return user;
     } else {
-      return userCache[id].toStrongRef();
+      return DataCache<User>::getInstance().get(id);
     }
   } else {
     return QSharedPointer<const User>();

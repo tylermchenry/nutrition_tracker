@@ -8,6 +8,7 @@
 
 #include "meal.h"
 #include "impl/meal_impl.h"
+#include "data_cache.h"
 #include "single_food.h"
 #include "composite_food.h"
 #include <QDebug>
@@ -16,11 +17,7 @@
 #include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
 
-QMap<int, QMap<QDate, QMap<int, QWeakPointer<Meal> > > > Meal::mealCache;
-
 int Meal::nextTemporaryId = 0;
-
-QMap<int, QWeakPointer<Meal> > Meal::temporaryMealCache;
 
 QMap<int, QString> Meal::getAllMealNames(int creatorId, bool includeGenerics)
 {
@@ -71,7 +68,8 @@ QSharedPointer<Meal> Meal::createTemporaryMeal(int userId, const QDate& date, in
     (new MealImpl(mealId, userId,
                   getAllMealNames()[mealId],
                   userId, date, QList<FoodComponent>(), nextTemporaryId++));
-  temporaryMealCache[meal->getTemporaryId()] = meal;
+
+  DataCache<TemporaryMeal>::getInstance().insert(meal->getTemporaryId(), meal);
   return meal;
 }
 
@@ -84,7 +82,7 @@ QSharedPointer<Meal> Meal::getOrCreateMeal(int userId, const QDate& date, int me
       (new MealImpl(mealId, userId,
                     getAllMealNames()[mealId],
                     userId, date, QList<FoodComponent>()));
-    mealCache[userId][date][mealId] = newMeal;
+    DataCache<Meal>::getInstance().insert(newMeal->getMealIdTuple(), newMeal);
     meal = newMeal;
   }
 
@@ -96,8 +94,9 @@ QSharedPointer<Meal> Meal::getMeal(int userId, const QDate& date, int mealId)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  if (mealCache[userId][date][mealId]) {
-    return mealCache[userId][date][mealId].toStrongRef();
+  if (DataCache<Meal>::getInstance().contains(MealIdTuple(userId, date, mealId)))
+  {
+    DataCache<Meal>::getInstance().get(MealIdTuple(userId, date, mealId));
   }
 
   query.prepare("SELECT meal.Meal_Id, meal.CreatorUser_Id, meal.Name, "
@@ -164,7 +163,7 @@ QSharedPointer<Meal> Meal::createMealFromQueryResults(QSqlQuery& query)
     int userId = record.field("User_Id").value().toInt();
     QDate date = record.field("MealDate").value().toDate();
 
-    if (!mealCache[userId][date][id]) {
+    if (!DataCache<Meal>::getInstance().contains(MealIdTuple(userId, date, id))) {
 
       int creatorId = -1;
 
@@ -177,10 +176,10 @@ QSharedPointer<Meal> Meal::createMealFromQueryResults(QSqlQuery& query)
                       record.field("Name").value().toString(),
                       userId, date));
 
-      mealCache[userId][date][id] = meal;
+      DataCache<Meal>::getInstance().insert(meal->getMealIdTuple(), meal);
 
     } else {
-      return mealCache[userId][date][id].toStrongRef();
+      return DataCache<Meal>::getInstance().get(MealIdTuple(userId, date, id));
     }
   }
 
@@ -203,9 +202,22 @@ QSharedPointer<Meal> Meal::createMealFromQueryResults(QSqlQuery& query)
 QSharedPointer<Food> Meal::getCanonicalSharedPointer() const
 {
   if (isTemporary()) {
-    return temporaryMealCache[getTemporaryId()].toStrongRef();
+    return DataCache<TemporaryMeal>::getInstance().get(getTemporaryId());
   } else {
-    return mealCache[getOwnerId()][getDate()][getMealId()].toStrongRef();
+    return DataCache<Meal>::getInstance().get(getMealIdTuple());
   }
 }
+
+Meal::MealIdTuple::MealIdTuple(int uid, const QDate& d, int mid)
+  : userId(uid), date(d), mealId(mid)
+{
+}
+
+bool Meal::MealIdTuple::operator< (const MealIdTuple& rhs) const
+{
+  return userId < rhs.userId ||
+    (userId == rhs.userId && date < rhs.date) ||
+    (userId == rhs.userId && date == rhs.date && mealId < rhs.mealId);
+}
+
 

@@ -22,6 +22,23 @@ class SpecializedUnit
 {
   public:
 
+    struct SpecializedUnitIdTuple
+    {
+      int foodId;
+      int sequence;
+
+      SpecializedUnitIdTuple(int fid, int s);
+
+      bool operator< (const SpecializedUnitIdTuple& rhs) const;
+    };
+
+    // Definitions to make this class cacheable with DataCache
+    typedef SpecializedUnitIdTuple cache_key_type;
+    typedef const SpecializedUnit cache_object_type;
+    typedef SpecializedUnitIdTuple cache_sort_key_type;
+    static SpecializedUnitIdTuple (SpecializedUnit::* const cache_get_sort_key)() const;
+    static const bool cache_strong = true;
+
     static QSharedPointer<const SpecializedUnit>
       getSpecializedUnit(int foodId, int sequence);
 
@@ -35,6 +52,9 @@ class SpecializedUnit
     virtual QSharedPointer<Food> getFood() const = 0;
 
     virtual int getSequence() const = 0;
+
+    inline SpecializedUnitIdTuple getSpecializedUnitIdTuple() const
+      { return SpecializedUnitIdTuple(getFoodId(), getSequence()); }
 
     virtual QString getName() const = 0;
 

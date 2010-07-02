@@ -1,5 +1,6 @@
 #include "template.h"
 #include "impl/template_impl.h"
+#include "data_cache.h"
 #include "nutrient_amount.h"
 #include "food_amount.h"
 #include "single_food.h"
@@ -11,15 +12,13 @@
 #include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
 
-QMap<int, QWeakPointer<Template> > Template::templateCache;
-
 int Template::tempId = -1;
 
 QSharedPointer<Template> Template::createNewTemplate
   (const QSharedPointer<const Template>& copy)
 {
   QSharedPointer<Template> food(new TemplateImpl(copy));
-  templateCache[food->getTemplateId()] = food;
+  DataCache<Template>::getInstance().insert(food->getTemplateId(), food);
   return food;
 }
 
@@ -28,8 +27,8 @@ QSharedPointer<Template> Template::getTemplate(int id)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  if (templateCache[id]) {
-    return templateCache[id].toStrongRef();
+  if (DataCache<Template>::getInstance().contains(id)) {
+    return DataCache<Template>::getInstance().get(id);
   }
 
   query.prepare("SELECT template.Template_Id, template.User_Id, template.Description, "
@@ -65,14 +64,14 @@ QSharedPointer<Template> Template::createTemplateFromQueryResults
     const QSqlRecord& record = query.record();
     int id = record.field("Template_Id").value().toInt();
 
-    if (!templateCache[id]) {
+    if (!DataCache<Template>::getInstance().contains(id)) {
       food = QSharedPointer<Template>
         (new TemplateImpl(id,
                           record.field("Description").value().toString(),
                           record.field("User_Id").value().toInt()));
-      templateCache[id] = food;
+      DataCache<Template>::getInstance().insert(id, food);
     } else {
-      return templateCache[id].toStrongRef();
+      return DataCache<Template>::getInstance().get(id);
     }
 
   }
@@ -117,6 +116,6 @@ QMultiMap<QString, int> Template::getFoodsForUser(int userId)
 
 QSharedPointer<Food> Template::getCanonicalSharedPointer() const
 {
-  return templateCache[getTemplateId()].toStrongRef();
+  return DataCache<Template>::getInstance().get(getTemplateId());
 }
 

@@ -53,6 +53,11 @@ class FoodCollection : virtual public Food
 {
   public:
 
+    // Definitions to make this class cacheable with DataCache
+    typedef int cache_key_type;
+    typedef FoodCollection cache_object_type;
+    static const bool cache_strong = false;
+
     struct ContainedTypes {
       enum ContainedType {
           SingleFood,
@@ -126,8 +131,6 @@ class FoodCollection : virtual public Food
   private:
 
     static int nextCollectionId;
-
-    static QMap<int, QWeakPointer<FoodCollection> > foodCollectionCache;
 
     friend class FoodCollectionImpl;
 };

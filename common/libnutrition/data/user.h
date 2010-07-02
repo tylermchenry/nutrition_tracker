@@ -19,6 +19,13 @@ class User
 {
   public:
 
+    // Definitions to make this class cacheable with DataCache
+    typedef int cache_key_type;
+    typedef User cache_object_type;
+    typedef QString cache_sort_key_type;
+    static QString (User::* const cache_get_sort_key)() const;
+    static const bool cache_strong = false;
+
     static QSharedPointer<const User> getUser(int id);
 
     static QSharedPointer<const User> getUserByUsername
@@ -65,7 +72,6 @@ class User
     static QVector<QSharedPointer<const User> >
       createUsersFromQueryResults(QSqlQuery& query);
 
-    static QMap<int, QWeakPointer<User> > userCache;
     static QSharedPointer<User> loggedInUser;
 
     friend class UserImpl;

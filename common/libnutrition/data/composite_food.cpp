@@ -7,6 +7,7 @@
 
 #include "composite_food.h"
 #include "impl/composite_food_impl.h"
+#include "data_cache.h"
 #include "nutrient_amount.h"
 #include "food_amount.h"
 #include "single_food.h"
@@ -17,13 +18,11 @@
 #include <QtSql/QSqlField>
 #include <QtSql/QSqlError>
 
-QMap<int, QWeakPointer<CompositeFood> > CompositeFood::compositeFoodCache;
-
 QSharedPointer<CompositeFood> CompositeFood::createNewCompositeFood
   (const QSharedPointer<const CompositeFood>& copy)
 {
   QSharedPointer<CompositeFood> food(new CompositeFoodImpl(copy));
-  compositeFoodCache[food->getCompositeFoodId()] = food;
+  DataCache<CompositeFood>::getInstance().insert(food->getCompositeFoodId(), food);
   return food;
 }
 
@@ -59,8 +58,8 @@ QSharedPointer<CompositeFood> CompositeFood::getCompositeFood(int id)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  if (compositeFoodCache[id]) {
-    return compositeFoodCache[id].toStrongRef();
+  if (DataCache<CompositeFood>::getInstance().contains(id)) {
+    return DataCache<CompositeFood>::getInstance().get(id);
   }
 
   query.prepare("SELECT composite_food.Composite_Id, composite_food.User_Id, "
@@ -101,7 +100,7 @@ QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
     const QSqlRecord& record = query.record();
     int id = record.field("Composite_Id").value().toInt();
 
-    if (!compositeFoodCache[id]) {
+    if (!DataCache<CompositeFood>::getInstance().contains(id)) {
 
       food = QSharedPointer<CompositeFood>
         (new CompositeFoodImpl(id,
@@ -115,10 +114,10 @@ QSharedPointer<CompositeFood> CompositeFood::createCompositeFoodFromQueryResults
                                record.field("ExpiryDate").value().toDate(),
                                record.field("IsNonce").value().toBool()));
 
-      compositeFoodCache[id] = food;
+      DataCache<CompositeFood>::getInstance().insert(id, food);
 
     } else {
-      return compositeFoodCache[id].toStrongRef();
+      return DataCache<CompositeFood>::getInstance().get(id);
     }
 
   }
@@ -197,15 +196,14 @@ QString CompositeFood::generateExpirySuffix
 
 QSharedPointer<Food> CompositeFood::getCanonicalSharedPointer() const
 {
-  return compositeFoodCache[getCompositeFoodId()].toStrongRef();
+  return DataCache<CompositeFood>::getInstance().get(getCompositeFoodId());
 }
 
 int CompositeFood::assignNewId(int newId)
 {
   int oldId = getCompositeFoodId();
   if (newId != oldId) {
-    compositeFoodCache[newId] = compositeFoodCache[oldId];
-    compositeFoodCache.remove(oldId);
+    DataCache<CompositeFood>::getInstance().changeKey(oldId, newId);
     qDebug() << "Assigned real ID " << newId
               << " to composite food with temp ID " << oldId;
   }
@@ -214,5 +212,5 @@ int CompositeFood::assignNewId(int newId)
 
 void CompositeFood::removeFromCache()
 {
-  compositeFoodCache.remove(getCompositeFoodId());
+  DataCache<CompositeFood>::getInstance().remove(getCompositeFoodId());
 }

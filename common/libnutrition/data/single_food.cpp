@@ -7,6 +7,7 @@
 
 #include "single_food.h"
 #include "impl/single_food_impl.h"
+#include "data_cache.h"
 #include <QVariant>
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
@@ -15,15 +16,13 @@
 #include <QtSql/QSqlError>
 #include <stdexcept>
 
-QMap<int, QWeakPointer<SingleFood> > SingleFood::singleFoodCache;
-
 int SingleFood::tempId = -1;
 
 QSharedPointer<SingleFood> SingleFood::createNewFood
   (const QSharedPointer<const SingleFood>& copy)
 {
   QSharedPointer<SingleFood> food(new SingleFoodImpl(copy));
-  singleFoodCache[food->getSingleFoodId()] = food;
+  DataCache<SingleFood>::getInstance().insert(food->getSingleFoodId(), food);
   return food;
 }
 
@@ -32,8 +31,8 @@ QSharedPointer<SingleFood> SingleFood::getSingleFood(int id)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  if (singleFoodCache[id]) {
-    return singleFoodCache[id].toStrongRef();
+  if (DataCache<SingleFood>::getInstance().contains(id)) {
+    return DataCache<SingleFood>::getInstance().get(id);
   }
 
   query.prepare("SELECT food_description.Food_Id, food_description.User_Id, "
@@ -77,7 +76,7 @@ QSharedPointer<SingleFood> SingleFood::createSingleFoodFromQueryResults(QSqlQuer
   if (query.first()) {
     const QSqlRecord& record = query.record();
     int id = record.field("Food_Id").value().toInt();
-    if (!singleFoodCache[id]) {
+    if (!DataCache<SingleFood>::getInstance().contains(id)) {
       QSharedPointer<SingleFood> food
         (new SingleFoodImpl(id,
                             record.field("Long_Desc").value().toString(),
@@ -95,10 +94,10 @@ QSharedPointer<SingleFood> SingleFood::createSingleFoodFromQueryResults(QSqlQuer
                             record.field("CHO_Factor").value().toDouble(),
                             record.field("Pro_Factor").value().toDouble(),
                             record.field("N_Factor").value().toDouble()));
-      singleFoodCache[id] = food;
+      DataCache<SingleFood>::getInstance().insert(id, food);
       return food;
     } else {
-      return singleFoodCache[id].toStrongRef();
+      return DataCache<SingleFood>::getInstance().get(id);
     }
 
   } else {
@@ -133,7 +132,7 @@ QMultiMap<QString, int> SingleFood::getFoodsForUser(int userId)
 
 QSharedPointer<Food> SingleFood::getCanonicalSharedPointer() const
 {
-  return singleFoodCache[getSingleFoodId()].toStrongRef();
+  return DataCache<SingleFood>::getInstance().get(getSingleFoodId());
 }
 
 SingleFood::EntrySources::EntrySource SingleFood::EntrySources::fromHumanReadable

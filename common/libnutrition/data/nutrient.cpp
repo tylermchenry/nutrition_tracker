@@ -7,6 +7,7 @@
 
 #include "nutrient.h"
 #include "impl/nutrient_impl.h"
+#include "data_cache.h"
 #include <QVariant>
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
@@ -21,17 +22,26 @@ const QString Nutrient::CARBOHYDRATE_NAME = "Total Carbohydrate";
 const QString Nutrient::PROTEIN_NAME = "Protein";
 const QString Nutrient::ALCOHOL_NAME = "Alcohol";
 
-QMap<QString, QSharedPointer<const Nutrient> > Nutrient::nutrientCache;
-QMap<QString, QSharedPointer<const Nutrient> > Nutrient::nutrientCacheByName;
+QString (Nutrient::* const Nutrient::cache_get_sort_key)() const = &Nutrient::getName;
 
 QSharedPointer<const Nutrient> Nutrient::getNutrientByName(const QString& name)
 {
-  if (!nutrientCacheByName.contains(name)) {
-    getAllNutrients();
+  static QMap<QString, QSharedPointer<const Nutrient> > nutrientsByName;
+
+  if (nutrientsByName.empty()) {
+    QVector<QSharedPointer<const Nutrient> > all = getAllNutrients();
+
+    for (QVector<QSharedPointer<const Nutrient> >::const_iterator i = all.begin();
+        i != all.end(); ++i)
+    {
+      if (*i) {
+        nutrientsByName.insert((*i)->getName(), *i);
+      }
+    }
   }
 
-  if (nutrientCacheByName.contains(name)) {
-    return nutrientCacheByName[name];
+  if (nutrientsByName.contains(name)) {
+    return nutrientsByName[name];
   } else {
     return QSharedPointer<const Nutrient>();
   }
@@ -42,8 +52,8 @@ QSharedPointer<const Nutrient> Nutrient::getNutrient(const QString& id)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  if (nutrientCache.contains(id)) {
-    return nutrientCache[id];
+  if (DataCache<Nutrient>::getInstance().contains(id)) {
+    return DataCache<Nutrient>::getInstance().get(id);
   }
 
   query.prepare("SELECT nutrient_definition.Nutr_No, nutrient_definition.Category, "
@@ -68,8 +78,14 @@ QVector<QSharedPointer<const Nutrient> > Nutrient::getAllNutrients()
   static bool gotAll = false;
 
   if (gotAll) {
-    // TODO: Make this method return a QList so this conversion is unnecessary
-    return nutrientCacheByName.values().toVector();
+    static QVector<QSharedPointer<const Nutrient> > all;
+
+    if (all.empty()) {
+      // TODO: Make this method return a QList so this conversion is unnecessary
+      all = DataCache<Nutrient>::getInstance().getAll().toVector();
+    }
+
+    return all;
   }
 
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
@@ -122,7 +138,7 @@ QSharedPointer<const Nutrient> Nutrient::createNutrientFromRecord
 {
   if (!record.isEmpty()) {
     QString id = record.field("Nutr_No").value().toString();
-    if (!nutrientCache.contains(id)) {
+    if (!DataCache<Nutrient>::getInstance().contains(id)) {
       QSharedPointer<const Nutrient> nutrient
       (new NutrientImpl(id,
                         record.field("ShortName").value().toString(),
@@ -130,11 +146,10 @@ QSharedPointer<const Nutrient> Nutrient::createNutrientFromRecord
                         Unit::createUnitFromRecord(record),
                         record.field("RDI").value().toDouble()));
       qDebug() << "Added nutrient named " << nutrient->getName() << " to cache at ID " << id;
-      nutrientCache[id] = nutrient;
-      nutrientCacheByName[nutrient->getName()] = nutrient;
+      DataCache<Nutrient>::getInstance().insert(id, nutrient);
       return nutrient;
     } else {
-      return nutrientCache[id];
+      return DataCache<Nutrient>::getInstance().get(id);
     }
   } else {
     return QSharedPointer<const Nutrient>();

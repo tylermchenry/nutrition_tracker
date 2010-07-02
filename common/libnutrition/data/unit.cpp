@@ -7,6 +7,7 @@
 
 #include "unit.h"
 #include "impl/unit_impl.h"
+#include "data_cache.h"
 #include <QVariant>
 #include <QDebug>
 #include <QtSql/QSqlDatabase>
@@ -15,8 +16,7 @@
 #include <QtSql/QSqlError>
 #include <stdexcept>
 
-QMap<QString, QSharedPointer<const Unit> > Unit::unitCache;
-QMap<QString, QSharedPointer<const Unit> > Unit::unitCacheByName;
+QString (Unit::* const Unit::cache_get_sort_key)() const = &Unit::getNameAndAbbreviation;
 
 QSharedPointer<const Unit> Unit::getPreferredUnit(Dimensions::Dimension dimension)
 {
@@ -28,8 +28,8 @@ QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
   QSqlQuery query(db);
 
-  if (unitCache.contains(abbreviation)) {
-    return unitCache[abbreviation];
+  if (DataCache<Unit>::getInstance().contains(abbreviation)) {
+    return DataCache<Unit>::getInstance().get(abbreviation);
   }
 
   query.prepare("SELECT Unit, Type, Name AS UnitName, Factor FROM units WHERE Unit=:abbrev "
@@ -49,7 +49,13 @@ QVector<QSharedPointer<const Unit> > Unit::getAllUnits()
 
   if (gotAll) {
     // TODO: Make this method return a QList so this conversion is unnecessary
-    return unitCacheByName.values().toVector();
+    static QVector<QSharedPointer<const Unit> > all;
+
+    if (all.empty()) {
+      all = DataCache<Unit>::getInstance().getAll().toVector();
+    }
+
+    return all;
   }
 
   QSqlDatabase db = QSqlDatabase::database("nutrition_db");
@@ -82,17 +88,16 @@ QSharedPointer<const Unit> Unit::createUnitFromRecord(const QSqlRecord& record)
 {
   if (!record.isEmpty()) {
     QString abbrev = record.field("Unit").value().toString();
-    if (!unitCache.contains(abbrev)) {
+    if (!DataCache<Unit>::getInstance().contains(abbrev)) {
       QSharedPointer<const Unit> unit
       (new UnitImpl(abbrev,
                     record.field("UnitName").value().toString(),
                     Dimensions::fromHumanReadable(record.field("Type").value().toString()),
                     record.field("Factor").value().toDouble()));
-      unitCache[abbrev] = unit;
-      unitCacheByName[unit->getName()] = unit;
+      DataCache<Unit>::getInstance().insert(abbrev, unit);
       return unit;
     } else {
-      return unitCache[abbrev];
+      return DataCache<Unit>::getInstance().get(abbrev);
     }
   } else {
     return QSharedPointer<const Unit>();
