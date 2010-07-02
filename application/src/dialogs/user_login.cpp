@@ -55,19 +55,11 @@ void UserLogin::logIn()
     QMessageBox::warning(this, "Login Failure", "You must enter a password.");
   } else if (!bCreate) {
 
-    QSharedPointer<const User> user = User::getUserByUsername(ui.txtUsername->text());
-
-    if (user) {
-      QString errorMessage;
-      if (User::logInAs(user, ui.txtPassword->text(), errorMessage)) {
-        success();
-      } else {
-        QMessageBox::warning(this, "Login Failure", "Cannot log in: " + errorMessage);
-      }
+    QString errorMessage;
+    if (User::logInAs(ui.txtUsername->text(), ui.txtPassword->text(), errorMessage)) {
+      success();
     } else {
-      QMessageBox::warning
-        (this, "Login Failure",
-         "Cannot log in: The username you entered does not exist.");
+      QMessageBox::warning(this, "Login Failure", "Cannot log in: " + errorMessage);
     }
 
   } else if (ui.txtConfirm->text() == "") {
@@ -77,19 +69,13 @@ void UserLogin::logIn()
   } else {
 
     QString errorMessage;
-    QSharedPointer<const User> user = User::createUser
-      (ui.txtUsername->text(), ui.txtPassword->text(), ui.txtRealName->text(),
-       errorMessage);
 
-    if (user) {
-      if (User::logInAs(user, ui.txtPassword->text(), errorMessage)) {
-        success();
-      } else {
-        QMessageBox::warning(this, "Login Failure", "Cannot log in: " + errorMessage);
-      }
+    if (User::createUser(ui.txtUsername->text(), ui.txtPassword->text(),
+                         ui.txtRealName->text(), errorMessage)) {
+      success();
     } else {
-      QMessageBox::warning
-        (this, "Login Failure", "Cannot create user: " + errorMessage);
+      QMessageBox::warning(this, "Registration Failure", "Cannot register: "
+                           + errorMessage);
     }
   }
 }

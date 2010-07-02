@@ -161,9 +161,9 @@ void EditCompositeFood::populateUserSelector(QComboBox* cboOwner)
 {
   // TODO: Maybe only load all users for administrator?
 
-  QVector<QSharedPointer<const User> > allUsers = User::getAllUsers();
+  QVector<QSharedPointer<User> > allUsers = User::getAllUsers();
 
-  for (QVector<QSharedPointer<const User> >::const_iterator i = allUsers.begin();
+  for (QVector<QSharedPointer<User> >::const_iterator i = allUsers.begin();
        i != allUsers.end(); ++i)
   {
     cboOwner->addItem((*i)->getDisplayName(), (*i)->getId());
