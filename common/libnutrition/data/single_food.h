@@ -79,9 +79,6 @@ class SingleFood : virtual public Food
 
     static QSharedPointer<SingleFood> getSingleFood(int id);
 
-    static QSharedPointer<SingleFood> createSingleFoodFromQueryResults
-      (QSqlQuery& query);
-
     static QMultiMap<QString, int> getFoodsForUser(int userId);
 
     virtual int getSingleFoodId() const = 0;

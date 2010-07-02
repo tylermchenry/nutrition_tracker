@@ -26,7 +26,6 @@
 #include <QVector>
 #include <QSharedPointer>
 #include <QWeakPointer>
-#include <QtSql/QSqlQuery>
 
 /* A unit object represents a unit of measurement such as a gram, a fluid ounce,
  * a serving, or a kilocalorie.
@@ -98,12 +97,6 @@ class Unit
 
     static QVector<QSharedPointer<const Unit> > getAllUnits
       (Dimensions::Dimension dimension);
-
-    static QSharedPointer<const Unit> createUnitFromRecord
-      (const QSqlRecord& record);
-
-    static QVector<QSharedPointer<const Unit> >
-      createUnitsFromQueryResults(QSqlQuery& query);
 
     virtual ~Unit() {};
 

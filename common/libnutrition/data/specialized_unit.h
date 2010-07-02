@@ -66,15 +66,6 @@ class SpecializedUnit
 
   private:
 
-    static QSharedPointer<const SpecializedUnit>
-      createSpecializedUnitFromRecord(const QSqlRecord& record);
-
-    static QVector<QSharedPointer<const SpecializedUnit> >
-      createSpecializedUnitsFromQueryResults(QSqlQuery& query);
-
-    static QMap<QPair<int, int>, QWeakPointer<const SpecializedUnit> >
-      specializedUnitCache;
-
     friend class SpecializedUnitImpl;
 };
 

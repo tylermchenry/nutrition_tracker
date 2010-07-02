@@ -9,12 +9,7 @@
 #include "group.h"
 #include "impl/group_impl.h"
 #include "data_cache.h"
-#include <QVariant>
-#include <QDebug>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlRecord>
-#include <QtSql/QSqlField>
-#include <QtSql/QSqlError>
+#include "libnutrition/backend/back_end.h"
 
 const QString Group::DEFAULT_GROUP_ID = "9999";
 
@@ -27,21 +22,10 @@ QSharedPointer<const Group> Group::getDefaultGroup()
 
 QSharedPointer<const Group> Group::getGroup(const QString& id)
 {
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-  QSqlQuery query(db);
-
   if (DataCache<Group>::getInstance().contains(id)) {
     return DataCache<Group>::getInstance().get(id);
-  }
-
-  query.prepare("SELECT FdGrp_Cd, FdGrp_Desc FROM group_description WHERE FdGrp_cd=:id "
-                "ORDER BY FdGrp_Desc ASC LIMIT 1");
-  query.bindValue(":id", id);
-
-  if (query.exec() && query.first()) {
-    return createGroupFromRecord(query.record());
   } else {
-    return QSharedPointer<const Group>();
+    return BackEnd::getBackEnd()->loadGroup(id);
   }
 }
 
@@ -59,43 +43,17 @@ QVector<QSharedPointer<const Group> > Group::getAllGroups()
     return groupsByName;
   }
 
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-  QSqlQuery query(db);
+  QList<QSharedPointer<Group> > groups = BackEnd::getBackEnd()->loadAllGroups();
 
-  if (query.exec("SELECT FdGrp_Cd, FdGrp_Desc FROM group_description "
-                  "ORDER BY FdGrp_Desc ASC")) {
-    gotAll = true;
-    return createGroupsFromQueryResults(query);
-  } else {
-    return QVector<QSharedPointer<const Group> >();
-  }
-}
+  gotAll = !groups.empty();
 
-QSharedPointer<const Group> Group::createGroupFromRecord(const QSqlRecord& record)
-{
-  if (!record.isEmpty()) {
-    QString id = record.field("FdGrp_Cd").value().toString();
-    if (!DataCache<Group>::getInstance().contains(id)) {
-      QSharedPointer<const Group> group
-        (new GroupImpl(id, record.field("FdGrp_Desc").value().toString()));
-      DataCache<Group>::getInstance().insert(id, group);
-      return group;
-    } else {
-      return DataCache<Group>::getInstance().get(id);
-    }
-  } else {
-    return QSharedPointer<const Group>();
-  }
-}
+  QVector<QSharedPointer<const Group> > groupsVec;
 
-QVector<QSharedPointer<const Group> > Group::createGroupsFromQueryResults
-  (QSqlQuery& query)
-{
-  QVector<QSharedPointer<const Group> > groups;
-
-  while (query.next()) {
-    groups.push_back(createGroupFromRecord(query.record()));
+  for (QList<QSharedPointer<Group> >::const_iterator i = groups.begin();
+       i != groups.end(); ++i)
+  {
+    groupsVec.push_back(*i);
   }
 
-  return groups;
+  return groupsVec;
 }

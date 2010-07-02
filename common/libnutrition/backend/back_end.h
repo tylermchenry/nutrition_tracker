@@ -30,7 +30,7 @@ class BackEnd
     inline static void setBackEnd(const QSharedPointer<BackEnd>& backEnd)
       { BackEnd::backEnd = backEnd; }
 
-    static QSharedPointer<BackEnd> getBackEnd() const
+    static QSharedPointer<BackEnd> getBackEnd()
       { return backEnd; }
 
     virtual ~BackEnd() {};
@@ -50,6 +50,9 @@ class BackEnd
     virtual QMultiMap<QString, QPair<FoodTypes::FoodType, int> >
       loadFoodNamesForUser(int userId, bool includeExpired) = 0;
 
+    virtual QMultiMap<QString, QPair<FoodTypes::FoodType, int> >
+      loadFoodNamesForUser
+        (int userId, FoodTypes::FoodType type, bool includeExpired = false) = 0;
 
     /** Single Foods **/
 
@@ -65,7 +68,7 @@ class BackEnd
     virtual QSharedPointer<CompositeFood> loadCompositeFood(int id) = 0;
 
     virtual QMultiMap<QString, int> loadCompositeFoodNamesForUser
-      (int userId, bool includeExpired) = 0;
+      (int userId, bool includeExpired = false) = 0;
 
     virtual void storeCompositeFood(const QSharedPointer<CompositeFood>& food) = 0;
 
@@ -84,9 +87,9 @@ class BackEnd
     virtual QSharedPointer<Meal> loadMeal
       (int userId, const QDate& date, int mealId) = 0;
 
-    virtual QMultiMap<QString, int> loadAllMealNames() = 0;
+    virtual QMap<int, QString> loadAllMealNames() = 0;
 
-    virtual QMultiMap<QString, int> loadAllMealNamesForUser
+    virtual QMap<int, QString> loadAllMealNamesForUser
       (int userId, bool includeGenerics) = 0;
 
     virtual QList<QSharedPointer<Meal> > loadAllMealsForDay
@@ -99,38 +102,62 @@ class BackEnd
 
     virtual QSharedPointer<User> loadUser(int id) = 0;
 
+    virtual QSharedPointer<User> loadUserByUsername
+      (const QString& username) = 0;
+
+    virtual QList<QSharedPointer<User> > loadAllUsers() = 0;
+
     virtual void storeUser(const QSharedPointer<User>& user) = 0;
 
 
     /** Nutrients **/
 
-    virtual QSharedPointer<const Nutrient> loadNutrient(int id) = 0;
+    virtual QSharedPointer<const Nutrient> loadNutrient(const QString& id) = 0;
 
-    virtual QList<QSharedPointer<const Nutrient> > loadAllNutrients(int id) = 0;
+    virtual QList<QSharedPointer<Nutrient> > loadAllNutrients() = 0;
+
+    virtual QList<QSharedPointer<Nutrient> > loadAllNutrients
+      (Nutrient::Categories::Category category) = 0;
 
 
     /** Units **/
 
     virtual QSharedPointer<const Unit> loadUnit(const QString& abbr) = 0;
 
-    virtual QList<QSharedPointer<const Unit> > loadAllUnits(const QString& abbr) = 0;
+    virtual QList<QSharedPointer<Unit> > loadAllUnits() = 0;
+
+    virtual QList<QSharedPointer<Unit> > loadAllUnits
+      (Unit::Dimensions::Dimension dimension) = 0;
+
+    virtual QSharedPointer<const Unit> loadBasicUnit
+      (Unit::Dimensions::Dimension dimension) = 0;
 
     virtual QSharedPointer<const SpecializedUnit>
       loadSpecializedUnit(int foodId, int sequence) = 0;
 
-    virtual QList<QSharedPointer<const SpecializedUnit> >
+    virtual QList<QSharedPointer<SpecializedUnit> >
       loadAllSpecializedUnitsForFood(int foodId) = 0;
 
-    virtual QPair<QList<QSharedPointer<const Unit> >,
-                   QList<QSharedPointer<const SpecializedUnit> > >
+    virtual QPair<QList<QSharedPointer<Unit> >,
+                   QList<QSharedPointer<SpecializedUnit> > >
       loadAllUnitsForFood(int foodId) = 0;
 
     /** Groups **/
 
-    virtual QSharedPointer<const Group> loadGroup(int id) = 0;
+    virtual QSharedPointer<const Group> loadGroup(const QString& id) = 0;
 
-    virtual QList<QSharedPointer<const Group> > loadAllGroups(int id) = 0;
+    virtual QList<QSharedPointer<Group> > loadAllGroups() = 0;
 
+
+    /** Login / Register **/
+
+    virtual QSharedPointer<User>
+      logIn(const QString& username, const QString& password,
+            QString& errorMessage) = 0;
+
+    virtual QSharedPointer<User>
+      registerAndLogIn(const QString& username, const QString& realName,
+                         const QString& password, QString& errorMessage) = 0;
 
     /** Search **/
 

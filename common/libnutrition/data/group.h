@@ -26,7 +26,6 @@
 #include <QMap>
 #include <QSharedPointer>
 #include <QWeakPointer>
-#include <QtSql/QSqlQuery>
 
 /* A food group (or category) is a USDA-defined classification of a single
  * (non-composite) food, such as "Vegetables", "Fast Food", "Milk and Cheese",
@@ -51,12 +50,6 @@ class Group
     static QSharedPointer<const Group> getGroup(const QString& id);
 
     static QVector<QSharedPointer<const Group> > getAllGroups();
-
-    static QSharedPointer<const Group> createGroupFromRecord
-      (const QSqlRecord& record);
-
-    static QVector<QSharedPointer<const Group> >
-      createGroupsFromQueryResults(QSqlQuery& query);
 
     virtual ~Group() {};
 

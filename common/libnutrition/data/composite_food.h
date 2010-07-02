@@ -67,9 +67,6 @@ class CompositeFood : virtual public FoodCollection
 
     static QSharedPointer<CompositeFood> getCompositeFood(int id);
 
-    static QSharedPointer<CompositeFood>
-      createCompositeFoodFromQueryResults(QSqlQuery& query);
-
     static QMultiMap<QString, int> getFoodsForUser(int userId);
 
     static QString generateExpirySuffix

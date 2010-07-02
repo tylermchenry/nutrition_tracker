@@ -122,12 +122,6 @@ class FoodCollection : virtual public Food
 
     virtual const QSet<int>& getRemovedIds() const = 0;
 
-    static QList<FoodComponent> createComponentsFromQueryResults
-      (QSqlQuery& query,
-       const QSharedPointer<FoodCollection>& containingCollection,
-       const QString& componentIdField,
-       const QString& componentOrderField = "Order");
-
   private:
 
     static int nextCollectionId;

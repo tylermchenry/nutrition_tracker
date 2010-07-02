@@ -8,12 +8,7 @@
 #include "unit.h"
 #include "impl/unit_impl.h"
 #include "data_cache.h"
-#include <QVariant>
-#include <QDebug>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlRecord>
-#include <QtSql/QSqlField>
-#include <QtSql/QSqlError>
+#include "libnutrition/backend/back_end.h"
 #include <stdexcept>
 
 QString (Unit::* const Unit::cache_get_sort_key)() const = &Unit::getNameAndAbbreviation;
@@ -25,21 +20,10 @@ QSharedPointer<const Unit> Unit::getPreferredUnit(Dimensions::Dimension dimensio
 
 QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
 {
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-  QSqlQuery query(db);
-
   if (DataCache<Unit>::getInstance().contains(abbreviation)) {
     return DataCache<Unit>::getInstance().get(abbreviation);
-  }
-
-  query.prepare("SELECT Unit, Type, Name AS UnitName, Factor FROM units WHERE Unit=:abbrev "
-                "ORDER BY Name LIMIT 1");
-  query.bindValue(":abbrev", abbreviation);
-
-  if (query.exec() && query.first()) {
-    return createUnitFromRecord(query.record());
   } else {
-    return QSharedPointer<const Unit>();
+    return BackEnd::getBackEnd()->loadUnit(abbreviation);
   }
 }
 
@@ -58,61 +42,40 @@ QVector<QSharedPointer<const Unit> > Unit::getAllUnits()
     return all;
   }
 
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-  QSqlQuery query(db);
+  QList<QSharedPointer<Unit> > units =
+    BackEnd::getBackEnd()->loadAllUnits();
 
-  if (query.exec("SELECT Unit, Type, Name AS UnitName, Factor FROM units ORDER BY Name")) {
-    gotAll = true;
-    return createUnitsFromQueryResults(query);
-  } else {
-    return QVector<QSharedPointer<const Unit> >();
+  gotAll = !units.empty();
+
+  QVector<QSharedPointer<const Unit> > unitsVec;
+
+  for (QList<QSharedPointer<Unit> >::const_iterator i = units.begin();
+       i != units.end(); ++i)
+  {
+    unitsVec.push_back(*i);
   }
+
+  return unitsVec;
 }
 
 QVector<QSharedPointer<const Unit> > Unit::getAllUnits(Dimensions::Dimension dimension)
 {
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-  QSqlQuery query(db);
+  static QMap<Dimensions::Dimension, QVector<QSharedPointer<const Unit> > > all;
 
-  query.prepare("SELECT Unit, Type, Name AS UnitName, Factor FROM units WHERE Type=:dim ORDER BY Name");
-  query.bindValue(":dim", Dimensions::toHumanReadable(dimension));
-
-  if (query.exec()) {
-    return createUnitsFromQueryResults(query);
-  } else {
-    return QVector<QSharedPointer<const Unit> >();
-  }
-}
-
-QSharedPointer<const Unit> Unit::createUnitFromRecord(const QSqlRecord& record)
-{
-  if (!record.isEmpty()) {
-    QString abbrev = record.field("Unit").value().toString();
-    if (!DataCache<Unit>::getInstance().contains(abbrev)) {
-      QSharedPointer<const Unit> unit
-      (new UnitImpl(abbrev,
-                    record.field("UnitName").value().toString(),
-                    Dimensions::fromHumanReadable(record.field("Type").value().toString()),
-                    record.field("Factor").value().toDouble()));
-      DataCache<Unit>::getInstance().insert(abbrev, unit);
-      return unit;
-    } else {
-      return DataCache<Unit>::getInstance().get(abbrev);
-    }
-  } else {
-    return QSharedPointer<const Unit>();
-  }
-}
-
-QVector<QSharedPointer<const Unit> > Unit::createUnitsFromQueryResults(QSqlQuery& query)
-{
-  QVector<QSharedPointer<const Unit> > units;
-
-  while (query.next()) {
-    units.push_back(createUnitFromRecord(query.record()));
+  if (!all[dimension].empty()) {
+    return all[dimension];
   }
 
-  return units;
+  QList<QSharedPointer<Unit> > units =
+    BackEnd::getBackEnd()->loadAllUnits(dimension);
+
+  for (QList<QSharedPointer<Unit> >::const_iterator i = units.begin();
+  i != units.end(); ++i)
+  {
+    all[dimension].push_back(*i);
+  }
+
+  return all[dimension];
 }
 
 QSharedPointer<const Unit> Unit::getBasicUnit(Dimensions::Dimension dimension)
@@ -125,25 +88,13 @@ QSharedPointer<const Unit> Unit::getBasicUnit(Dimensions::Dimension dimension)
 
   } else {
 
-    QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-    QSqlQuery query(db);
+    QSharedPointer<const Unit> basicUnit = BackEnd::getBackEnd()->loadBasicUnit(dimension);
 
-    query.prepare("SELECT Unit, Type, Name AS UnitName, Factor FROM units WHERE Type=:dim AND Factor=1 "
-                  "ORDER BY Name LIMIT 1");
-    query.bindValue(":dim", Dimensions::toHumanReadable(dimension));
-
-    QVector<QSharedPointer<const Unit> > units;
-
-    if (query.exec()) {
-      units = createUnitsFromQueryResults(query);
+    if (basicUnit) {
+      basicUnits[dimension] = basicUnit;
     }
 
-    if (units.size() > 0) {
-      basicUnits[dimension] = units[0];
-      return units[0];
-    } else {
-      return QSharedPointer<const Unit>();
-    }
+    return basicUnit;
   }
 }
 

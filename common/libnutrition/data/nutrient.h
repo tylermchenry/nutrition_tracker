@@ -26,7 +26,6 @@
 #include <QMap>
 #include <QSharedPointer>
 #include <QWeakPointer>
-#include <QtSql/QSqlQuery>
 #include "libnutrition/data/unit.h"
 
 /* A nutrient object describes a particular sort of nutrient that may be found
@@ -85,11 +84,6 @@ class Nutrient
 
     static QVector<QSharedPointer<const Nutrient> > getAllNutrients
       (Categories::Category category);
-
-    static QSharedPointer<const Nutrient> createNutrientFromRecord(const QSqlRecord& record);
-
-    static QVector<QSharedPointer<const Nutrient> > createNutrientsFromQueryResults
-      (QSqlQuery& query);
 
     virtual ~Nutrient() {};
 

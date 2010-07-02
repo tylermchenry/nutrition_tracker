@@ -26,19 +26,19 @@ class User
     static QString (User::* const cache_get_sort_key)() const;
     static const bool cache_strong = false;
 
-    static QSharedPointer<const User> getUser(int id);
+    static QSharedPointer<User> getUser(int id);
 
-    static QSharedPointer<const User> getUserByUsername
+    static QSharedPointer<User> getUserByUsername
       (const QString& username);
 
-    static QVector<QSharedPointer<const User> > getAllUsers();
+    static QVector<QSharedPointer<User> > getAllUsers();
 
-    static QSharedPointer<const User> createUser
+    static QSharedPointer<User> createUser
       (const QString& username, const QString& password,
        const QString& realName, QString& errorMessage);
 
-    static bool logInAs
-      (const QSharedPointer<const User>& user, const QString& password,
+    static QSharedPointer<User> logInAs
+      (const QString& username, const QString& password,
        QString& errorMessage);
 
     inline static QSharedPointer<User> getLoggedInUser()
@@ -58,19 +58,11 @@ class User
 
     virtual void setPassword(const QString& newPassword) = 0;
 
-    virtual void saveToDatabase() = 0;
-
-  protected:
-
     virtual bool checkPassword(const QString& password) const = 0;
 
+    virtual void saveToDatabase() = 0;
+
   private:
-
-    static QSharedPointer<const User> createUserFromRecord
-      (const QSqlRecord& record);
-
-    static QVector<QSharedPointer<const User> >
-      createUsersFromQueryResults(QSqlQuery& query);
 
     static QSharedPointer<User> loggedInUser;
 

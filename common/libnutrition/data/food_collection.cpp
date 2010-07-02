@@ -84,61 +84,6 @@ QSharedPointer<FoodCollection> FoodCollection::getCanonicalSharedPointerToCollec
   return getCanonicalSharedPointer().dynamicCast<FoodCollection>();
 }
 
-QList<FoodComponent> FoodCollection::createComponentsFromQueryResults
-  (QSqlQuery& query, const QSharedPointer<FoodCollection>& containingCollection,
-   const QString& componentIdField, const QString& componentOrderField)
-{
-  QList<FoodComponent> components;
-  int order = -1;
-
-  while (query.next()) {
-
-    const QSqlRecord& record = query.record();
-
-    if (record.field(componentIdField).value().isNull()) continue;
-
-    int containedId = record.field("Contained_Id").value().toInt();
-
-    ContainedTypes::ContainedType type =
-      ContainedTypes::fromHumanReadable(record.field("Contained_Type").value().toString());
-
-    QSharedPointer<Food> containedFood;
-
-    if (type == ContainedTypes::SingleFood) {
-      containedFood = SingleFood::getSingleFood(containedId);
-    } else if (type == ContainedTypes::CompositeFood) {
-      containedFood = CompositeFood::getCompositeFood(containedId);
-    } else {
-      qDebug() << "Component has unknown type!";
-    }
-
-    if (!record.field(componentOrderField).value().isNull()) {
-      order = record.field(componentOrderField).value().toInt();
-    } else {
-      qDebug() << "WARNING: Order field " << componentOrderField
-               << " missing. Defaulting to sequential.";
-      order++;
-    }
-
-    if (containedFood != NULL) {
-      qDebug() << "Value of component ID field " << componentIdField << ": "
-                << record.field(componentIdField).value().toInt();
-      components.append
-        (FoodComponent
-          (containingCollection,
-           record.field(componentIdField).value().toInt(),
-           FoodAmount(containedFood, record.field("Magnitude").value().toDouble(),
-                      Unit::getUnit(record.field("Unit").value().toString()),
-                      record.field("Includes_Refuse").value().toBool()),
-           order));
-    } else {
-      qDebug() << "Failed to create component!";
-    }
-  }
-
-  return components;
-}
-
 FoodCollection::ContainedTypes::ContainedType FoodCollection::ContainedTypes::fromHumanReadable
   (const QString& str)
 {

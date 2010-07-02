@@ -5,8 +5,9 @@ CONFIG += dll \
 VERSION = 0.1.0
 QT += core \
     sql
-HEADERS += libnutrition/data/data_cache.h \ 
-	libnutrition/backend/back_end.h \
+HEADERS += libnutrition/backend/mysql_back_end.h \
+    libnutrition/data/data_cache.h \
+    libnutrition/backend/back_end.h \
     libnutrition/data/impl/composite_food_impl.h \
     libnutrition/data/impl/food_collection_impl.h \
     libnutrition/data/impl/food_impl.h \
@@ -33,7 +34,9 @@ HEADERS += libnutrition/data/data_cache.h \
     libnutrition/data/template.h \
     libnutrition/data/unit.h \
     libnutrition/data/user.h
-SOURCES += libnutrition/data/impl/composite_food_impl.cpp \
+SOURCES += libnutrition/backend/back_end.cpp \
+    libnutrition/backend/mysql_back_end.cpp \
+    libnutrition/data/impl/composite_food_impl.cpp \
     libnutrition/data/impl/food_collection_impl.cpp \
     libnutrition/data/impl/food_impl.cpp \
     libnutrition/data/impl/group_impl.cpp \

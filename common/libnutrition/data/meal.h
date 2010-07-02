@@ -79,9 +79,6 @@ class Meal : virtual public FoodCollection
     static QVector<QSharedPointer<Meal> > getMealsForDay
       (int userId, const QDate& date);
 
-    static QSharedPointer<Meal> createMealFromQueryResults
-      (QSqlQuery& query);
-
     virtual bool isTemporary() const = 0;
 
     virtual int getMealId() const = 0;

@@ -39,9 +39,6 @@ class Template : virtual public FoodCollection
 
     static QSharedPointer<Template> getTemplate(int id);
 
-    static QSharedPointer<Template>
-      createTemplateFromQueryResults(QSqlQuery& query);
-
     static QMultiMap<QString, int> getFoodsForUser(int userId);
 
     virtual ~Template() {};
