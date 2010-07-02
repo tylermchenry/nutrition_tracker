@@ -11,6 +11,7 @@
 #include "dialogs/database_information.h"
 #include "dialogs/user_login.h"
 #include "libnutrition/data/single_food.h"
+#include "libnutrition/backend/mysql_back_end.h"
 #include <QtGui/QInputDialog>
 #include <QtGui/QLabel>
 #include <QtGui/QStatusBar>
@@ -94,6 +95,8 @@ void NutritionTrackerMain::show()
     return;
   }
 
+  BackEnd::setBackEnd(QSharedPointer<MySQLBackEnd>(new MySQLBackEnd("nutrition_db")));
+
   UserLogin loginPrompt(this);
 
   if (!loginPrompt.tryAutoLogIn()) {
@@ -109,7 +112,6 @@ void NutritionTrackerMain::show()
   statusMessage = "Using database " + db.databaseName() + " on " +
     db.userName() + "@" + db.hostName() + ". Logged in as " +
     User::getLoggedInUser()->getDisplayName() + ".";
-
 
   statusBar()->addPermanentWidget(new QLabel(statusMessage, statusBar()), 100);
 
