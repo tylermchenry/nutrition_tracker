@@ -91,7 +91,7 @@ QPair<QList<QSharedPointer<Unit> >,
 
 QList<FoodComponent> MySQLBackEnd::createComponentsFromQueryResults
   (QSqlQuery& query, const QSharedPointer<FoodCollection>& containingCollection,
-   const QString& componentIdField, const QString& componentOrderField)
+   const QString& componentIdField, const QString& componentOrderField) const
 {
   QList<FoodComponent> components;
   int order = -1;
@@ -142,4 +142,17 @@ QList<FoodComponent> MySQLBackEnd::createComponentsFromQueryResults
   }
 
   return components;
+}
+
+void MySQLBackEnd::bindBaseAmount
+  (const QSharedPointer<Food>& food, QSqlQuery& query,
+   const QString& placeholder, Unit::Dimensions::Dimension dimension) const
+{
+  FoodAmount amount = food->getBaseAmount(dimension);
+
+  if (amount.isDefined()) {
+    query.bindValue(placeholder, amount.getAmount(Unit::getPreferredUnit(dimension)));
+  } else {
+    query.bindValue(placeholder, QVariant(QVariant::Double)); // Binds "NULL"
+  }
 }

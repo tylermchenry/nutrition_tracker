@@ -42,6 +42,10 @@ class MySQLBackEnd : public BackEnd
 
     virtual void storeSingleFood(const QSharedPointer<SingleFood>& food);
 
+    virtual void deleteSingleFood(const QSharedPointer<SingleFood>& food);
+
+    virtual void deleteSingleFood(int id);
+
 
     /** Composite Foods **/
 
@@ -52,6 +56,10 @@ class MySQLBackEnd : public BackEnd
 
     virtual void storeCompositeFood(const QSharedPointer<CompositeFood>& food);
 
+    virtual void deleteCompositeFood(const QSharedPointer<CompositeFood>& food);
+
+    virtual void deleteCompositeFood(int id);
+
 
     /** Templates **/
 
@@ -60,6 +68,10 @@ class MySQLBackEnd : public BackEnd
     virtual QMultiMap<QString, int> loadTemplateNamesForUser(int userId);
 
     virtual void storeTemplate(const QSharedPointer<Template>& templ);
+
+    virtual void deleteTemplate(const QSharedPointer<Template>& templ);
+
+    virtual void deleteTemplate(int id);
 
 
     /** Meals **/
@@ -76,6 +88,10 @@ class MySQLBackEnd : public BackEnd
       (int userId, const QDate& date);
 
     virtual void storeMeal(const QSharedPointer<Meal>& meal);
+
+    virtual void deleteMeal(const QSharedPointer<Meal>& templ);
+
+    virtual void deleteMeal(int userId, const QDate& date, int mealId);
 
 
     /** Users **/
@@ -195,7 +211,11 @@ class MySQLBackEnd : public BackEnd
       (QSqlQuery& query,
        const QSharedPointer<FoodCollection>& containingCollection,
        const QString& componentIdField,
-       const QString& componentOrderField = "Order");
+       const QString& componentOrderField = "Order") const;
+
+    void bindBaseAmount
+      (const QSharedPointer<Food>& food, QSqlQuery& query,
+       const QString& placeholder, Unit::Dimensions::Dimension dimension) const;
 };
 
 #endif /* MYSQL_BACK_END_H_ */

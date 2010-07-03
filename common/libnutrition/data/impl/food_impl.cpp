@@ -120,15 +120,3 @@ QVector<FoodAmount> FoodImpl::getComponentAmounts() const
 {
   return QVector<FoodAmount>();
 }
-
-void FoodImpl::bindBaseAmount
-  (QSqlQuery& query, const QString& placeholder, Unit::Dimensions::Dimension dimension) const
-{
-  FoodAmount amount = getBaseAmount(dimension);
-
-  if (amount.isDefined()) {
-    query.bindValue(placeholder, amount.getAmount(Unit::getPreferredUnit(dimension)));
-  } else {
-    query.bindValue(placeholder, QVariant(QVariant::Double)); // Binds "NULL"
-  }
-}

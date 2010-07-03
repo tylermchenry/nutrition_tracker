@@ -7,13 +7,9 @@
  */
 
 #include "user_impl.h"
+#include "libnutrition/data/data_cache.h"
+#include "libnutrition/backend/back_end.h"
 #include <QCryptographicHash>
-#include <QVariant>
-#include <QDebug>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlRecord>
-#include <QtSql/QSqlField>
-#include <QtSql/QSqlError>
 
 UserImpl::UserImpl(int id, const QString& username, const QString& realName,
             const QString& pwSHA1_hex)
@@ -33,18 +29,7 @@ void UserImpl::setPassword(const QString& newPassword)
 
 void UserImpl::saveToDatabase()
 {
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-  QSqlQuery query(db);
-
-  query.prepare("UPDATE user SET Name=:realName, PW_SHA1=:shapass "
-                " WHERE User_Id=:id");
-  query.bindValue(":realName", realName);
-  query.bindValue(":shapass", pwSHA1_hex);
-  query.bindValue(":id", id);
-
-  if (!query.exec()) {
-    qDebug() << "SQL Failure: " << query.lastError();
-  }
+  BackEnd::getBackEnd()->storeUser(DataCache<User>::getInstance().get(id));
 }
 
 bool UserImpl::checkPassword(const QString& password) const

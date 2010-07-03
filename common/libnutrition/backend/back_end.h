@@ -62,6 +62,10 @@ class BackEnd
 
     virtual void storeSingleFood(const QSharedPointer<SingleFood>& food) = 0;
 
+    virtual void deleteSingleFood(const QSharedPointer<SingleFood>& food) = 0;
+
+    virtual void deleteSingleFood(int id) = 0;
+
 
     /** Composite Foods **/
 
@@ -72,6 +76,10 @@ class BackEnd
 
     virtual void storeCompositeFood(const QSharedPointer<CompositeFood>& food) = 0;
 
+    virtual void deleteCompositeFood(const QSharedPointer<CompositeFood>& food) = 0;
+
+    virtual void deleteCompositeFood(int id) = 0;
+
 
     /** Templates **/
 
@@ -80,6 +88,10 @@ class BackEnd
     virtual QMultiMap<QString, int> loadTemplateNamesForUser(int userId) = 0;
 
     virtual void storeTemplate(const QSharedPointer<Template>& templ) = 0;
+
+    virtual void deleteTemplate(const QSharedPointer<Template>& templ) = 0;
+
+    virtual void deleteTemplate(int id) = 0;
 
 
     /** Meals **/
@@ -96,6 +108,10 @@ class BackEnd
       (int userId, const QDate& date) = 0;
 
     virtual void storeMeal(const QSharedPointer<Meal>& meal) = 0;
+
+    virtual void deleteMeal(const QSharedPointer<Meal>& templ) = 0;
+
+    virtual void deleteMeal(int userId, const QDate& date, int mealId) = 0;
 
 
     /** Users **/

@@ -28,7 +28,6 @@
 #include "specialized_unit.h"
 #include <QMap>
 #include <QMultiMap>
-#include <QWeakPointer>
 #include <QSet>
 
 /* A single food is an indivisible food with its own inherent nutrition
@@ -112,9 +111,6 @@ class SingleFood : virtual public Food
   private:
 
     static int tempId;
-
-    static QMap<QString, QSharedPointer<const Unit> >
-      createNutrientsFromQueryResults(QSqlQuery& query);
 
     friend class SingleFoodImpl;
 };

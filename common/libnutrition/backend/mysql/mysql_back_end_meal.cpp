@@ -119,8 +119,139 @@ QList<QSharedPointer<Meal> > MySQLBackEnd::loadAllMealsForDay
 
 void MySQLBackEnd::storeMeal(const QSharedPointer<Meal>& meal)
 {
-  // TODO: Replace
-  meal->saveToDatabase();
+  if (!meal) {
+    throw std::logic_error("Attempted to delete a NULL meal");
+  } else if (meal->isTemporary()) {
+    throw std::logic_error("Attempted to save a temporary meal to the database.");
+  }
+
+  QSharedPointer<MealImpl> meal_impl = meal.dynamicCast<MealImpl>();
+
+  QSqlQuery query(db);
+
+  // This needs to work either for a new food or an update to an existing food
+
+  QSet<int> removedLinkIds = meal_impl->getRemovedIds();
+
+  for (QSet<int>::const_iterator i = removedLinkIds.begin(); i != removedLinkIds.end(); ++i)
+  {
+    query.prepare("DELETE FROM meal_link WHERE MealLink_Id=:linkId");
+
+    query.bindValue(":linkId", *i);
+
+    if (!query.exec()) {
+      qDebug() << "Failed to delete removed meal item: " << query.lastError();
+      return;
+    }
+  }
+
+  meal_impl->deleteRemovedNonceFoods();
+
+  QList<FoodComponent> components = meal->getComponents();
+  for (QList<FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
+  {
+    if (i->getFoodAmount().getFood()->isNonce()) {
+      i->getFoodAmount().getFood()->saveToDatabase();
+    }
+
+    query.prepare("INSERT INTO meal_link "
+                   "  (MealLink_Id, Meal_Id, User_Id, MealDate, Contained_Type, "
+                   "   Contained_Id, Includes_Refuse, Magnitude, Unit, IntramealOrder) "
+                   "VALUES "
+                   "  (:linkId, :mealId, :userId, :mealDate, :containedType, "
+                   "   :containedId, :includesRefuse, :magnitude, :unit, :order) "
+                   "ON DUPLICATE KEY UPDATE "
+                   "  Includes_Refuse=:includesRefuse2, Magnitude=:magnitude2, "
+                   "  Unit=:unit2, IntramealOrder=:order2");
+
+    query.bindValue(":linkId", i->getId() >= 0 ? QVariant(i->getId()) : QVariant());
+
+    query.bindValue(":mealId", meal->getMealId());
+    query.bindValue(":userId", meal->getOwnerId());
+    query.bindValue(":mealDate", meal->getDate());
+
+    if (!i->getFoodAmount().isDefined()) continue;
+
+    QSharedPointer<const Food> food = i->getFoodAmount().getFood();
+
+    QSharedPointer<const SingleFood> singleFood;
+    QSharedPointer<const CompositeFood> compositeFood;
+
+    FoodCollection::ContainedTypes::ContainedType containedType;
+    int containedId;
+
+    if ((singleFood = food.dynamicCast<const SingleFood>()) != NULL) {
+      containedType = FoodCollection::ContainedTypes::SingleFood;
+      containedId = singleFood->getSingleFoodId();
+    } else if ((compositeFood = food.dynamicCast<const CompositeFood>()) != NULL) {
+      containedType = FoodCollection::ContainedTypes::CompositeFood;
+      containedId = compositeFood->getCompositeFoodId();
+    } else {
+      continue;
+    }
+
+    query.bindValue(":containedType", FoodCollection::ContainedTypes::toHumanReadable(containedType));
+    query.bindValue(":containedId", containedId);
+
+    query.bindValue(":includesRefuse", i->getFoodAmount().includesRefuse());
+    query.bindValue(":magnitude", i->getFoodAmount().getAmount());
+    query.bindValue(":unit", i->getFoodAmount().getUnit()->getAbbreviation());
+    query.bindValue(":order", i->getOrder());
+
+    query.bindValue(":includesRefuse2", i->getFoodAmount().includesRefuse());
+    query.bindValue(":magnitude2", i->getFoodAmount().getAmount());
+    query.bindValue(":unit2", i->getFoodAmount().getUnit()->getAbbreviation());
+    query.bindValue(":order2", i->getOrder());
+
+    if (!query.exec()) {
+      qDebug() << "Failed to save " << food->getName() << " to meal: " << query.lastError();
+    } else {
+      if (i->getId() < 0) {
+        int newId = query.lastInsertId().toInt();
+        qDebug() << "Assigned real ID " << newId
+                  << " to food component with temp ID " << i->getId();
+        meal_impl->replaceComponent
+          (*i, FoodComponent(meal_impl->getCanonicalSharedPointerToCollection(),
+                             newId, i->getFoodAmount(), i->getOrder()));
+      }
+    }
+  }
+}
+
+void MySQLBackEnd::deleteMeal(const QSharedPointer<Meal>& meal)
+{
+  if (!meal) {
+    throw std::logic_error("Attempted to delete a NULL meal");
+  } else if (meal->isTemporary()) {
+    // Silently ignore requests to delete temporaries; it's simpler to do that
+    // than to force the client to check whether a food is temporary or not
+    // every time it wants to delete something.
+    return;
+  }
+
+  QSharedPointer<MealImpl> meal_impl = meal.dynamicCast<MealImpl>();
+
+  QSqlQuery query(db);
+
+  query.prepare("DELETE FROM meal_link "
+                 "WHERE Meal_Id=:mealId AND User_Id=:userId "
+                 "      AND MealDate=:mealDate");
+  query.bindValue(":mealId", meal->getId());
+  query.bindValue(":userId", meal->getOwnerId());
+  query.bindValue(":mealDate", meal->getDate());
+
+  if (!query.exec()) {
+    qDebug() << "Failed to delete meal: " << query.lastError();
+  } else {
+    meal_impl->clearComponents();
+    meal_impl->deleteRemovedNonceFoods();
+    DataCache<Meal>::getInstance().remove(meal->getMealIdTuple());
+  }
+}
+
+void MySQLBackEnd::deleteMeal(int userId, const QDate& date, int mealId)
+{
+  deleteMeal(Meal::getMeal(userId, date, mealId));
 }
 
 QSharedPointer<Meal> MySQLBackEnd::createMealFromQueryResults

@@ -107,7 +107,10 @@ class FoodCollectionImpl : public FoodImpl, virtual public FoodCollection
     virtual void deleteFromDatabase();
 
     // The following two methods are protected in the interface, but are
-    // public in the implementation for the benefit of the backend
+    // public in the implementation for the benefit of the backend:
+
+    virtual QSharedPointer<FoodCollection>
+      getCanonicalSharedPointerToCollection() const;
 
     virtual inline bool needsToBeReSaved() const
       { return bNeedsToBeReSaved; }
@@ -115,10 +118,6 @@ class FoodCollectionImpl : public FoodImpl, virtual public FoodCollection
     // If the subclass chooses not to pass components to the constructor,
     // they can be set later through this method
     virtual void setComponents(const QList<FoodComponent>& components);
-
-  protected:
-
-    virtual inline int getFoodCollectionId() const { return id; }
 
     // Derived classes call to replace a component that has been newly
     // saved to the database with one that has the DB-assigned ID.
@@ -145,6 +144,10 @@ class FoodCollectionImpl : public FoodImpl, virtual public FoodCollection
 
     virtual inline const QSet<int>& getRemovedIds() const
       { return removedIds; }
+
+  protected:
+
+    virtual inline int getFoodCollectionId() const { return id; }
 
   private:
 

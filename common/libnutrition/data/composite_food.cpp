@@ -99,18 +99,3 @@ QSharedPointer<Food> CompositeFood::getCanonicalSharedPointer() const
   return DataCache<CompositeFood>::getInstance().get(getCompositeFoodId());
 }
 
-int CompositeFood::assignNewId(int newId)
-{
-  int oldId = getCompositeFoodId();
-  if (newId != oldId) {
-    DataCache<CompositeFood>::getInstance().changeKey(oldId, newId);
-    qDebug() << "Assigned real ID " << newId
-              << " to composite food with temp ID " << oldId;
-  }
-  return newId;
-}
-
-void CompositeFood::removeFromCache()
-{
-  DataCache<CompositeFood>::getInstance().remove(getCompositeFoodId());
-}

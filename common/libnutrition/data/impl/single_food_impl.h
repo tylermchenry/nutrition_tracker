@@ -116,6 +116,21 @@ class SingleFoodImpl : public FoodImpl, virtual public SingleFood
 
     virtual void deleteFromDatabase();
 
+    // The following methods are only in the Impl class and are not accessible
+    // through the interface. They exist for the benefit of the back ends:
+
+    inline void setSingleFoodId(int id)
+      { this->id = id; }
+
+    inline const QMap<QString, NutrientAmount>& getRawNutrients() const
+      { return nutrients; }
+
+    inline const QSet<QString>& getModifiedNutrients() const
+      { return modifiedNutrients; }
+
+    inline void clearModifiedNutrients()
+      { modifiedNutrients.clear(); }
+
   protected:
 
     virtual inline const QMap<QString, double>&

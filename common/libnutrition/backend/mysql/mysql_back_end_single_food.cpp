@@ -9,7 +9,7 @@
 #include <QtSql/QSqlError>
 #include <stdexcept>
 
-QSharedPointer<SingleFood>  MySQLBackEnd::loadSingleFood(int id)
+QSharedPointer<SingleFood> MySQLBackEnd::loadSingleFood(int id)
 {
   QSqlQuery query(db);
 
@@ -64,8 +64,143 @@ QMultiMap<QString, int>  MySQLBackEnd::loadSingleFoodNamesForUser(int userId)
 
 void MySQLBackEnd::storeSingleFood(const QSharedPointer<SingleFood>& food)
 {
-  // TODO: Replace
-  food->saveToDatabase();
+  if (!food) {
+    throw std::logic_error("Attempted to store a NULL food");
+  } else if (!food->getGroup()) {
+    throw std::logic_error("Attempted to store a food with an empty group.");
+  }
+
+  QSharedPointer<SingleFoodImpl> food_impl = food.dynamicCast<SingleFoodImpl>();
+
+  QSqlQuery query(db);
+
+  // This needs to work either for a new food or an update to an existing food
+
+  // Note that the calorie densities (factors) are not updated. Currently there
+  // is no way to modify them, or even view them.
+
+  // TODO: Save calorie density information if it becomes mutable
+
+  query.prepare("INSERT INTO food_description "
+      "  (Food_Id, User_Id, Entry_Src, FdGrp_Cd, Long_Desc, Weight_g, Volume_floz, Quantity, Servings) "
+      "VALUES "
+      "  (:id, :userId, :entrySource, :group, :name, :weight, :volume, :quantity, :servings) "
+      "ON DUPLICATE KEY UPDATE"
+      "  User_Id=:userId2, Entry_Src=:entrySource2, FdGrp_Cd=:group2, Long_Desc=:name2,"
+      "  Weight_g=:weight2, Volume_floz=:volume2, Quantity=:quantity2, Servings=:servings2");
+
+  query.bindValue
+    (":id", (food->getSingleFoodId() >= 0 ? QVariant(food->getSingleFoodId()) :
+                                            QVariant(QVariant::Int)));
+
+  query.bindValue(":userId", food->getOwnerId());
+  query.bindValue(":userId2", food->getOwnerId());
+  query.bindValue(":entrySource", SingleFood::EntrySources::toHumanReadable
+                      (food->getEntrySource()));
+  query.bindValue(":entrySource2", SingleFood::EntrySources::toHumanReadable
+                      (food->getEntrySource()));
+  query.bindValue(":group", food->getGroup()->getId());
+  query.bindValue(":group2", food->getGroup()->getId());
+  query.bindValue(":name", food->getName());
+  query.bindValue(":name2", food->getName());
+
+  bindBaseAmount(food, query, ":weight", Unit::Dimensions::Weight);
+  bindBaseAmount(food, query, ":volume", Unit::Dimensions::Volume);
+  bindBaseAmount(food, query, ":quantity", Unit::Dimensions::Quantity);
+  bindBaseAmount(food, query, ":servings", Unit::Dimensions::Serving);
+
+  bindBaseAmount(food, query, ":weight2", Unit::Dimensions::Weight);
+  bindBaseAmount(food, query, ":volume2", Unit::Dimensions::Volume);
+  bindBaseAmount(food, query, ":quantity2", Unit::Dimensions::Quantity);
+  bindBaseAmount(food, query, ":servings2", Unit::Dimensions::Serving);
+
+  if (!query.exec()) {
+    qDebug() << "Query error: " << query.lastError();
+    throw std::runtime_error("Failed to save food to database.");
+  }
+
+  if (food->getSingleFoodId() < 0) {
+    int newId = query.lastInsertId().toInt();
+    DataCache<SingleFood>::getInstance().changeKey(food->getSingleFoodId(), newId);
+    qDebug() << "Assigned real ID " << newId << " to food with temp ID "
+              << food->getSingleFoodId();
+    food_impl->setSingleFoodId(newId);
+  }
+
+  // Only change information for nutrients that have actually been modified
+  // "4" below is the Source ID for "inputed" data. TODO: get rid of magic number
+
+  if (food->getEntrySource() == SingleFood::EntrySources::USDA) {
+    // For USDA items, we want to do a REPLACE query in order to explicitly lose all of the
+    // extra statistical data that would not apply to a modified value.
+
+    query.prepare("REPLACE INTO nutrient_data "
+        "  (Food_Id, Nutr_No, Nutr_Val, Src_Cd) "
+        "VALUES "
+        "  (:id, :nutrient_id, :value, 4)");
+
+  } else {
+    // Otherwise, we want to do an INSERT-UPDATE query
+
+    query.prepare("INSERT INTO nutrient_data "
+        "  (Food_Id, Nutr_No, Nutr_Val, Src_Cd) "
+        "VALUES "
+        "  (:id, :nutrient_id, :value, 4) "
+        "ON DUPLICATE KEY UPDATE"
+        "  Nutr_No=:nutrient_id2, Nutr_Val=:value2, Src_Cd=4");
+  }
+
+  for (QSet<QString>::const_iterator i = food_impl->getModifiedNutrients().begin();
+       i != food_impl->getModifiedNutrients().end(); ++i)
+  {
+    const NutrientAmount& amount = food_impl->getRawNutrients()[*i];
+
+    query.bindValue(":id", food->getSingleFoodId());
+
+    query.bindValue(":nutrient_id", amount.getNutrient()->getId());
+    query.bindValue(":value", amount.getAmount(amount.getNutrient()->getStandardUnit()));
+
+    if (food->getEntrySource() != SingleFood::EntrySources::USDA) {
+      query.bindValue(":nutrient_id2", amount.getNutrient()->getId());
+      query.bindValue(":value2", amount.getAmount(amount.getNutrient()->getStandardUnit()));
+    }
+
+    if (!query.exec()) {
+      throw std::runtime_error("Failed to save nutrient amount for food to database.");
+    }
+  }
+
+  food_impl->clearModifiedNutrients();
+}
+
+void MySQLBackEnd::deleteSingleFood(const QSharedPointer<SingleFood>& food)
+{
+  if (food) {
+    deleteSingleFood(food->getSingleFoodId());
+  } else {
+    throw std::logic_error("Attempted to delete a NULL food");
+  }
+}
+
+void MySQLBackEnd::deleteSingleFood(int id)
+{
+  // Silently ignore requests to delete temporaries; it's simpler to do that
+  // than to force the client to check whether a food is temporary or not
+  // every time it wants to delete something.
+
+  if (id < 0) return;
+
+  QSqlQuery query(db);
+
+  query.prepare("DELETE FROM food_description WHERE Food_Id=:id");
+  query.bindValue(":id", id);
+
+  if (!query.exec()) {
+    qDebug() << "Query error: " << query.lastError();
+    throw std::runtime_error("Failed to delete food from database.");
+  }
+
+  DataCache<SingleFood>::getInstance().remove(id);
 }
 
 QSharedPointer<SingleFood> MySQLBackEnd::createSingleFoodFromQueryResults

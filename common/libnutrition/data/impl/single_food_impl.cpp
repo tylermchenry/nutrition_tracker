@@ -6,14 +6,8 @@
  */
 
 #include "single_food_impl.h"
-#include "libnutrition/data/data_cache.h"
-#include <QVariant>
+#include "libnutrition/backend/back_end.h"
 #include <QDebug>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlRecord>
-#include <QtSql/QSqlField>
-#include <QtSql/QSqlError>
-#include <stdexcept>
 
 SingleFoodImpl::SingleFoodImpl
   (int id, const QString& name, int ownerId,
@@ -142,120 +136,14 @@ void SingleFoodImpl::setNutrient(const NutrientAmount& nutrientAmount)
 
 void SingleFoodImpl::saveToDatabase()
 {
-  if (group == NULL) return;
-
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-  QSqlQuery query(db);
-
-  // This needs to work either for a new food or an update to an existing food
-
-  // Note that the calorie densities (factors) are not updated. Currently there
-  // is no way to modify them, or even view them.
-
-  // TODO: Save calorie density information if it becomes mutable
-
-  query.prepare("INSERT INTO food_description "
-                "  (Food_Id, User_Id, Entry_Src, FdGrp_Cd, Long_Desc, Weight_g, Volume_floz, Quantity, Servings) "
-                "VALUES "
-                "  (:id, :userId, :entrySource, :group, :name, :weight, :volume, :quantity, :servings) "
-                "ON DUPLICATE KEY UPDATE"
-                "  User_Id=:userId2, Entry_Src=:entrySource2, FdGrp_Cd=:group2, Long_Desc=:name2,"
-                "  Weight_g=:weight2, Volume_floz=:volume2, Quantity=:quantity2, Servings=:servings2");
-
-  query.bindValue(":id", (id >= 0 ? QVariant(id) : QVariant(QVariant::Int)));
-
-  query.bindValue(":userId", getOwnerId());
-  query.bindValue(":userId2", getOwnerId());
-  query.bindValue(":entrySource", EntrySources::toHumanReadable(entrySource));
-  query.bindValue(":entrySource2", EntrySources::toHumanReadable(entrySource));
-  query.bindValue(":group", group->getId());
-  query.bindValue(":group2", group->getId());
-  query.bindValue(":name", getName());
-  query.bindValue(":name2", getName());
-
-  bindBaseAmount(query, ":weight", Unit::Dimensions::Weight);
-  bindBaseAmount(query, ":volume", Unit::Dimensions::Volume);
-  bindBaseAmount(query, ":quantity", Unit::Dimensions::Quantity);
-  bindBaseAmount(query, ":servings", Unit::Dimensions::Serving);
-
-  bindBaseAmount(query, ":weight2", Unit::Dimensions::Weight);
-  bindBaseAmount(query, ":volume2", Unit::Dimensions::Volume);
-  bindBaseAmount(query, ":quantity2", Unit::Dimensions::Quantity);
-  bindBaseAmount(query, ":servings2", Unit::Dimensions::Serving);
-
-  if (!query.exec()) {
-    qDebug() << "Query error: " << query.lastError();
-    throw std::runtime_error("Failed to save food to database.");
-  }
-
-  if (id < 0) {
-    int newId = query.lastInsertId().toInt();
-    DataCache<SingleFood>::getInstance().changeKey(id, newId);
-    qDebug() << "Assigned real ID " << newId << " to food with temp ID " << id;
-    id = newId;
-  }
-
-  // Only change information for nutrients that have actually been modified
-  // "4" below is the Source ID for "inputed" data. TODO: get rid of magic number
-
-  if (entrySource == EntrySources::USDA) {
-    // For USDA items, we want to do a REPLACE query in order to explicitly lose all of the
-    // extra statistical data that would not apply to a modified value.
-
-    query.prepare("REPLACE INTO nutrient_data "
-                  "  (Food_Id, Nutr_No, Nutr_Val, Src_Cd) "
-                  "VALUES "
-                  "  (:id, :nutrient_id, :value, 4)");
-
-  } else {
-    // Otherwise, we want to do an INSERT-UPDATE query
-
-    query.prepare("INSERT INTO nutrient_data "
-                  "  (Food_Id, Nutr_No, Nutr_Val, Src_Cd) "
-                  "VALUES "
-                  "  (:id, :nutrient_id, :value, 4) "
-                  "ON DUPLICATE KEY UPDATE"
-                  "  Nutr_No=:nutrient_id2, Nutr_Val=:value2, Src_Cd=4");
-  }
-
-  for (QSet<QString>::const_iterator i = modifiedNutrients.begin(); i != modifiedNutrients.end(); ++i)
-  {
-    const NutrientAmount& amount = nutrients[*i];
-
-    query.bindValue(":id", id);
-
-    query.bindValue(":nutrient_id", amount.getNutrient()->getId());
-    query.bindValue(":value", amount.getAmount(amount.getNutrient()->getStandardUnit()));
-
-    if (entrySource != EntrySources::USDA) {
-      query.bindValue(":nutrient_id2", amount.getNutrient()->getId());
-      query.bindValue(":value2", amount.getAmount(amount.getNutrient()->getStandardUnit()));
-    }
-
-    if (!query.exec()) {
-       throw std::runtime_error("Failed to save nutrient amount for food to database.");
-    }
-  }
-
-  modifiedNutrients.clear();
+  BackEnd::getBackEnd()->storeSingleFood
+    (getCanonicalSharedPointer().dynamicCast<SingleFood>());
 }
 
 void SingleFoodImpl::deleteFromDatabase()
 {
-  if (id < 0) return;
-
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
-  QSqlQuery query(db);
-
-  query.prepare("DELETE FROM food_description WHERE Food_Id=:id");
-  query.bindValue(":id", id);
-
-  if (!query.exec()) {
-    qDebug() << "Query error: " << query.lastError();
-    throw std::runtime_error("Failed to delete food from database.");
-  }
-
-  DataCache<SingleFood>::getInstance().remove(id);
+  BackEnd::getBackEnd()->deleteSingleFood
+    (getCanonicalSharedPointer().dynamicCast<SingleFood>());
 }
 
 void SingleFoodImpl::setCalorieDensity(const QString& nutrientName, double density)

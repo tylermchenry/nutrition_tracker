@@ -128,10 +128,6 @@ class FoodImpl : virtual public Food
 
   protected:
 
-    void bindBaseAmount
-      (QSqlQuery& query, const QString& placeholder,
-       Unit::Dimensions::Dimension dimension) const;
-
     virtual inline const QMap<Unit::Dimensions::Dimension, double>&
       getBaseAmounts() const
         { return baseAmounts; }

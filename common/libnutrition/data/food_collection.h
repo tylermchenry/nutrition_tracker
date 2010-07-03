@@ -106,7 +106,7 @@ class FoodCollection : virtual public Food
       getCanonicalSharedPointer() const;
 
     virtual QSharedPointer<FoodCollection>
-      getCanonicalSharedPointerToCollection() const;
+      getCanonicalSharedPointerToCollection() const = 0;
 
     virtual int getFoodCollectionId() const = 0;
 

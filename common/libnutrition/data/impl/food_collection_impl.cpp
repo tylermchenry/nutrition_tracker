@@ -267,6 +267,12 @@ void FoodCollectionImpl::deleteFromDatabase()
   throw std::logic_error("Attempted to delete a bare food collection from the database.");
 }
 
+QSharedPointer<FoodCollection>
+  FoodCollectionImpl::getCanonicalSharedPointerToCollection() const
+{
+  return getCanonicalSharedPointer().dynamicCast<FoodCollection>();
+}
+
 void FoodCollectionImpl::setComponents(const QList<FoodComponent>& components)
 {
   qDebug() << "Setting components of " << this->getName() << " to a set of "

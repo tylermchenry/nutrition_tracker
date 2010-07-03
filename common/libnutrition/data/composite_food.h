@@ -88,10 +88,6 @@ class CompositeFood : virtual public FoodCollection
 
     virtual QSharedPointer<Food> getCanonicalSharedPointer() const;
 
-    int assignNewId(int newId);
-
-    void removeFromCache();
-
   private:
 
     static QMap<int, QWeakPointer<CompositeFood> > compositeFoodCache;

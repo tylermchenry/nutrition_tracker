@@ -13,8 +13,6 @@
 #include <QString>
 #include <QVector>
 #include <QSharedPointer>
-#include <QWeakPointer>
-#include <QtSql/QSqlQuery>
 
 class UserImpl : virtual public User
 {
@@ -40,6 +38,11 @@ class UserImpl : virtual public User
     virtual void setPassword(const QString& newPassword);
 
     void saveToDatabase();
+
+    // The following methods are only in the Impl class and are not accessible
+    // through the interface. They exist for the benefit of the back ends:
+
+    QString getPwSHA1_hex() const { return pwSHA1_hex; }
 
   protected:
 

@@ -12,12 +12,6 @@
 #include "single_food.h"
 #include "composite_food.h"
 #include "template.h"
-#include <QVariant>
-#include <QDebug>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlRecord>
-#include <QtSql/QSqlField>
-#include <QtSql/QSqlError>
 
 int FoodCollection::nextCollectionId = 0;
 
@@ -77,11 +71,6 @@ QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
 QSharedPointer<Food> FoodCollection::getCanonicalSharedPointer() const
 {
   return DataCache<FoodCollection>::getInstance().get(getFoodCollectionId());
-}
-
-QSharedPointer<FoodCollection> FoodCollection::getCanonicalSharedPointerToCollection() const
-{
-  return getCanonicalSharedPointer().dynamicCast<FoodCollection>();
 }
 
 FoodCollection::ContainedTypes::ContainedType FoodCollection::ContainedTypes::fromHumanReadable

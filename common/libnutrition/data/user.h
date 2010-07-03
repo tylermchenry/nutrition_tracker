@@ -12,8 +12,6 @@
 #include <QString>
 #include <QVector>
 #include <QSharedPointer>
-#include <QWeakPointer>
-#include <QtSql/QSqlQuery>
 
 class User
 {

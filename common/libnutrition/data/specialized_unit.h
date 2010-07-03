@@ -9,12 +9,9 @@
 #ifndef SPECIALIZED_UNIT_H_
 #define SPECIALIZED_UNIT_H_
 
+#include <QString>
 #include <QVector>
-#include <QMap>
-#include <QPair>
 #include <QSharedPointer>
-#include <QWeakPointer>
-#include <QtSql/QSqlQuery>
 #include "food_amount.h"
 #include "unit.h"
 

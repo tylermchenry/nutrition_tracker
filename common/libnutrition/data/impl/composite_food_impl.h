@@ -98,6 +98,12 @@ class CompositeFoodImpl
 
     virtual QSharedPointer<Food> cloneNonce() const;
 
+    // The following methods are only in the Impl class and are not accessible
+    // through the interface. They exist for the benefit of the back ends:
+
+    inline void setCompositeFoodId(int id)
+      { this->id = id; }
+
   protected:
 
     virtual inline void setNonce(bool nonce) { this->nonce = nonce; }

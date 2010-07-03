@@ -46,6 +46,12 @@ class TemplateImpl : public FoodCollectionImpl, virtual public Template
 
     virtual void deleteFromDatabase();
 
+    // The following methods are only in the Impl class and are not accessible
+    // through the interface. They exist for the benefit of the back ends:
+
+    inline void setTemplateId(int id)
+      { this->id = id; }
+
   private:
 
     int id;

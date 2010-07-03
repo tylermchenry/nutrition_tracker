@@ -57,8 +57,23 @@ QList<QSharedPointer<User> > MySQLBackEnd::loadAllUsers()
 
 void MySQLBackEnd::storeUser(const QSharedPointer<User>& user)
 {
-  // TODO: Replace
-  user->saveToDatabase();
+  if (!user) {
+    throw std::logic_error("Attempted to store a NULL user");
+  }
+
+  QSharedPointer<UserImpl> user_impl = user.dynamicCast<UserImpl>();
+
+  QSqlQuery query(db);
+
+  query.prepare("UPDATE user SET Name=:realName, PW_SHA1=:shapass "
+                " WHERE User_Id=:id");
+  query.bindValue(":realName", user->getRealName());
+  query.bindValue(":shapass", user_impl->getPwSHA1_hex());
+  query.bindValue(":id", user->getId());
+
+  if (!query.exec()) {
+    qDebug() << "SQL Failure: " << query.lastError();
+  }
 }
 
 QList<QSharedPointer<User> > MySQLBackEnd::createUsersFromQueryResults
