@@ -191,6 +191,9 @@ class MySQLBackEnd : public BackEnd
     QList<QSharedPointer<Unit> > createUnitsFromQueryResults
       (QSqlQuery& query);
 
+    QSharedPointer<const Unit> createUnitFromRecordOrCache
+      (const QSqlRecord& record);
+
     QSharedPointer<Unit> createUnitFromRecord
       (const QSqlRecord& record);
 

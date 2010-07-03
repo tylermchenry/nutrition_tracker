@@ -96,7 +96,7 @@ QSharedPointer<Nutrient> MySQLBackEnd::createNutrientFromRecord
                         record.field("ShortName").value().toString(),
                         Nutrient::Categories::fromHumanReadable
                         (record.field("Category").value().toString()),
-                        createUnitFromRecord(record),
+                        createUnitFromRecordOrCache(record),
                         record.field("RDI").value().toDouble()));
     qDebug() << "Added nutrient named " << nutrient->getName() << " to cache at ID " << id;
     DataCache<Nutrient>::getInstance().insert(id, nutrient);

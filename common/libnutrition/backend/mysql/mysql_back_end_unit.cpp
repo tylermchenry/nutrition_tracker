@@ -84,6 +84,17 @@ QList<QSharedPointer<Unit> > MySQLBackEnd::createUnitsFromQueryResults
   return units;
 }
 
+QSharedPointer<const Unit> MySQLBackEnd::createUnitFromRecordOrCache
+  (const QSqlRecord& record)
+{
+  QString abbrev = record.field("Unit").value().toString();
+  if (DataCache<Unit>::getInstance().contains(abbrev)) {
+    return DataCache<Unit>::getInstance().get(abbrev);
+  } else {
+    return createUnitFromRecord(record);
+  }
+}
+
 QSharedPointer<Unit> MySQLBackEnd::createUnitFromRecord
   (const QSqlRecord& record)
 {
