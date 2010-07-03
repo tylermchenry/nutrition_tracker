@@ -5,7 +5,7 @@ CONFIG += dll \
 VERSION = 0.1.0
 QT += core \
     sql
-HEADERS += libnutrition/backend/mysql_back_end.h \
+HEADERS += libnutrition/backend/mysql/mysql_back_end.h \
     libnutrition/data/data_cache.h \
     libnutrition/backend/back_end.h \
     libnutrition/data/impl/composite_food_impl.h \
@@ -34,8 +34,19 @@ HEADERS += libnutrition/backend/mysql_back_end.h \
     libnutrition/data/template.h \
     libnutrition/data/unit.h \
     libnutrition/data/user.h
-SOURCES += libnutrition/backend/back_end.cpp \
-    libnutrition/backend/mysql_back_end.cpp \
+SOURCES += libnutrition/backend/mysql/mysql_back_end_user.cpp \
+    libnutrition/backend/mysql/mysql_back_end_composite_food.cpp \
+    libnutrition/backend/mysql/mysql_back_end_group.cpp \
+    libnutrition/backend/mysql/mysql_back_end_login.cpp \
+    libnutrition/backend/mysql/mysql_back_end_meal.cpp \
+    libnutrition/backend/mysql/mysql_back_end_nutrient.cpp \
+    libnutrition/backend/mysql/mysql_back_end_search.cpp \
+    libnutrition/backend/mysql/mysql_back_end_single_food.cpp \
+    libnutrition/backend/mysql/mysql_back_end_specialized_unit.cpp \
+    libnutrition/backend/mysql/mysql_back_end_template.cpp \
+    libnutrition/backend/mysql/mysql_back_end_unit.cpp \
+    libnutrition/backend/mysql/mysql_back_end.cpp \
+    libnutrition/backend/back_end.cpp \
     libnutrition/data/impl/composite_food_impl.cpp \
     libnutrition/data/impl/food_collection_impl.cpp \
     libnutrition/data/impl/food_impl.cpp \

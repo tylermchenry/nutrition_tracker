@@ -11,7 +11,7 @@
 #include "dialogs/database_information.h"
 #include "dialogs/user_login.h"
 #include "libnutrition/data/single_food.h"
-#include "libnutrition/backend/mysql_back_end.h"
+#include "libnutrition/backend/mysql/mysql_back_end.h"
 #include <QtGui/QInputDialog>
 #include <QtGui/QLabel>
 #include <QtGui/QStatusBar>

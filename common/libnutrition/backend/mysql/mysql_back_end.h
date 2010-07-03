@@ -8,7 +8,7 @@
 #ifndef MYSQL_BACK_END_H_
 #define MYSQL_BACK_END_H_
 
-#include "back_end.h"
+#include "../back_end.h"
 #include <QString>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
