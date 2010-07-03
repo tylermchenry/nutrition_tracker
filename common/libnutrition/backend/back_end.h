@@ -43,6 +43,8 @@ class BackEnd
         CompositeFood,
         Template
       };
+      static QString toContainedType(FoodType type);
+      static FoodType fromContainedType(const QString& food);
     };
 
     virtual QSharedPointer<Food> loadFood(FoodTypes::FoodType type, int id) = 0;

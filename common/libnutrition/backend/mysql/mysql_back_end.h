@@ -219,6 +219,10 @@ class MySQLBackEnd : public BackEnd
     void bindBaseAmount
       (const QSharedPointer<Food>& food, QSqlQuery& query,
        const QString& placeholder, Unit::Dimensions::Dimension dimension) const;
+
+    void runSearchQuery
+      (const QString& queryText, const QString& terms,
+       QMap<QString, SearchResult>& results) const;
 };
 
 #endif /* MYSQL_BACK_END_H_ */
