@@ -92,7 +92,7 @@ QVector<QSharedPointer<const Nutrient> > Nutrient::getAllNutrients
   }
 
   QList<QSharedPointer<Nutrient> > nutrients =
-    BackEnd::getBackEnd()->loadAllNutrients();
+    BackEnd::getBackEnd()->loadAllNutrients(category);
 
   QVector<QSharedPointer<const Nutrient> > nutrientsVec;
 
