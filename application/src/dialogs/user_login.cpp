@@ -1,7 +1,6 @@
 #include "user_login.h"
 #include "libnutrition/data/user.h"
 #include <QSettings>
-#include <QtSql/QSqlQuery>
 #include <QtGui/QMessageBox>
 
 UserLogin::UserLogin(QWidget *parent)

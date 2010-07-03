@@ -2,7 +2,6 @@
 #define USER_LOGIN_H
 
 #include <QtGui/QDialog>
-#include <QtSql/QSqlDatabase>
 #include <QByteArray>
 #include "ui_user_login.h"
 

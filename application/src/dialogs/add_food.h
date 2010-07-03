@@ -2,7 +2,6 @@
 #define ADD_FOOD_H
 
 #include <QtGui/QDialog>
-#include <QtSql/QSqlDatabase>
 #include <QDate>
 #include "ui_add_food.h"
 #include "libnutrition/data/food_collection.h"

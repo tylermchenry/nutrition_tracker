@@ -15,7 +15,6 @@ FoodSearchControl::FoodSearchControl(QWidget *parent)
   connect(ui.btnCreate, SIGNAL(clicked()), this, SLOT(showCreateFood()));
 
   static const QString COMPOUND_NAME = "(Composite Foods)";
-  QSqlDatabase db = QSqlDatabase::database("nutrition_db");
 
   ui.lstCategories->clear();
   categoryToGroupID.clear();

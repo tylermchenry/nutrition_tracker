@@ -2,7 +2,6 @@
 #define FOOD_SEARCH_CONTROL_H
 
 #include <QtGui/QWidget>
-#include <QtSql/QSqlDatabase>
 #include <QMap>
 #include <QSet>
 #include "ui_food_search_control.h"
@@ -51,8 +50,6 @@ class FoodSearchControl : public QWidget
 
     Ui::FoodSearchControlUI ui;
     QMap<QString, QString> categoryToGroupID;
-
-  void runSearchQuery(const QString& queryText, QMap<QString, Result>& results) const;
 };
 
 uint qHash(const FoodSearchControl::Result& result);
