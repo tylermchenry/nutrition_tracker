@@ -1,0 +1,42 @@
+import "error.proto";
+
+message SearchRequest 
+{
+	required string searchTerms = 1;
+
+   	repeated int32 excludeGroupIds = 2;
+
+   	optional bool searchSingleFoods = 3 [default = true];
+   	optional bool searchComposites = 4 [default = true];
+   	optional bool searchTemplates = 5 [default = false];
+
+   	optional bool sourceUSDA = 6 [default = true];
+   	optional bool sourceImport = 7 [default = true];
+   	optional bool sourceSelf = 8 [default = true];
+   	optional bool sourceOthers = 9 [default = true];
+   	optional bool includeExpired = 10 [default = false];
+
+   	optional int32 maxResults = 11 [default = 1000];
+}
+
+message SearchResult
+{
+	optional string displayName = 1;
+	
+	enum FoodType 
+	{
+		SingleFood = 0;
+		CompositeFood = 1;
+		Template = 2;
+	}
+	
+	optional FoodType foodType = 2;
+	
+	optional int32 id = 3;
+}
+
+message SearchResponse 
+{
+	repeated SearchResult results = 1;
+	optional Error error = 100;
+}

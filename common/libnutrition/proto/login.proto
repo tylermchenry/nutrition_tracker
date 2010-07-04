@@ -1,0 +1,17 @@
+import "error.proto";
+
+message LogInRequest
+{
+	optional string username = 1;
+	optional string password = 2;
+	optional string realName = 3;
+	optional bool createUser = 4 [default = false];
+}
+
+message LogInResponse
+{
+	optional int32 userId = 1;
+	optional string username = 2;
+	optional string realName = 3;
+	optional Error error = 100;
+}
