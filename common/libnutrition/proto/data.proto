@@ -9,6 +9,17 @@ import "libnutrition/proto/group.proto";
 import "libnutrition/proto/user.proto";
 import "libnutrition/proto/error.proto";
 
+message FoodData 
+{
+	optional SingleFoodData singleFoods = 1;
+	
+	optional CompositeFoodData compositeFoods = 2;
+	
+	optional TemplateData templates = 3;
+	
+	optional MealData meals = 4;	
+}
+
 message DataLoadRequest 
 {
 	optional SingleFoodLoadRequest singleFoodLoadRequest = 1;
