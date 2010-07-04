@@ -1,0 +1,26 @@
+import "error.proto";
+
+message UserRequest
+{
+	optional bool omit = 1 [default = false];
+	optional bool all = 2 [default = false];
+	repeated int32 requestedIds = 3;
+	repeated string requestedUsernames = 4;
+}
+
+message UserData
+{
+	required int32 userId = 1;
+	
+	optional string username = 2;
+	
+	optional string realName = 3;
+	
+	optional string password_SHA1_hex = 4;
+}
+
+message UserResponse
+{
+	repeated UserData users = 1;
+	optional Error error = 100;
+}

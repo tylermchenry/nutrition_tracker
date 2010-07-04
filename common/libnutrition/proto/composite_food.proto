@@ -1,0 +1,32 @@
+import "food_component.proto";
+import "error.proto";
+
+message CompositeFoodRequest 
+{
+	optional bool omit = 1 [default = false];
+	optional bool omitComponents = 2 [default = false];
+	repeated int32 requestedIds = 3;
+}
+
+message CompositeFoodData
+{
+	required int32 id = 1;
+	
+	optional string name = 2;
+	
+	optional string creationDate_ISO8601 = 3;
+	
+	optional string expiryDate_ISO8601 = 4;
+	
+	optional int32 ownerId = 5;
+	
+	optional bool isNonce = 6 [default = false];
+	
+	repeated FoodComponentData components = 7;
+}
+
+message CompositeFoodResponse
+{
+	repeated CompositeFoodData compositeFoods = 1;
+	optional Error error = 100;
+}

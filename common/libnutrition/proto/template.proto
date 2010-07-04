@@ -1,0 +1,26 @@
+import "food_component.proto";
+import "error.proto";
+
+message TemplateRequest 
+{
+	optional bool omit = 1 [default = false];
+	optional bool omitComponents = 2 [default = false];
+	repeated int32 requestedIds = 3;
+}
+
+message TemplateData
+{
+	required int32 id = 1;
+	
+	optional string name = 2;
+	
+	optional int32 ownerId = 3;
+	
+	repeated FoodComponentData components = 4;
+}
+
+message TemplateResponse
+{
+	repeated TemplateData templates = 1;
+	optional Error error = 100;
+}

@@ -1,0 +1,54 @@
+import "single_food.proto";
+import "composite_food.proto";
+import "template.proto";
+import "meal.proto";
+import "nutrient.proto";
+import "unit.proto";
+import "specialized_unit.proto";
+import "group.proto";
+import "user.proto";
+import "error.proto";
+
+message DataRequest 
+{
+	optional SingleFoodRequest singleFoodRequest = 1;
+	
+	optional CompositeFoodRequest compositeFoodRequest = 2;
+	
+	optional TemplateRequest templateRequest = 3;
+	
+	optional MealRequest mealRequest = 4;	
+	
+	optional NutrientRequest nutrientRequest = 5;
+	
+	optional UnitRequest unitRequest = 6;
+		
+	optional SpecializedUnitRequest specializedUnitRequest = 7;
+
+	optional GroupRequest groupRequest = 8;
+	
+	optional UserRequest userRequest = 9;	
+}
+
+message DataResponse
+{
+	optional SingleFoodResponse singleFoodResponse = 1;
+	
+	optional CompositeFoodResponse compositeFoodResponse = 2;
+	
+	optional TemplateResponse templateResponse = 3;
+	
+	optional MealResponse mealResponse = 4;	
+	
+	optional NutrientResponse nutrientResponse = 5;
+	
+	optional UnitResponse unitResponse = 6;
+		
+	optional SpecializedUnitResponse specializedUnitResponse = 7;
+
+	optional GroupResponse groupResponse = 8;
+	
+	optional UserResponse userResponse = 9;
+	
+	optional Error error = 100;
+}

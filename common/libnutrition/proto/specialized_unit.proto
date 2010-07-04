@@ -1,0 +1,33 @@
+import "error.proto";
+
+message SpecializedUnitRequest
+{
+	optional bool omit = 1 [default = false];
+	
+	repeated int32 requestedSingleFoodIds = 2;
+	
+	message SpecializedUnitIdentifier 
+	{
+		required int32 singleFoodId = 1;
+		required int32 sequence = 2;
+	}
+	
+	repeated SpecializedUnitIdentifier requestedIds = 3;
+}
+
+message SpecializedUnitData
+{
+	required int32 foodId = 1;
+	
+	optional int32 sequence = 2;
+	
+	optional string name = 3;
+	
+	optional double amountInGrams = 4;
+} 
+
+message SpecializedUnitResponse
+{
+	repeated SpecializedUnitData specializedUnits = 1;
+	optional Error error = 100;
+}

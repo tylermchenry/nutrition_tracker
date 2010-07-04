@@ -1,0 +1,50 @@
+import "error.proto";
+
+message UnitRequest
+{
+	optional bool omit = 1 [default = false];
+	optional bool all = 2 [default = false];
+	
+	enum Dimension {
+		Weight = 0;
+        Volume = 1;
+        Quantity = 2;
+        Serving = 3;
+        Energy = 4;
+        IU = 5;
+    }
+    
+    repeated Dimension requestedDimensions = 3;
+    
+    repeated string requestedAbbreviations = 4;
+    
+    optional bool basicUnitsOnly = 5 [default = false];
+}
+
+message UnitData
+{
+	optional string abbreviation = 1;
+
+	optional string name = 2;
+
+	enum Dimension {
+		Weight = 0;
+        Volume = 1;
+        Quantity = 2;
+        Serving = 3;
+        Energy = 4;
+        IU = 5;
+    }
+    
+    optional Dimension dimension = 3;
+    
+    optional double basicConversionFactor = 4;
+    
+    optional bool isBasic = 5;
+}	
+
+message UnitResponse 
+{
+	repeated UnitData units = 1;
+	optional Error error = 100;
+}

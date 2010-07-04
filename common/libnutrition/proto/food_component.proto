@@ -1,0 +1,18 @@
+message FoodComponentData
+{
+	enum FoodType 
+	{
+		SingleFood = 0;
+		CompositeFood = 1;
+	}
+	
+	required int32 foodId = 1;
+	
+	required FoodType foodType = 2;
+	
+	optional double amount = 3;
+	
+	optional string unitAbbreviation = 4 [default = "g"];
+
+	optional int32 order = 5;	
+}	

@@ -1,0 +1,39 @@
+import "error.proto";
+
+message NutrientRequest 
+{
+	optional bool omit = 1 [default = false];
+	optional bool all = 2 [default = false];
+	repeated int32 requestedIds = 3;
+	repeated string requestedNames = 4;
+}
+
+message NutrientData
+{
+	required int32 id = 1;
+	
+	optional string name = 2;
+	
+	enum Category {
+		Energy = 0; 
+        Basic = 1;
+        Vitamin = 2;
+        Mineral = 3;
+        Additional = 4;
+        Hidden = 5;
+    }
+    
+    required Category category = 3 [default = Additional];
+    
+    optional string standardUnitAbbreviation = 4;
+    
+    optional double RDI = 5;
+}
+
+message NutrientResponse
+{
+	repeated NutrientData nutrients = 1;
+	optional Error error = 100;
+}
+
+	

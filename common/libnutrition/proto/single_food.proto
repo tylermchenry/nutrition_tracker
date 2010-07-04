@@ -1,0 +1,62 @@
+import "error.proto";
+
+message SingleFoodRequest 
+{
+	optional bool omit = 1 [default = false];
+	optional bool omitComponents = 2 [default = false];
+	repeated int32 requestedIds = 3;
+}
+
+message SingleFoodData
+{
+	required int32 id = 1;
+	
+	optional string name = 2;
+	
+	optional int32 ownerId = 3;
+	
+	enum EntrySource {
+		USDA = 0;
+		Import = 1;
+		Custom = 2;
+	}
+	
+	optional EntrySource entrySource = 4;
+	
+	optional int32 groupId = 5;
+	
+	optional double percentRefuse = 6;
+	
+	optional string refuseDescription = 7;
+	
+	message NutrientAmount 
+	{
+		required int32 nutrientId = 1;
+		optional double amount = 2;
+		optional string unitAbbreviation = 3 [default = "g"];
+	}
+	
+	repeated NutrientAmount nutrientAmounts = 8;
+	
+	optional double weightAmount = 9;
+	
+	optional double volumeAmount = 10;
+	
+	optional double quantityAmount = 11;
+	
+	optional double servingAmount = 12;
+	
+	optional double energyDensityFat = 13;
+	
+	optional double energyDensityProtein = 14;
+	
+	optional double energyDensityCarbohydrate = 15;
+	
+	optional double energyDensityAlcohol = 16;
+}
+
+message SingleFoodResponse
+{
+	repeated SingleFoodData singleFoods = 1;
+	optional Error error = 100;
+}

@@ -1,0 +1,40 @@
+import "food_component.proto";
+import "error.proto";
+
+message MealRequest 
+{
+	optional bool omit = 1 [default = false];
+	optional bool omitComponents = 2 [default = false];
+
+	repeated string requestedDate_ISO8601 = 3;
+	
+	message MealIdentifier 
+	{
+		optional int32 userId = 1;
+		required string date_ISO8601 = 2;
+		required int32 mealId = 3;
+	}
+		
+	repeated MealIdentifier requestedIds = 4;
+}
+
+message MealData
+{
+	required int32 userId = 1;
+	
+	optional string date_ISO8601 = 2;
+	
+	optional int32 mealId = 3;
+	
+	optional string name = 4;
+	
+	optional int32 creatorId = 5;
+	
+	repeated FoodComponentData components = 6;
+}
+
+message MealResponse
+{
+	repeated MealData meals = 1;
+	optional Error error = 100;
+}
