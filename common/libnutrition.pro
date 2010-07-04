@@ -5,6 +5,9 @@ CONFIG += dll \
 VERSION = 0.1.0
 QT += core \
     sql
+    
+LIBS += -lprotobuf
+    
 HEADERS += libnutrition/backend/mysql/mysql_back_end.h \
     libnutrition/data/data_cache.h \
     libnutrition/backend/back_end.h \
@@ -72,4 +75,38 @@ SOURCES += libnutrition/backend/mysql/mysql_back_end_user.cpp \
     libnutrition/data/unit.cpp \
     libnutrition/data/user.cpp
 FORMS += 
-RESOURCES += 
+RESOURCES +=
+
+# Order is important for the protos, since some depend on each other's generated
+# header files, and qmake is not knowledgeable about this. Error and Component
+# must come first, and Data must come after everything except Login and Search
+
+PROTOS += libnutrition/proto/error.proto \
+	libnutrition/proto/food_component.proto \
+	libnutrition/proto/composite_food.proto \
+	libnutrition/proto/group.proto \
+	libnutrition/proto/meal.proto \
+	libnutrition/proto/nutrient.proto \
+	libnutrition/proto/single_food.proto \
+	libnutrition/proto/specialized_unit.proto \
+	libnutrition/proto/template.proto \
+	libnutrition/proto/unit.proto \
+	libnutrition/proto/user.proto \
+	libnutrition/proto/data.proto \
+	libnutrition/proto/login.proto \
+	libnutrition/proto/search.proto 
+ 
+protobuf_decl.name  = protobuf header
+protobuf_decl.input = PROTOS
+protobuf_decl.output  = libnutrition/proto/${QMAKE_FILE_BASE}.pb.h
+protobuf_decl.commands = protoc --cpp_out="." ${QMAKE_FILE_NAME}
+protobuf_decl.variable_out = GENERATED_FILES 
+QMAKE_EXTRA_COMPILERS += protobuf_decl 
+
+protobuf_impl.name  = protobuf implementation
+protobuf_impl.input = PROTOS
+protobuf_impl.output  = libnutrition/proto/${QMAKE_FILE_BASE}.pb.cc
+protobuf_impl.depends  = libnutrition/proto/${QMAKE_FILE_BASE}.pb.h
+protobuf_impl.commands = $$escape_expand(\n)
+protobuf_impl.variable_out = GENERATED_SOURCES
+QMAKE_EXTRA_COMPILERS += protobuf_impl 
