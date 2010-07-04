@@ -1,5 +1,5 @@
-import "food_component.proto";
-import "error.proto";
+import "libnutrition/proto/food_component.proto";
+import "libnutrition/proto/error.proto";
 
 message CompositeFoodRequest 
 {

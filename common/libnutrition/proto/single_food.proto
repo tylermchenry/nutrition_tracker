@@ -1,4 +1,4 @@
-import "error.proto";
+import "libnutrition/proto/error.proto";
 
 message SingleFoodRequest 
 {

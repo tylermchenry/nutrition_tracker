@@ -1,13 +1,13 @@
-import "single_food.proto";
-import "composite_food.proto";
-import "template.proto";
-import "meal.proto";
-import "nutrient.proto";
-import "unit.proto";
-import "specialized_unit.proto";
-import "group.proto";
-import "user.proto";
-import "error.proto";
+import "libnutrition/proto/single_food.proto";
+import "libnutrition/proto/composite_food.proto";
+import "libnutrition/proto/template.proto";
+import "libnutrition/proto/meal.proto";
+import "libnutrition/proto/nutrient.proto";
+import "libnutrition/proto/unit.proto";
+import "libnutrition/proto/specialized_unit.proto";
+import "libnutrition/proto/group.proto";
+import "libnutrition/proto/user.proto";
+import "libnutrition/proto/error.proto";
 
 message DataRequest 
 {
