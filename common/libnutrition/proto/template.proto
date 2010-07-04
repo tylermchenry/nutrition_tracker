@@ -1,13 +1,6 @@
 import "libnutrition/proto/food_component.proto";
 import "libnutrition/proto/error.proto";
 
-message TemplateRequest 
-{
-	optional bool omit = 1 [default = false];
-	optional bool omitComponents = 2 [default = false];
-	repeated int32 requestedIds = 3;
-}
-
 message TemplateData
 {
 	required int32 id = 1;
@@ -19,8 +12,37 @@ message TemplateData
 	repeated FoodComponentData components = 4;
 }
 
-message TemplateResponse
+message TemplateLoadRequest 
+{
+	optional bool omit = 1 [default = false];
+	optional bool nameAndIdOnly = 2 [default = false];
+	repeated int32 requestedIds = 3;
+}
+
+message TemplateLoadResponse
 {
 	repeated TemplateData templates = 1;
+	optional Error error = 100;
+}
+
+message TemplateStoreRequest
+{
+	repeated TemplateData templatess = 1;
+}
+
+message TemplateStoreResponse
+{
+	repeated int32 storedIds = 1;
+	optional Error error = 100;
+}
+
+message TemplateDeleteRequest
+{
+	repeated int32 deleteIds = 1;
+}
+
+message TemplateDeleteResponse
+{
+	repeated int32 deletedIds = 1;
 	optional Error error = 100;
 }

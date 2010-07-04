@@ -1,21 +1,11 @@
 import "libnutrition/proto/food_component.proto";
 import "libnutrition/proto/error.proto";
 
-message MealRequest 
+message MealIdentifier 
 {
-	optional bool omit = 1 [default = false];
-	optional bool omitComponents = 2 [default = false];
-
-	repeated string requestedDate_ISO8601 = 3;
-	
-	message MealIdentifier 
-	{
-		optional int32 userId = 1;
-		required string date_ISO8601 = 2;
-		required int32 mealId = 3;
-	}
-		
-	repeated MealIdentifier requestedIds = 4;
+	optional int32 userId = 1;
+	required string date_ISO8601 = 2;
+	required int32 mealId = 3;
 }
 
 message MealData
@@ -33,8 +23,41 @@ message MealData
 	repeated FoodComponentData components = 6;
 }
 
-message MealResponse
+message MealLoadRequest 
+{
+	optional bool omit = 1 [default = false];
+	optional bool nameAndIdOnly = 2 [default = false];
+
+	repeated string requestedDates_ISO8601 = 3;
+		
+	repeated MealIdentifier requestedIds = 4;
+}
+
+message MealLoadResponse
 {
 	repeated MealData meals = 1;
+	optional Error error = 100;
+}
+
+message MealStoreRequest
+{
+	repeated MealData meals = 1;
+}
+
+message MealStoreResponse
+{
+	repeated MealIdentifier storedIds = 1;
+	optional Error error = 100;
+}
+
+message MealDeleteRequest
+{
+	repeated string deleteDates_ISO8601 = 1;
+	repeated MealIdentifier deleteIds = 2;
+}
+
+message MealDeleteResponse
+{
+	repeated MealIdentifier deletedIds = 1;
 	optional Error error = 100;
 }

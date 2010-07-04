@@ -9,46 +9,98 @@ import "libnutrition/proto/group.proto";
 import "libnutrition/proto/user.proto";
 import "libnutrition/proto/error.proto";
 
-message DataRequest 
+message DataLoadRequest 
 {
-	optional SingleFoodRequest singleFoodRequest = 1;
+	optional SingleFoodLoadRequest singleFoodLoadRequest = 1;
 	
-	optional CompositeFoodRequest compositeFoodRequest = 2;
+	optional CompositeFoodLoadRequest compositeFoodLoadRequest = 2;
 	
-	optional TemplateRequest templateRequest = 3;
+	optional TemplateLoadRequest templateLoadRequest = 3;
 	
-	optional MealRequest mealRequest = 4;	
+	optional MealLoadRequest mealLoadRequest = 4;	
 	
-	optional NutrientRequest nutrientRequest = 5;
+	optional NutrientLoadRequest nutrientLoadRequest = 5;
 	
-	optional UnitRequest unitRequest = 6;
+	optional UnitLoadRequest unitLoadRequest = 6;
 		
-	optional SpecializedUnitRequest specializedUnitRequest = 7;
+	optional SpecializedUnitLoadRequest specializedUnitLoadRequest = 7;
 
-	optional GroupRequest groupRequest = 8;
+	optional GroupLoadRequest groupLoadRequest = 8;
 	
-	optional UserRequest userRequest = 9;	
+	optional UserLoadRequest userLoadRequest = 9;	
 }
 
-message DataResponse
+message DataLoadResponse
 {
-	optional SingleFoodResponse singleFoodResponse = 1;
+	optional SingleFoodLoadResponse singleFoodLoadResponse = 1;
 	
-	optional CompositeFoodResponse compositeFoodResponse = 2;
+	optional CompositeFoodLoadResponse compositeFoodLoadResponse = 2;
 	
-	optional TemplateResponse templateResponse = 3;
+	optional TemplateLoadResponse templateLoadResponse = 3;
 	
-	optional MealResponse mealResponse = 4;	
+	optional MealLoadResponse mealLoadResponse = 4;	
 	
-	optional NutrientResponse nutrientResponse = 5;
+	optional NutrientLoadResponse nutrientLoadResponse = 5;
 	
-	optional UnitResponse unitResponse = 6;
+	optional UnitLoadResponse unitLoadResponse = 6;
 		
-	optional SpecializedUnitResponse specializedUnitResponse = 7;
+	optional SpecializedUnitLoadResponse specializedUnitLoadResponse = 7;
 
-	optional GroupResponse groupResponse = 8;
+	optional GroupLoadResponse groupLoadResponse = 8;
 	
-	optional UserResponse userResponse = 9;
+	optional UserLoadResponse userLoadResponse = 9;
+	
+	optional Error error = 100;
+}
+
+message DataStoreRequest 
+{
+	optional SingleFoodStoreRequest singleFoodStoreRequest = 1;
+	
+	optional CompositeFoodStoreRequest compositeFoodStoreRequest = 2;
+	
+	optional TemplateStoreRequest templateStoreRequest = 3;
+	
+	optional MealStoreRequest mealStoreRequest = 4;	
+	
+	optional UserStoreRequest userStoreRequest = 9;	
+}
+
+message DataStoreResponse
+{
+	optional SingleFoodStoreResponse singleFoodStoreResponse = 1;
+	
+	optional CompositeFoodStoreResponse compositeFoodStoreResponse = 2;
+	
+	optional TemplateStoreResponse templateStoreResponse = 3;
+	
+	optional MealStoreResponse mealStoreResponse = 4;
+	
+	optional UserStoreRequest userStoreResponse = 9;	
+	
+	optional Error error = 100;
+}
+
+message DataDeleteRequest 
+{
+	optional SingleFoodDeleteRequest singleFoodDeleteRequest = 1;
+	
+	optional CompositeFoodDeleteRequest compositeFoodDeleteRequest = 2;
+	
+	optional TemplateDeleteRequest templateDeleteRequest = 3;
+	
+	optional MealDeleteRequest mealDeleteRequest = 4;		
+}
+
+message DataDeleteResponse
+{
+	optional SingleFoodDeleteResponse singleFoodDeleteResponse = 1;
+	
+	optional CompositeFoodDeleteResponse compositeFoodDeleteResponse = 2;
+	
+	optional TemplateDeleteResponse templateDeleteResponse = 3;
+	
+	optional MealDeleteResponse mealDeleteResponse = 4;	
 	
 	optional Error error = 100;
 }

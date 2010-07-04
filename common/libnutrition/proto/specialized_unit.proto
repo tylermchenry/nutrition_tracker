@@ -1,18 +1,9 @@
 import "libnutrition/proto/error.proto";
 
-message SpecializedUnitRequest
+message SpecializedUnitIdentifier 
 {
-	optional bool omit = 1 [default = false];
-	
-	repeated int32 requestedSingleFoodIds = 2;
-	
-	message SpecializedUnitIdentifier 
-	{
-		required int32 singleFoodId = 1;
-		required int32 sequence = 2;
-	}
-	
-	repeated SpecializedUnitIdentifier requestedIds = 3;
+	required int32 singleFoodId = 1;
+	required int32 sequence = 2;
 }
 
 message SpecializedUnitData
@@ -26,8 +17,16 @@ message SpecializedUnitData
 	optional double amountInGrams = 4;
 } 
 
-message SpecializedUnitResponse
+message SpecializedUnitLoadResponse
 {
 	repeated SpecializedUnitData specializedUnits = 1;
 	optional Error error = 100;
+}
+
+message SpecializedUnitLoadRequest
+{
+	optional bool omit = 1 [default = false];
+	
+	repeated int32 requestedSingleFoodIds = 2;		
+	repeated SpecializedUnitIdentifier requestedIds = 3;
 }

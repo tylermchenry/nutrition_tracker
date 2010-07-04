@@ -1,13 +1,5 @@
 import "libnutrition/proto/error.proto";
 
-message NutrientRequest 
-{
-	optional bool omit = 1 [default = false];
-	optional bool all = 2 [default = false];
-	repeated int32 requestedIds = 3;
-	repeated string requestedNames = 4;
-}
-
 message NutrientData
 {
 	required int32 id = 1;
@@ -30,7 +22,15 @@ message NutrientData
     optional double RDI = 5;
 }
 
-message NutrientResponse
+message NutrientLoadRequest 
+{
+	optional bool omit = 1 [default = false];
+	optional bool all = 2 [default = false];
+	repeated int32 requestedIds = 3;
+	repeated string requestedNames = 4;
+}
+
+message NutrientLoadResponse
 {
 	repeated NutrientData nutrients = 1;
 	optional Error error = 100;

@@ -1,13 +1,5 @@
 import "libnutrition/proto/error.proto";
 
-message UserRequest
-{
-	optional bool omit = 1 [default = false];
-	optional bool all = 2 [default = false];
-	repeated int32 requestedIds = 3;
-	repeated string requestedUsernames = 4;
-}
-
 message UserData
 {
 	required int32 userId = 1;
@@ -17,10 +9,32 @@ message UserData
 	optional string realName = 3;
 	
 	optional string password_SHA1_hex = 4;
+	
+	optional string password_plain = 5;
 }
 
-message UserResponse
+message UserLoadRequest
+{
+	optional bool omit = 1 [default = false];
+	optional bool all = 2 [default = false];
+	repeated int32 requestedIds = 3;
+	repeated string requestedUsernames = 4;
+}
+
+message UserLoadResponse
 {
 	repeated UserData users = 1;
 	optional Error error = 100;
 }
+
+message UserStoreRequest
+{
+	repeated UserData users = 1;
+}
+
+message UserStoreResponse
+{
+	repeated int32 storedIds = 1;
+	optional Error error = 100;
+}
+

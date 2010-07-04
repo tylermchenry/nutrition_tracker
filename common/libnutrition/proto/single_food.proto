@@ -1,12 +1,5 @@
 import "libnutrition/proto/error.proto";
 
-message SingleFoodRequest 
-{
-	optional bool omit = 1 [default = false];
-	optional bool omitDetails = 2 [default = false];
-	repeated int32 requestedIds = 3;
-}
-
 message SingleFoodData
 {
 	required int32 id = 1;
@@ -55,8 +48,37 @@ message SingleFoodData
 	optional double energyDensityAlcohol = 16;
 }
 
-message SingleFoodResponse
+message SingleFoodLoadRequest 
+{
+	optional bool omit = 1 [default = false];
+	optional bool nameAndIdOnly = 2 [default = false];
+	repeated int32 requestedIds = 3	;
+}
+
+message SingleFoodLoadResponse
 {
 	repeated SingleFoodData singleFoods = 1;
+	optional Error error = 100;
+}
+
+message SingleFoodStoreRequest
+{
+	repeated SingleFoodData singleFoods = 1;
+}
+
+message SingleFoodStoreResponse
+{
+	repeated int32 storedIds = 1;
+	optional Error error = 100;
+}
+
+message SingleFoodDeleteRequest
+{
+	repeated int32 deleteIds = 1;
+}
+
+message SingleFoodDeleteResponse
+{
+	repeated int32 deletedIds = 1;
 	optional Error error = 100;
 }
