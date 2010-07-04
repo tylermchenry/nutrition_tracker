@@ -3,7 +3,7 @@ import "libnutrition/proto/error.proto";
 message SingleFoodRequest 
 {
 	optional bool omit = 1 [default = false];
-	optional bool omitComponents = 2 [default = false];
+	optional bool omitDetails = 2 [default = false];
 	repeated int32 requestedIds = 3;
 }
 
