@@ -6,13 +6,17 @@ message FoodComponentData
 		CompositeFood = 1;
 	}
 	
-	required int32 foodId = 1;
+	required int32 id = 1;
 	
-	required FoodType foodType = 2;
+	optional int32 foodId = 2;
 	
-	optional double amount = 3;
+	optional FoodType foodType = 3;
 	
-	optional string unitAbbreviation = 4 [default = "g"];
+	optional double amount = 4;
+	
+	optional string unitAbbreviation = 5 [default = "g"];
+	
+	optional bool includesRefuse = 6;
 
-	optional int32 order = 5;	
+	optional int32 order = 7;	
 }	
