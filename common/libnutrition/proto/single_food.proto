@@ -16,7 +16,7 @@ message SingleFoodData
 	
 	optional EntrySource entrySource = 4;
 	
-	optional int32 groupId = 5;
+	optional string groupId = 5;
 	
 	optional double percentRefuse = 6;
 	
@@ -24,7 +24,7 @@ message SingleFoodData
 	
 	message NutrientAmount 
 	{
-		required int32 nutrientId = 1;
+		optional string nutrientId = 1;
 		optional double amount = 2;
 		optional string unitAbbreviation = 3 [default = "g"];
 	}
@@ -52,7 +52,8 @@ message SingleFoodLoadRequest
 {
 	optional bool omit = 1 [default = false];
 	optional bool nameAndIdOnly = 2 [default = false];
-	repeated int32 requestedIds = 3	;
+	repeated int32 requestedIds = 3;
+	repeated int32 requestedUserIds = 4;
 }
 
 message SingleFoodLoadResponse

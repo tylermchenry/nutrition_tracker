@@ -17,6 +17,7 @@ message TemplateLoadRequest
 	optional bool omit = 1 [default = false];
 	optional bool nameAndIdOnly = 2 [default = false];
 	repeated int32 requestedIds = 3;
+	repeated int32 requestedUserIds = 4;
 }
 
 message TemplateLoadResponse
