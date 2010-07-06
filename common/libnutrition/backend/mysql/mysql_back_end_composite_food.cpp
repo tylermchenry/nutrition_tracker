@@ -111,7 +111,7 @@ void MySQLBackEnd::storeCompositeFood(const QSharedPointer<CompositeFood>& food)
   query.bindValue(":nonce2", food->isNonce());
 
   QDate creationDate = food->getCreationDate();
-  QDate expiryDate = food->getCreationDate();
+  QDate expiryDate = food->getExpiryDate();
 
   query.bindValue(":creation", creationDate.isNull() ? QVariant(QVariant::Date) : creationDate);
   query.bindValue(":creation2", creationDate.isNull() ? QVariant(QVariant::Date) : creationDate);
