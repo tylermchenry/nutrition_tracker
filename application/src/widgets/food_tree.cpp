@@ -152,8 +152,9 @@ void FoodTree::changeAmount(const QModelIndex& index, FoodComponent* component)
     double newAmount =
         QInputDialog::getDouble(this, "Change Amount",
                                 "New amount (in " + amount.getUnit()->getName() + "):",
-                                 amount.getAmount(), 0);
-   model->changeAmount(index, FoodAmount(amount.getFood(), newAmount, amount.getUnit()));
+                                 amount.getAmount());
+   model->changeAmount(index, FoodAmount(amount.getFood(), newAmount, amount.getUnit(),
+                                         amount.includesRefuse()));
   }
 }
 
@@ -165,7 +166,8 @@ void FoodTree::changeUnit(const QModelIndex& index, FoodComponent* component,
 
     double newAmount = amount.getAmount(unit);
 
-    model->changeAmount(index, FoodAmount(amount.getFood(), newAmount, unit));
+    model->changeAmount(index, FoodAmount(amount.getFood(), newAmount, unit,
+                                          amount.includesRefuse()));
   }
 }
 
