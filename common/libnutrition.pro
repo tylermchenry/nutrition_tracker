@@ -37,7 +37,8 @@ HEADERS += libnutrition/backend/service/service_back_end.h \
     libnutrition/data/template.h \
     libnutrition/data/unit.h \
     libnutrition/data/user.h
-SOURCES += libnutrition/backend/service/service_back_end_composite_food.cpp \
+SOURCES += libnutrition/backend/service/service_back_end_proto_kludge.cpp \
+	libnutrition/backend/service/service_back_end_composite_food.cpp \
     libnutrition/backend/service/service_back_end_single_food.cpp \
     libnutrition/backend/service/service_back_end_specialized_unit.cpp \
     libnutrition/backend/service/service_back_end_nutrient.cpp \
