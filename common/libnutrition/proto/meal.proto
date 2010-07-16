@@ -4,8 +4,8 @@ import "libnutrition/proto/error.proto";
 message MealIdentifier 
 {
 	optional int32 userId = 1;
-	required string date_ISO8601 = 2;
-	required int32 mealId = 3;
+	optional string date_ISO8601 = 2;
+	optional int32 mealId = 3;
 }
 
 message MealData
@@ -25,12 +25,12 @@ message MealData
 
 message MealLoadRequest 
 {
-	optional bool omit = 1 [default = false];
-	optional bool nameAndIdOnly = 2 [default = false];
-
-	repeated string requestedDates_ISO8601 = 3;
+	optional bool all = 1 [default = false];
+	optional bool omit = 2 [default = false];
+	optional bool nameAndIdOnly = 3 [default = false];
+	optional bool omitGenerics = 4 [default = false];
 		
-	repeated MealIdentifier requestedIds = 4;
+	repeated MealIdentifier requestedIds = 5;	
 }
 
 message MealLoadResponse
