@@ -4,7 +4,7 @@ message SearchRequest
 {
 	required string searchTerms = 1;
 
-   	repeated int32 excludeGroupIds = 2;
+   	repeated string excludeGroupIds = 2;
 
    	optional bool searchSingleFoods = 3 [default = true];
    	optional bool searchComposites = 4 [default = true];
