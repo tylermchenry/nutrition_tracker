@@ -1,30 +1,5 @@
-import "libnutrition/proto/food_component.proto";
-import "libnutrition/proto/error.proto";
-
-message CompositeFoodData
-{
-	required int32 id = 1;
-	
-	optional string name = 2;
-	
-	optional int32 ownerId = 3;
-	
-	optional double weightAmount = 4;
-	
-	optional double volumeAmount = 5;
-	
-	optional double quantityAmount = 6;
-	
-	optional double servingAmount = 7;
-	
-	optional string creationDate_ISO8601 = 8;
-	
-	optional string expiryDate_ISO8601 = 9;
-	
-	optional bool isNonce = 10 [default = false];
-	
-	repeated FoodComponentData components = 11;
-}
+import "libnutrition/proto/data/composite_food.proto";
+import "libnutrition/proto/service/error.proto";
 
 message CompositeFoodLoadRequest 
 {

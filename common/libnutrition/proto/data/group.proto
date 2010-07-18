@@ -1,0 +1,5 @@
+message GroupData
+{
+	optional string id = 1;	
+	optional string name = 2;
+}

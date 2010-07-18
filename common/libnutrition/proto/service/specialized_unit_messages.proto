@@ -1,21 +1,5 @@
-import "libnutrition/proto/error.proto";
-
-message SpecializedUnitIdentifier 
-{
-	required int32 singleFoodId = 1;
-	required int32 sequence = 2;
-}
-
-message SpecializedUnitData
-{
-	required int32 foodId = 1;
-	
-	optional int32 sequence = 2;
-	
-	optional string name = 3;
-	
-	optional double amountInGrams = 4;
-} 
+import "libnutrition/proto/data/specialized_unit.proto";
+import "libnutrition/proto/service/error.proto";
 
 message SpecializedUnitLoadResponse
 {

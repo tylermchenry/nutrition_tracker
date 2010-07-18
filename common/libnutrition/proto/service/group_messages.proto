@@ -1,10 +1,5 @@
-import "libnutrition/proto/error.proto";
-
-message GroupData
-{
-	optional string id = 1;	
-	optional string name = 2;
-}
+import "libnutrition/proto/data/group.proto";
+import "libnutrition/proto/service/error.proto";
 
 message GroupLoadRequest
 {

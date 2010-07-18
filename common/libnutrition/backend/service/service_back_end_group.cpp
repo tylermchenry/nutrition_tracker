@@ -7,7 +7,7 @@
  */
 
 #include "service_back_end.h"
-#include "libnutrition/proto/group.pb.h"
+#include "libnutrition/proto/service/group_messages.pb.h"
 #include "libnutrition/data/impl/group_impl.h"
 #include "libnutrition/data/data_cache.h"
 #include <stdexcept>

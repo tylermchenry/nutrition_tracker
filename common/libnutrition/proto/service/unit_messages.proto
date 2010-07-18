@@ -1,26 +1,5 @@
-import "libnutrition/proto/error.proto";
-
-message UnitData
-{
-	optional string abbreviation = 1;
-
-	optional string name = 2;
-
-	enum Dimension {
-		Weight = 0;
-        Volume = 1;
-        Quantity = 2;
-        Serving = 3;
-        Energy = 4;
-        IU = 5;
-    }
-    
-    optional Dimension dimension = 3;
-    
-    optional double basicConversionFactor = 4;
-    
-    optional bool isBasic = 5;
-}	
+import "libnutrition/proto/data/unit.proto";
+import "libnutrition/proto/service/error.proto";
 
 message UnitLoadRequest
 {

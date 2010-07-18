@@ -1,4 +1,4 @@
-import "libnutrition/proto/error.proto";
+import "libnutrition/proto/service/error.proto";
 
 message LogInRequest
 {

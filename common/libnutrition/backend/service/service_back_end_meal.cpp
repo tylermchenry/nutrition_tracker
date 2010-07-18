@@ -7,7 +7,7 @@
  */
 
 #include "service_back_end.h"
-#include "libnutrition/proto/data.pb.h"
+#include "libnutrition/proto/service/data_messages.pb.h"
 #include "libnutrition/data/impl/meal_impl.h"
 #include "libnutrition/data/data_cache.h"
 #include <stdexcept>

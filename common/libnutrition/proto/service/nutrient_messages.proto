@@ -1,0 +1,18 @@
+import "libnutrition/proto/data/nutrient.proto";
+import "libnutrition/proto/service/error.proto";
+
+message NutrientLoadRequest 
+{
+	optional bool omit = 1 [default = false];
+	optional bool all = 2 [default = false];
+	repeated string requestedIds = 3;
+	repeated string requestedNames = 4;
+}
+
+message NutrientLoadResponse
+{
+	repeated NutrientData nutrients = 1;
+	optional Error error = 100;
+}
+
+	

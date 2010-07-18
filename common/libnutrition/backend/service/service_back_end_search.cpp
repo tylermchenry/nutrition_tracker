@@ -7,7 +7,7 @@
  */
 
 #include "service_back_end.h"
-#include "libnutrition/proto/search.pb.h"
+#include "libnutrition/proto/service/search_messages.pb.h"
 #include <stdexcept>
 
 QList<BackEnd::SearchResult> ServiceBackEnd::searchFoods(const BackEnd::SearchRequest& request)

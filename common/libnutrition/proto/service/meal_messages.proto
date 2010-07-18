@@ -1,27 +1,5 @@
-import "libnutrition/proto/food_component.proto";
-import "libnutrition/proto/error.proto";
-
-message MealIdentifier 
-{
-	optional int32 userId = 1;
-	optional string date_ISO8601 = 2;
-	optional int32 mealId = 3;
-}
-
-message MealData
-{
-	required int32 userId = 1;
-	
-	optional string date_ISO8601 = 2;
-	
-	optional int32 mealId = 3;
-	
-	optional string name = 4;
-	
-	optional int32 creatorId = 5;
-	
-	repeated FoodComponentData components = 6;
-}
+import "libnutrition/proto/data/meal.proto";
+import "libnutrition/proto/service/error.proto";
 
 message MealLoadRequest 
 {

@@ -93,34 +93,61 @@ RESOURCES +=
 # Order is important for the protos, since some depend on each other's generated
 # header files, and qmake is not knowledgeable about this. Error and Component
 # must come first, and Data must come after everything except Login and Search
-PROTOS += libnutrition/proto/error.proto \
-    libnutrition/proto/food_component.proto \
-    libnutrition/proto/composite_food.proto \
-    libnutrition/proto/group.proto \
-    libnutrition/proto/meal.proto \
-    libnutrition/proto/nutrient.proto \
-    libnutrition/proto/single_food.proto \
-    libnutrition/proto/specialized_unit.proto \
-    libnutrition/proto/template.proto \
-    libnutrition/proto/unit.proto \
-    libnutrition/proto/user.proto \
-    libnutrition/proto/data.proto \
-    libnutrition/proto/login.proto \
-    libnutrition/proto/search.proto
-protobuf_decl.name = protobuf \
-    header
-protobuf_decl.input = PROTOS
-protobuf_decl.output = libnutrition/proto/${QMAKE_FILE_BASE}.pb.h
-protobuf_decl.commands = protoc \
+
+DATA_PROTOS += libnutrition/proto/data/food_component.proto \
+    libnutrition/proto/data/composite_food.proto \
+    libnutrition/proto/data/group.proto \
+    libnutrition/proto/data/meal.proto \
+    libnutrition/proto/data/nutrient.proto \
+    libnutrition/proto/data/single_food.proto \
+    libnutrition/proto/data/specialized_unit.proto \
+    libnutrition/proto/data/template.proto \
+    libnutrition/proto/data/unit.proto \
+    libnutrition/proto/data/user.proto \
+    libnutrition/proto/data/data.proto 
+probuf_data_decl.name = protobuf data header
+probuf_data_decl.input = DATA_PROTOS
+probuf_data_decl.output = libnutrition/proto/data/${QMAKE_FILE_BASE}.pb.h
+probuf_data_decl.commands = protoc \
     --cpp_out="." \
     ${QMAKE_FILE_NAME}
-protobuf_decl.variable_out = GENERATED_FILES
-QMAKE_EXTRA_COMPILERS += protobuf_decl
-protobuf_impl.name = protobuf \
-    implementation
-protobuf_impl.input = PROTOS
-protobuf_impl.output = libnutrition/proto/${QMAKE_FILE_BASE}.pb.cc
-protobuf_impl.depends = libnutrition/proto/${QMAKE_FILE_BASE}.pb.h
-protobuf_impl.commands = $$escape_expand(\n)
-protobuf_impl.variable_out = GENERATED_SOURCES
-QMAKE_EXTRA_COMPILERS += protobuf_impl
+probuf_data_decl.variable_out = GENERATED_FILES
+QMAKE_EXTRA_COMPILERS += probuf_data_decl
+probuf_data_impl.name = protobuf data implementation
+probuf_data_impl.input = DATA_PROTOS
+probuf_data_impl.output = libnutrition/proto/data/${QMAKE_FILE_BASE}.pb.cc
+probuf_data_impl.depends = libnutrition/proto/data/${QMAKE_FILE_BASE}.pb.h
+probuf_data_impl.commands = $$escape_expand(\n)
+probuf_data_impl.variable_out = GENERATED_SOURCES
+QMAKE_EXTRA_COMPILERS += probuf_data_impl
+
+SERVICE_PROTOS += libnutrition/proto/service/error.proto \
+    libnutrition/proto/service/composite_food_messages.proto \
+    libnutrition/proto/service/group_messages.proto \
+    libnutrition/proto/service/meal_messages.proto \
+    libnutrition/proto/service/nutrient_messages.proto \
+    libnutrition/proto/service/single_food_messages.proto \
+    libnutrition/proto/service/specialized_unit_messages.proto \
+    libnutrition/proto/service/template_messages.proto \
+    libnutrition/proto/service/unit_messages.proto \
+    libnutrition/proto/service/user_messages.proto \
+    libnutrition/proto/service/data_messages.proto \
+    libnutrition/proto/service/login_messages.proto \
+    libnutrition/proto/service/search_messages.proto
+probuf_service_decl.name = protobuf service header
+probuf_service_decl.input = SERVICE_PROTOS
+probuf_service_decl.output = libnutrition/proto/service/${QMAKE_FILE_BASE}.pb.h
+probuf_service_decl.commands = protoc \
+    --cpp_out="." \
+    ${QMAKE_FILE_NAME}
+probuf_service_decl.variable_out = GENERATED_FILES
+QMAKE_EXTRA_COMPILERS += probuf_service_decl
+probuf_service_impl.name = protobuf service implementation
+probuf_service_impl.input = SERVICE_PROTOS
+probuf_service_impl.output = libnutrition/proto/service/${QMAKE_FILE_BASE}.pb.cc
+probuf_service_impl.depends = libnutrition/proto/service/${QMAKE_FILE_BASE}.pb.h
+probuf_service_impl.commands = $$escape_expand(\n)
+probuf_service_impl.variable_out = GENERATED_SOURCES
+QMAKE_EXTRA_COMPILERS += probuf_service_impl
+
+

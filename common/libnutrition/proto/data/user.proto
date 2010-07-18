@@ -1,0 +1,12 @@
+message UserData
+{
+	required int32 userId = 1;
+	
+	optional string username = 2;
+	
+	optional string realName = 3;
+	
+	optional string password_SHA1_hex = 4;
+	
+	optional string password_plain = 5;
+}
