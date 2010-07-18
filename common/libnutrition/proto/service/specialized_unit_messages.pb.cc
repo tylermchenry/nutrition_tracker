@@ -355,12 +355,6 @@ void SpecializedUnitLoadResponse::CopyFrom(const SpecializedUnitLoadResponse& fr
 
 bool SpecializedUnitLoadResponse::IsInitialized() const {
   
-  for (int i = 0; i < specializedunits_size(); i++) {
-    if (!this->specializedunits(i).IsInitialized()) return false;
-  }
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -653,9 +647,6 @@ void SpecializedUnitLoadRequest::CopyFrom(const SpecializedUnitLoadRequest& from
 
 bool SpecializedUnitLoadRequest::IsInitialized() const {
   
-  for (int i = 0; i < requestedids_size(); i++) {
-    if (!this->requestedids(i).IsInitialized()) return false;
-  }
   return true;
 }
 

@@ -84,7 +84,7 @@ void protobuf_AddDesc_libnutrition_2fproto_2fdata_2fcomposite_5ffood_2eproto() {
     "\n,libnutrition/proto/data/composite_food"
     ".proto\032,libnutrition/proto/data/food_com"
     "ponent.proto\"\223\002\n\021CompositeFoodData\022\n\n\002id"
-    "\030\001 \002(\005\022\014\n\004name\030\002 \001(\t\022\017\n\007ownerId\030\003 \001(\005\022\024\n"
+    "\030\001 \001(\005\022\014\n\004name\030\002 \001(\t\022\017\n\007ownerId\030\003 \001(\005\022\024\n"
     "\014weightAmount\030\004 \001(\001\022\024\n\014volumeAmount\030\005 \001("
     "\001\022\026\n\016quantityAmount\030\006 \001(\001\022\025\n\rservingAmou"
     "nt\030\007 \001(\001\022\034\n\024creationDate_ISO8601\030\010 \001(\t\022\032"
@@ -230,7 +230,7 @@ bool CompositeFoodData::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 id = 1;
+      // optional int32 id = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -425,7 +425,7 @@ bool CompositeFoodData::MergePartialFromCodedStream(
 
 void CompositeFoodData::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required int32 id = 1;
+  // optional int32 id = 1;
   if (_has_bit(0)) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->id(), output);
   }
@@ -501,7 +501,7 @@ void CompositeFoodData::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* CompositeFoodData::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required int32 id = 1;
+  // optional int32 id = 1;
   if (_has_bit(0)) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->id(), target);
   }
@@ -584,7 +584,7 @@ int CompositeFoodData::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 id = 1;
+    // optional int32 id = 1;
     if (has_id()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
@@ -731,11 +731,7 @@ void CompositeFoodData::CopyFrom(const CompositeFoodData& from) {
 }
 
 bool CompositeFoodData::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
-  for (int i = 0; i < components_size(); i++) {
-    if (!this->components(i).IsInitialized()) return false;
-  }
   return true;
 }
 

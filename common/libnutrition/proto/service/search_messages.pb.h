@@ -111,7 +111,7 @@ class SearchRequest : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required string searchTerms = 1;
+  // optional string searchTerms = 1;
   inline bool has_searchterms() const;
   inline void clear_searchterms();
   static const int kSearchTermsFieldNumber = 1;
@@ -480,7 +480,7 @@ class SearchResponse : public ::google::protobuf::Message {
 
 // SearchRequest
 
-// required string searchTerms = 1;
+// optional string searchTerms = 1;
 inline bool SearchRequest::has_searchterms() const {
   return _has_bit(0);
 }

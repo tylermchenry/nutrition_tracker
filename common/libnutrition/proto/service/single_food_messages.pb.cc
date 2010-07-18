@@ -798,12 +798,6 @@ void SingleFoodLoadResponse::CopyFrom(const SingleFoodLoadResponse& from) {
 
 bool SingleFoodLoadResponse::IsInitialized() const {
   
-  for (int i = 0; i < singlefoods_size(); i++) {
-    if (!this->singlefoods(i).IsInitialized()) return false;
-  }
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1007,9 +1001,6 @@ void SingleFoodStoreRequest::CopyFrom(const SingleFoodStoreRequest& from) {
 
 bool SingleFoodStoreRequest::IsInitialized() const {
   
-  for (int i = 0; i < singlefoods_size(); i++) {
-    if (!this->singlefoods(i).IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1270,9 +1261,6 @@ void SingleFoodStoreResponse::CopyFrom(const SingleFoodStoreResponse& from) {
 
 bool SingleFoodStoreResponse::IsInitialized() const {
   
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1744,9 +1732,6 @@ void SingleFoodDeleteResponse::CopyFrom(const SingleFoodDeleteResponse& from) {
 
 bool SingleFoodDeleteResponse::IsInitialized() const {
   
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 

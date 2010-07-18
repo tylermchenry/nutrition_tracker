@@ -249,7 +249,7 @@ class SingleFoodData : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required int32 id = 1;
+  // optional int32 id = 1;
   inline bool has_id() const;
   inline void clear_id();
   static const int kIdFieldNumber = 1;
@@ -530,7 +530,7 @@ inline ::std::string* SingleFoodData_NutrientAmount::mutable_unitabbreviation() 
 
 // SingleFoodData
 
-// required int32 id = 1;
+// optional int32 id = 1;
 inline bool SingleFoodData::has_id() const {
   return _has_bit(0);
 }

@@ -98,8 +98,8 @@ void protobuf_AddDesc_libnutrition_2fproto_2fdata_2fspecialized_5funit_2eproto()
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n.libnutrition/proto/data/specialized_un"
     "it.proto\"C\n\031SpecializedUnitIdentifier\022\024\n"
-    "\014singleFoodId\030\001 \002(\005\022\020\n\010sequence\030\002 \002(\005\"\\\n"
-    "\023SpecializedUnitData\022\016\n\006foodId\030\001 \002(\005\022\020\n\010"
+    "\014singleFoodId\030\001 \001(\005\022\020\n\010sequence\030\002 \001(\005\"\\\n"
+    "\023SpecializedUnitData\022\016\n\006foodId\030\001 \001(\005\022\020\n\010"
     "sequence\030\002 \001(\005\022\014\n\004name\030\003 \001(\t\022\025\n\ramountIn"
     "Grams\030\004 \001(\001", 211);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
@@ -191,7 +191,7 @@ bool SpecializedUnitIdentifier::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 singleFoodId = 1;
+      // optional int32 singleFoodId = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -206,7 +206,7 @@ bool SpecializedUnitIdentifier::MergePartialFromCodedStream(
         break;
       }
       
-      // required int32 sequence = 2;
+      // optional int32 sequence = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -240,12 +240,12 @@ bool SpecializedUnitIdentifier::MergePartialFromCodedStream(
 
 void SpecializedUnitIdentifier::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required int32 singleFoodId = 1;
+  // optional int32 singleFoodId = 1;
   if (_has_bit(0)) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->singlefoodid(), output);
   }
   
-  // required int32 sequence = 2;
+  // optional int32 sequence = 2;
   if (_has_bit(1)) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->sequence(), output);
   }
@@ -258,12 +258,12 @@ void SpecializedUnitIdentifier::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* SpecializedUnitIdentifier::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required int32 singleFoodId = 1;
+  // optional int32 singleFoodId = 1;
   if (_has_bit(0)) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->singlefoodid(), target);
   }
   
-  // required int32 sequence = 2;
+  // optional int32 sequence = 2;
   if (_has_bit(1)) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->sequence(), target);
   }
@@ -279,14 +279,14 @@ int SpecializedUnitIdentifier::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 singleFoodId = 1;
+    // optional int32 singleFoodId = 1;
     if (has_singlefoodid()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->singlefoodid());
     }
     
-    // required int32 sequence = 2;
+    // optional int32 sequence = 2;
     if (has_sequence()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
@@ -343,7 +343,6 @@ void SpecializedUnitIdentifier::CopyFrom(const SpecializedUnitIdentifier& from) 
 }
 
 bool SpecializedUnitIdentifier::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
   
   return true;
 }
@@ -453,7 +452,7 @@ bool SpecializedUnitData::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 foodId = 1;
+      // optional int32 foodId = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -535,7 +534,7 @@ bool SpecializedUnitData::MergePartialFromCodedStream(
 
 void SpecializedUnitData::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required int32 foodId = 1;
+  // optional int32 foodId = 1;
   if (_has_bit(0)) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->foodid(), output);
   }
@@ -567,7 +566,7 @@ void SpecializedUnitData::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* SpecializedUnitData::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required int32 foodId = 1;
+  // optional int32 foodId = 1;
   if (_has_bit(0)) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->foodid(), target);
   }
@@ -603,7 +602,7 @@ int SpecializedUnitData::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 foodId = 1;
+    // optional int32 foodId = 1;
     if (has_foodid()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
@@ -685,7 +684,6 @@ void SpecializedUnitData::CopyFrom(const SpecializedUnitData& from) {
 }
 
 bool SpecializedUnitData::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
   return true;
 }

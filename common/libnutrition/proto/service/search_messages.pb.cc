@@ -133,7 +133,7 @@ void protobuf_AddDesc_libnutrition_2fproto_2fservice_2fsearch_5fmessages_2eproto
     "\n0libnutrition/proto/service/search_mess"
     "ages.proto\032&libnutrition/proto/service/e"
     "rror.proto\"\303\002\n\rSearchRequest\022\023\n\013searchTe"
-    "rms\030\001 \002(\t\022\027\n\017excludeGroupIds\030\002 \003(\t\022\037\n\021se"
+    "rms\030\001 \001(\t\022\027\n\017excludeGroupIds\030\002 \003(\t\022\037\n\021se"
     "archSingleFoods\030\003 \001(\010:\004true\022\036\n\020searchCom"
     "posites\030\004 \001(\010:\004true\022\036\n\017searchTemplates\030\005"
     " \001(\010:\005false\022\030\n\nsourceUSDA\030\006 \001(\010:\004true\022\032\n"
@@ -274,7 +274,7 @@ bool SearchRequest::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required string searchTerms = 1;
+      // optional string searchTerms = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -470,7 +470,7 @@ bool SearchRequest::MergePartialFromCodedStream(
 
 void SearchRequest::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required string searchTerms = 1;
+  // optional string searchTerms = 1;
   if (_has_bit(0)) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->searchterms().data(), this->searchterms().length(),
@@ -541,7 +541,7 @@ void SearchRequest::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* SearchRequest::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required string searchTerms = 1;
+  // optional string searchTerms = 1;
   if (_has_bit(0)) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->searchterms().data(), this->searchterms().length(),
@@ -616,7 +616,7 @@ int SearchRequest::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required string searchTerms = 1;
+    // optional string searchTerms = 1;
     if (has_searchterms()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -756,7 +756,6 @@ void SearchRequest::CopyFrom(const SearchRequest& from) {
 }
 
 bool SearchRequest::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
   return true;
 }
@@ -1354,9 +1353,6 @@ void SearchResponse::CopyFrom(const SearchResponse& from) {
 
 bool SearchResponse::IsInitialized() const {
   
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 

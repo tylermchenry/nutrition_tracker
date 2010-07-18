@@ -13,7 +13,7 @@ message NutrientData
         Hidden = 5;
     }
     
-    required Category category = 3 [default = Additional];
+    optional Category category = 3 [default = Additional];
     
     optional string standardUnitAbbreviation = 4;
     

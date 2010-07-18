@@ -434,18 +434,6 @@ void FoodData::CopyFrom(const FoodData& from) {
 
 bool FoodData::IsInitialized() const {
   
-  if (has_singlefoods()) {
-    if (!this->singlefoods().IsInitialized()) return false;
-  }
-  if (has_compositefoods()) {
-    if (!this->compositefoods().IsInitialized()) return false;
-  }
-  if (has_templates()) {
-    if (!this->templates().IsInitialized()) return false;
-  }
-  if (has_meals()) {
-    if (!this->meals().IsInitialized()) return false;
-  }
   return true;
 }
 

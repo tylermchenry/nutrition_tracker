@@ -199,7 +199,7 @@ class MealData : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required int32 userId = 1;
+  // optional int32 userId = 1;
   inline bool has_userid() const;
   inline void clear_userid();
   static const int kUserIdFieldNumber = 1;
@@ -370,7 +370,7 @@ inline void MealIdentifier::set_mealid(::google::protobuf::int32 value) {
 
 // MealData
 
-// required int32 userId = 1;
+// optional int32 userId = 1;
 inline bool MealData::has_userid() const {
   return _has_bit(0);
 }

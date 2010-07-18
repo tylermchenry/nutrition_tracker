@@ -78,7 +78,7 @@ void protobuf_AddDesc_libnutrition_2fproto_2fdata_2fnutrient_2eproto() {
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n&libnutrition/proto/data/nutrient.proto"
     "\"\346\001\n\014NutrientData\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 "
-    "\001(\t\0224\n\010category\030\003 \002(\0162\026.NutrientData.Cat"
+    "\001(\t\0224\n\010category\030\003 \001(\0162\026.NutrientData.Cat"
     "egory:\nAdditional\022 \n\030standardUnitAbbrevi"
     "ation\030\004 \001(\t\022\013\n\003RDI\030\005 \001(\001\"W\n\010Category\022\n\n\006"
     "Energy\020\000\022\t\n\005Basic\020\001\022\013\n\007Vitamin\020\002\022\013\n\007Mine"
@@ -265,7 +265,7 @@ bool NutrientData::MergePartialFromCodedStream(
         break;
       }
       
-      // required .NutrientData.Category category = 3 [default = Additional];
+      // optional .NutrientData.Category category = 3 [default = Additional];
       case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -355,7 +355,7 @@ void NutrientData::SerializeWithCachedSizes(
       2, this->name(), output);
   }
   
-  // required .NutrientData.Category category = 3 [default = Additional];
+  // optional .NutrientData.Category category = 3 [default = Additional];
   if (_has_bit(2)) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       3, this->category(), output);
@@ -403,7 +403,7 @@ void NutrientData::SerializeWithCachedSizes(
         2, this->name(), target);
   }
   
-  // required .NutrientData.Category category = 3 [default = Additional];
+  // optional .NutrientData.Category category = 3 [default = Additional];
   if (_has_bit(2)) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       3, this->category(), target);
@@ -449,7 +449,7 @@ int NutrientData::ByteSize() const {
           this->name());
     }
     
-    // required .NutrientData.Category category = 3 [default = Additional];
+    // optional .NutrientData.Category category = 3 [default = Additional];
     if (has_category()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->category());
@@ -526,7 +526,6 @@ void NutrientData::CopyFrom(const NutrientData& from) {
 }
 
 bool NutrientData::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000004) != 0x00000004) return false;
   
   return true;
 }

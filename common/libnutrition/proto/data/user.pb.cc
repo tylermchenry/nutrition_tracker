@@ -75,7 +75,7 @@ void protobuf_AddDesc_libnutrition_2fproto_2fdata_2fuser_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\"libnutrition/proto/data/user.proto\"q\n\010"
-    "UserData\022\016\n\006userId\030\001 \002(\005\022\020\n\010username\030\002 \001"
+    "UserData\022\016\n\006userId\030\001 \001(\005\022\020\n\010username\030\002 \001"
     "(\t\022\020\n\010realName\030\003 \001(\t\022\031\n\021password_SHA1_he"
     "x\030\004 \001(\t\022\026\n\016password_plain\030\005 \001(\t", 151);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
@@ -206,7 +206,7 @@ bool UserData::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 userId = 1;
+      // optional int32 userId = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -307,7 +307,7 @@ bool UserData::MergePartialFromCodedStream(
 
 void UserData::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required int32 userId = 1;
+  // optional int32 userId = 1;
   if (_has_bit(0)) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->userid(), output);
   }
@@ -356,7 +356,7 @@ void UserData::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* UserData::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required int32 userId = 1;
+  // optional int32 userId = 1;
   if (_has_bit(0)) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->userid(), target);
   }
@@ -412,7 +412,7 @@ int UserData::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 userId = 1;
+    // optional int32 userId = 1;
     if (has_userid()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
@@ -506,7 +506,6 @@ void UserData::CopyFrom(const UserData& from) {
 }
 
 bool UserData::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
   return true;
 }

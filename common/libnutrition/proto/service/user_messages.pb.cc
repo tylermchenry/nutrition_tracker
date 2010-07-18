@@ -744,12 +744,6 @@ void UserLoadResponse::CopyFrom(const UserLoadResponse& from) {
 
 bool UserLoadResponse::IsInitialized() const {
   
-  for (int i = 0; i < users_size(); i++) {
-    if (!this->users(i).IsInitialized()) return false;
-  }
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -953,9 +947,6 @@ void UserStoreRequest::CopyFrom(const UserStoreRequest& from) {
 
 bool UserStoreRequest::IsInitialized() const {
   
-  for (int i = 0; i < users_size(); i++) {
-    if (!this->users(i).IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1216,9 +1207,6 @@ void UserStoreResponse::CopyFrom(const UserStoreResponse& from) {
 
 bool UserStoreResponse::IsInitialized() const {
   
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 

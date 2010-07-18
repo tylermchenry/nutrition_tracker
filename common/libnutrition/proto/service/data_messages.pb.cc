@@ -865,9 +865,6 @@ void DataLoadRequest::CopyFrom(const DataLoadRequest& from) {
 
 bool DataLoadRequest::IsInitialized() const {
   
-  if (has_specializedunitloadrequest()) {
-    if (!this->specializedunitloadrequest().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1490,36 +1487,6 @@ void DataLoadResponse::CopyFrom(const DataLoadResponse& from) {
 
 bool DataLoadResponse::IsInitialized() const {
   
-  if (has_singlefoodloadresponse()) {
-    if (!this->singlefoodloadresponse().IsInitialized()) return false;
-  }
-  if (has_compositefoodloadresponse()) {
-    if (!this->compositefoodloadresponse().IsInitialized()) return false;
-  }
-  if (has_templateloadresponse()) {
-    if (!this->templateloadresponse().IsInitialized()) return false;
-  }
-  if (has_mealloadresponse()) {
-    if (!this->mealloadresponse().IsInitialized()) return false;
-  }
-  if (has_nutrientloadresponse()) {
-    if (!this->nutrientloadresponse().IsInitialized()) return false;
-  }
-  if (has_unitloadresponse()) {
-    if (!this->unitloadresponse().IsInitialized()) return false;
-  }
-  if (has_specializedunitloadresponse()) {
-    if (!this->specializedunitloadresponse().IsInitialized()) return false;
-  }
-  if (has_grouploadresponse()) {
-    if (!this->grouploadresponse().IsInitialized()) return false;
-  }
-  if (has_userloadresponse()) {
-    if (!this->userloadresponse().IsInitialized()) return false;
-  }
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1917,21 +1884,6 @@ void DataStoreRequest::CopyFrom(const DataStoreRequest& from) {
 
 bool DataStoreRequest::IsInitialized() const {
   
-  if (has_singlefoodstorerequest()) {
-    if (!this->singlefoodstorerequest().IsInitialized()) return false;
-  }
-  if (has_compositefoodstorerequest()) {
-    if (!this->compositefoodstorerequest().IsInitialized()) return false;
-  }
-  if (has_templatestorerequest()) {
-    if (!this->templatestorerequest().IsInitialized()) return false;
-  }
-  if (has_mealstorerequest()) {
-    if (!this->mealstorerequest().IsInitialized()) return false;
-  }
-  if (has_userstorerequest()) {
-    if (!this->userstorerequest().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -2368,24 +2320,6 @@ void DataStoreResponse::CopyFrom(const DataStoreResponse& from) {
 
 bool DataStoreResponse::IsInitialized() const {
   
-  if (has_singlefoodstoreresponse()) {
-    if (!this->singlefoodstoreresponse().IsInitialized()) return false;
-  }
-  if (has_compositefoodstoreresponse()) {
-    if (!this->compositefoodstoreresponse().IsInitialized()) return false;
-  }
-  if (has_templatestoreresponse()) {
-    if (!this->templatestoreresponse().IsInitialized()) return false;
-  }
-  if (has_mealstoreresponse()) {
-    if (!this->mealstoreresponse().IsInitialized()) return false;
-  }
-  if (has_userstoreresponse()) {
-    if (!this->userstoreresponse().IsInitialized()) return false;
-  }
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -3126,21 +3060,6 @@ void DataDeleteResponse::CopyFrom(const DataDeleteResponse& from) {
 
 bool DataDeleteResponse::IsInitialized() const {
   
-  if (has_singlefooddeleteresponse()) {
-    if (!this->singlefooddeleteresponse().IsInitialized()) return false;
-  }
-  if (has_compositefooddeleteresponse()) {
-    if (!this->compositefooddeleteresponse().IsInitialized()) return false;
-  }
-  if (has_templatedeleteresponse()) {
-    if (!this->templatedeleteresponse().IsInitialized()) return false;
-  }
-  if (has_mealdeleteresponse()) {
-    if (!this->mealdeleteresponse().IsInitialized()) return false;
-  }
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 

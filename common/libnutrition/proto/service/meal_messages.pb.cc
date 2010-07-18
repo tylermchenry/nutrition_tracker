@@ -822,12 +822,6 @@ void MealLoadResponse::CopyFrom(const MealLoadResponse& from) {
 
 bool MealLoadResponse::IsInitialized() const {
   
-  for (int i = 0; i < meals_size(); i++) {
-    if (!this->meals(i).IsInitialized()) return false;
-  }
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1031,9 +1025,6 @@ void MealStoreRequest::CopyFrom(const MealStoreRequest& from) {
 
 bool MealStoreRequest::IsInitialized() const {
   
-  for (int i = 0; i < meals_size(); i++) {
-    if (!this->meals(i).IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1286,9 +1277,6 @@ void MealStoreResponse::CopyFrom(const MealStoreResponse& from) {
 
 bool MealStoreResponse::IsInitialized() const {
   
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1791,9 +1779,6 @@ void MealDeleteResponse::CopyFrom(const MealDeleteResponse& from) {
 
 bool MealDeleteResponse::IsInitialized() const {
   
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 

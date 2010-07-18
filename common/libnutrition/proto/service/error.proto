@@ -1,6 +1,6 @@
 message Error
 {
-	required bool isError = 1 [default = false];
+	optional bool isError = 1 [default = false];
 	
 	optional string errorMessage = 2;
 }

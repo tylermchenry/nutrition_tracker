@@ -89,14 +89,14 @@ class SpecializedUnitIdentifier : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required int32 singleFoodId = 1;
+  // optional int32 singleFoodId = 1;
   inline bool has_singlefoodid() const;
   inline void clear_singlefoodid();
   static const int kSingleFoodIdFieldNumber = 1;
   inline ::google::protobuf::int32 singlefoodid() const;
   inline void set_singlefoodid(::google::protobuf::int32 value);
   
-  // required int32 sequence = 2;
+  // optional int32 sequence = 2;
   inline bool has_sequence() const;
   inline void clear_sequence();
   static const int kSequenceFieldNumber = 2;
@@ -186,7 +186,7 @@ class SpecializedUnitData : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required int32 foodId = 1;
+  // optional int32 foodId = 1;
   inline bool has_foodid() const;
   inline void clear_foodid();
   static const int kFoodIdFieldNumber = 1;
@@ -254,7 +254,7 @@ class SpecializedUnitData : public ::google::protobuf::Message {
 
 // SpecializedUnitIdentifier
 
-// required int32 singleFoodId = 1;
+// optional int32 singleFoodId = 1;
 inline bool SpecializedUnitIdentifier::has_singlefoodid() const {
   return _has_bit(0);
 }
@@ -270,7 +270,7 @@ inline void SpecializedUnitIdentifier::set_singlefoodid(::google::protobuf::int3
   singlefoodid_ = value;
 }
 
-// required int32 sequence = 2;
+// optional int32 sequence = 2;
 inline bool SpecializedUnitIdentifier::has_sequence() const {
   return _has_bit(1);
 }
@@ -290,7 +290,7 @@ inline void SpecializedUnitIdentifier::set_sequence(::google::protobuf::int32 va
 
 // SpecializedUnitData
 
-// required int32 foodId = 1;
+// optional int32 foodId = 1;
 inline bool SpecializedUnitData::has_foodid() const {
   return _has_bit(0);
 }

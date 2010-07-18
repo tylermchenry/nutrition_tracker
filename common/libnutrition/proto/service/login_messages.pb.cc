@@ -846,9 +846,6 @@ void LogInResponse::CopyFrom(const LogInResponse& from) {
 
 bool LogInResponse::IsInitialized() const {
   
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 

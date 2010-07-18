@@ -72,7 +72,7 @@ void protobuf_AddDesc_libnutrition_2fproto_2fservice_2ferror_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n&libnutrition/proto/service/error.proto"
-    "\"5\n\005Error\022\026\n\007isError\030\001 \002(\010:\005false\022\024\n\014err"
+    "\"5\n\005Error\022\026\n\007isError\030\001 \001(\010:\005false\022\024\n\014err"
     "orMessage\030\002 \001(\t", 95);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "libnutrition/proto/service/error.proto", &protobuf_RegisterTypes);
@@ -169,7 +169,7 @@ bool Error::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required bool isError = 1 [default = false];
+      // optional bool isError = 1 [default = false];
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -219,7 +219,7 @@ bool Error::MergePartialFromCodedStream(
 
 void Error::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required bool isError = 1 [default = false];
+  // optional bool isError = 1 [default = false];
   if (_has_bit(0)) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(1, this->iserror(), output);
   }
@@ -241,7 +241,7 @@ void Error::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* Error::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required bool isError = 1 [default = false];
+  // optional bool isError = 1 [default = false];
   if (_has_bit(0)) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(1, this->iserror(), target);
   }
@@ -267,7 +267,7 @@ int Error::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required bool isError = 1 [default = false];
+    // optional bool isError = 1 [default = false];
     if (has_iserror()) {
       total_size += 1 + 1;
     }
@@ -329,7 +329,6 @@ void Error::CopyFrom(const Error& from) {
 }
 
 bool Error::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
   return true;
 }

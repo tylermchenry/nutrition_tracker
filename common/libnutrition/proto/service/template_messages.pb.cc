@@ -798,12 +798,6 @@ void TemplateLoadResponse::CopyFrom(const TemplateLoadResponse& from) {
 
 bool TemplateLoadResponse::IsInitialized() const {
   
-  for (int i = 0; i < templates_size(); i++) {
-    if (!this->templates(i).IsInitialized()) return false;
-  }
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1007,9 +1001,6 @@ void TemplateStoreRequest::CopyFrom(const TemplateStoreRequest& from) {
 
 bool TemplateStoreRequest::IsInitialized() const {
   
-  for (int i = 0; i < templatess_size(); i++) {
-    if (!this->templatess(i).IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1270,9 +1261,6 @@ void TemplateStoreResponse::CopyFrom(const TemplateStoreResponse& from) {
 
 bool TemplateStoreResponse::IsInitialized() const {
   
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1744,9 +1732,6 @@ void TemplateDeleteResponse::CopyFrom(const TemplateDeleteResponse& from) {
 
 bool TemplateDeleteResponse::IsInitialized() const {
   
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 

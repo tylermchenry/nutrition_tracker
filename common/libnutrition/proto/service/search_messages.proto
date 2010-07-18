@@ -2,7 +2,7 @@ import "libnutrition/proto/service/error.proto";
 
 message SearchRequest 
 {
-	required string searchTerms = 1;
+	optional string searchTerms = 1;
 
    	repeated string excludeGroupIds = 2;
 

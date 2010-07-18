@@ -159,7 +159,7 @@ class NutrientData : public ::google::protobuf::Message {
   inline void set_name(const char* value, size_t size);
   inline ::std::string* mutable_name();
   
-  // required .NutrientData.Category category = 3 [default = Additional];
+  // optional .NutrientData.Category category = 3 [default = Additional];
   inline bool has_category() const;
   inline void clear_category();
   static const int kCategoryFieldNumber = 3;
@@ -307,7 +307,7 @@ inline ::std::string* NutrientData::mutable_name() {
   return name_;
 }
 
-// required .NutrientData.Category category = 3 [default = Additional];
+// optional .NutrientData.Category category = 3 [default = Additional];
 inline bool NutrientData::has_category() const {
   return _has_bit(2);
 }

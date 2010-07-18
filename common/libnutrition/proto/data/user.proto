@@ -1,6 +1,6 @@
 message UserData
 {
-	required int32 userId = 1;
+	optional int32 userId = 1;
 	
 	optional string username = 2;
 	

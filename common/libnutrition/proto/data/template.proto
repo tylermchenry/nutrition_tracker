@@ -2,7 +2,7 @@ import "libnutrition/proto/data/food_component.proto";
 
 message TemplateData
 {
-	required int32 id = 1;
+	optional int32 id = 1;
 	
 	optional string name = 2;
 	

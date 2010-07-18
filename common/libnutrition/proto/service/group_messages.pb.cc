@@ -643,9 +643,6 @@ void GroupLoadResponse::CopyFrom(const GroupLoadResponse& from) {
 
 bool GroupLoadResponse::IsInitialized() const {
   
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 

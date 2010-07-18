@@ -104,7 +104,7 @@ void protobuf_AddDesc_libnutrition_2fproto_2fdata_2fmeal_2eproto() {
     "bnutrition/proto/data/food_component.pro"
     "to\"F\n\016MealIdentifier\022\016\n\006userId\030\001 \001(\005\022\024\n\014"
     "date_ISO8601\030\002 \001(\t\022\016\n\006mealId\030\003 \001(\005\"\211\001\n\010M"
-    "ealData\022\016\n\006userId\030\001 \002(\005\022\024\n\014date_ISO8601\030"
+    "ealData\022\016\n\006userId\030\001 \001(\005\022\024\n\014date_ISO8601\030"
     "\002 \001(\t\022\016\n\006mealId\030\003 \001(\005\022\014\n\004name\030\004 \001(\t\022\021\n\tc"
     "reatorId\030\005 \001(\005\022&\n\ncomponents\030\006 \003(\0132\022.Foo"
     "dComponentData", 294);
@@ -529,7 +529,7 @@ bool MealData::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 userId = 1;
+      // optional int32 userId = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -643,7 +643,7 @@ bool MealData::MergePartialFromCodedStream(
 
 void MealData::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required int32 userId = 1;
+  // optional int32 userId = 1;
   if (_has_bit(0)) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->userid(), output);
   }
@@ -690,7 +690,7 @@ void MealData::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* MealData::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required int32 userId = 1;
+  // optional int32 userId = 1;
   if (_has_bit(0)) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->userid(), target);
   }
@@ -743,7 +743,7 @@ int MealData::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 userId = 1;
+    // optional int32 userId = 1;
     if (has_userid()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
@@ -846,11 +846,7 @@ void MealData::CopyFrom(const MealData& from) {
 }
 
 bool MealData::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
-  for (int i = 0; i < components_size(); i++) {
-    if (!this->components(i).IsInitialized()) return false;
-  }
   return true;
 }
 

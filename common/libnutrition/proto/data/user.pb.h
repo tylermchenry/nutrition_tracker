@@ -88,7 +88,7 @@ class UserData : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required int32 userId = 1;
+  // optional int32 userId = 1;
   inline bool has_userid() const;
   inline void clear_userid();
   static const int kUserIdFieldNumber = 1;
@@ -176,7 +176,7 @@ class UserData : public ::google::protobuf::Message {
 
 // UserData
 
-// required int32 userId = 1;
+// optional int32 userId = 1;
 inline bool UserData::has_userid() const {
   return _has_bit(0);
 }

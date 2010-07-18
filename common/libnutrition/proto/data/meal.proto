@@ -9,7 +9,7 @@ message MealIdentifier
 
 message MealData
 {
-	required int32 userId = 1;
+	optional int32 userId = 1;
 	
 	optional string date_ISO8601 = 2;
 	

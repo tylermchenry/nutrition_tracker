@@ -6,7 +6,7 @@ message FoodComponentData
 		CompositeFood = 1;
 	}
 	
-	required int32 id = 1;
+	optional int32 id = 1;
 	
 	optional int32 foodId = 2;
 	

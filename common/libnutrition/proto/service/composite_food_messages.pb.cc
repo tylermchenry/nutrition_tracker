@@ -879,12 +879,6 @@ void CompositeFoodLoadResponse::CopyFrom(const CompositeFoodLoadResponse& from) 
 
 bool CompositeFoodLoadResponse::IsInitialized() const {
   
-  for (int i = 0; i < compositefoods_size(); i++) {
-    if (!this->compositefoods(i).IsInitialized()) return false;
-  }
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1088,9 +1082,6 @@ void CompositeFoodStoreRequest::CopyFrom(const CompositeFoodStoreRequest& from) 
 
 bool CompositeFoodStoreRequest::IsInitialized() const {
   
-  for (int i = 0; i < compositefoods_size(); i++) {
-    if (!this->compositefoods(i).IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1351,9 +1342,6 @@ void CompositeFoodStoreResponse::CopyFrom(const CompositeFoodStoreResponse& from
 
 bool CompositeFoodStoreResponse::IsInitialized() const {
   
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
@@ -1825,9 +1813,6 @@ void CompositeFoodDeleteResponse::CopyFrom(const CompositeFoodDeleteResponse& fr
 
 bool CompositeFoodDeleteResponse::IsInitialized() const {
   
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 

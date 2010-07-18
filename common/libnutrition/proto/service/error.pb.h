@@ -88,7 +88,7 @@ class Error : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required bool isError = 1 [default = false];
+  // optional bool isError = 1 [default = false];
   inline bool has_iserror() const;
   inline void clear_iserror();
   static const int kIsErrorFieldNumber = 1;
@@ -140,7 +140,7 @@ class Error : public ::google::protobuf::Message {
 
 // Error
 
-// required bool isError = 1 [default = false];
+// optional bool isError = 1 [default = false];
 inline bool Error::has_iserror() const {
   return _has_bit(0);
 }

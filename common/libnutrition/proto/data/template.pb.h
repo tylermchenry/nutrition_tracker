@@ -89,7 +89,7 @@ class TemplateData : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required int32 id = 1;
+  // optional int32 id = 1;
   inline bool has_id() const;
   inline void clear_id();
   static const int kIdFieldNumber = 1;
@@ -162,7 +162,7 @@ class TemplateData : public ::google::protobuf::Message {
 
 // TemplateData
 
-// required int32 id = 1;
+// optional int32 id = 1;
 inline bool TemplateData::has_id() const {
   return _has_bit(0);
 }

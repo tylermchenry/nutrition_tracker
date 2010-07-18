@@ -692,12 +692,6 @@ void NutrientLoadResponse::CopyFrom(const NutrientLoadResponse& from) {
 
 bool NutrientLoadResponse::IsInitialized() const {
   
-  for (int i = 0; i < nutrients_size(); i++) {
-    if (!this->nutrients(i).IsInitialized()) return false;
-  }
-  if (has_error()) {
-    if (!this->error().IsInitialized()) return false;
-  }
   return true;
 }
 
