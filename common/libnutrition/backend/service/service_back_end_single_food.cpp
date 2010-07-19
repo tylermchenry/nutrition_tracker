@@ -35,7 +35,7 @@ QMultiMap<QString, int> ServiceBackEnd::loadSingleFoodNamesForUser(int userId)
   SingleFoodLoadRequest req;
   SingleFoodLoadResponse resp;
 
-  req.add_requestedids(userId);
+  req.add_requesteduserids(userId);
   req.set_nameandidonly(true);
 
   writeMessageAndReadResponse(req, resp);

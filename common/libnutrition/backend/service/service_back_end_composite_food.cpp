@@ -36,7 +36,7 @@ QMultiMap<QString, int> ServiceBackEnd::loadCompositeFoodNamesForUser
   CompositeFoodLoadRequest req;
   CompositeFoodLoadResponse resp;
 
-  req.add_requestedids(userId);
+  req.add_requesteduserids(userId);
   req.set_omitexpired(!includeExpired);
   req.set_nameandidonly(true);
 
