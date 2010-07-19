@@ -25,14 +25,13 @@ class MySQLBackEnd : public BackEnd
 
     virtual ~MySQLBackEnd();
 
-    virtual QSharedPointer<Food> loadFood(FoodTypes::FoodType type, int id);
-
     virtual QMultiMap<QString, QPair<FoodTypes::FoodType, int> >
       loadFoodNamesForUser(int userId, bool includeExpired);
 
-    virtual QMultiMap<QString, QPair<FoodTypes::FoodType, int> >
+    QMultiMap<QString, QPair<FoodTypes::FoodType, int> >
       loadFoodNamesForUser
-        (int userId, FoodTypes::FoodType type, bool includeExpired);
+        (int userId, FoodTypes::FoodType type, bool includeExpired = false)
+    { return BackEnd::loadFoodNamesForUser(userId, type, includeExpired); }
 
     /** Single Foods **/
 

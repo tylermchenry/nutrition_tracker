@@ -47,14 +47,14 @@ class BackEnd
       static FoodType fromContainedType(const QString& food);
     };
 
-    virtual QSharedPointer<Food> loadFood(FoodTypes::FoodType type, int id) = 0;
+    QSharedPointer<Food> loadFood(FoodTypes::FoodType type, int id);
 
     virtual QMultiMap<QString, QPair<FoodTypes::FoodType, int> >
       loadFoodNamesForUser(int userId, bool includeExpired) = 0;
 
-    virtual QMultiMap<QString, QPair<FoodTypes::FoodType, int> >
+    QMultiMap<QString, QPair<FoodTypes::FoodType, int> >
       loadFoodNamesForUser
-        (int userId, FoodTypes::FoodType type, bool includeExpired = false) = 0;
+        (int userId, FoodTypes::FoodType type, bool includeExpired = false);
 
     /** Single Foods **/
 
