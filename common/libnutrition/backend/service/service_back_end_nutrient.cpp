@@ -47,6 +47,26 @@ QList<QSharedPointer<Nutrient> > ServiceBackEnd::loadAllNutrients()
   return all;
 }
 
+QList<QSharedPointer<Nutrient> > ServiceBackEnd::loadAllNutrients
+  (Nutrient::Categories::Category category)
+{
+  DataLoadRequest req;
+  DataLoadResponse resp;
+  LoadedData ldata;
+
+  req.mutable_nutrientloadrequest()->add_requestedcategories
+    (static_cast<NutrientLoadRequest_Category>(category));
+
+  setOmissions(req);
+
+  writeMessageAndReadResponse(req, resp);
+  loadResponseData(ldata, resp);
+
+  QList<QSharedPointer<Nutrient> > all = ldata.nutrients.values();
+
+  return all;
+}
+
 void ServiceBackEnd::loadResponseData
   (LoadedData& loadedData, const NutrientLoadResponse& resp)
 {
