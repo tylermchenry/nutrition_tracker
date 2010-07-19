@@ -51,16 +51,13 @@ class ServiceBackEnd : public BackEnd
 
     virtual ~ServiceBackEnd();
 
-
-    virtual QSharedPointer<Food> loadFood(FoodTypes::FoodType type, int id);
-
     virtual QMultiMap<QString, QPair<FoodTypes::FoodType, int> >
       loadFoodNamesForUser(int userId, bool includeExpired);
 
-    virtual QMultiMap<QString, QPair<FoodTypes::FoodType, int> >
-      loadFoodNamesForUser
-        (int userId, FoodTypes::FoodType type, bool includeExpired);
-
+    QMultiMap<QString, QPair<FoodTypes::FoodType, int> >
+       loadFoodNamesForUser
+         (int userId, FoodTypes::FoodType type, bool includeExpired = false)
+    { return BackEnd::loadFoodNamesForUser(userId, type, includeExpired); }
 
     /** Single Foods **/
 
@@ -141,7 +138,7 @@ class ServiceBackEnd : public BackEnd
     virtual QList<QSharedPointer<Nutrient> > loadAllNutrients();
 
     virtual QList<QSharedPointer<Nutrient> > loadAllNutrients
-          (Nutrient::Categories::Category category);
+       (Nutrient::Categories::Category category);
 
 
     /** Units **/

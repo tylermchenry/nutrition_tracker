@@ -47,29 +47,6 @@ QList<QSharedPointer<SpecializedUnit> >
   return ldata.specializedUnits.values();
 }
 
-QPair<QList<QSharedPointer<Unit> >, QList<QSharedPointer<SpecializedUnit> > >
-ServiceBackEnd::loadAllUnitsForFood
-   (int foodId)
-{
-  DataLoadRequest req;
-  DataLoadResponse resp;
-  LoadedData ldata;
-
-  req.mutable_specializedunitloadrequest()->add_requestedsinglefoodids(foodId);
-
-  if (!loadedAllUnits) {
-    // TODO: Perhaps restrict to dimensions that this food can be measured in?
-    req.mutable_unitloadrequest()->set_all(true);
-  }
-
-  setOmissions(req);
-
-  writeMessageAndReadResponse(req, resp);
-  loadResponseData(ldata, resp);
-
-  return qMakePair(ldata.units.values(), ldata.specializedUnits.values());
-}
-
 void ServiceBackEnd::loadResponseData
   (LoadedData& loadedData, const SpecializedUnitLoadResponse& resp)
 {
