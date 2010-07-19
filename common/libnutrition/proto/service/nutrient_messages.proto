@@ -7,6 +7,17 @@ message NutrientLoadRequest
 	optional bool all = 2 [default = false];
 	repeated string requestedIds = 3;
 	repeated string requestedNames = 4;
+	
+	enum Category {
+        	Energy = 0;
+          	Basic = 1;
+          	Vitamin = 2;
+          	Mineral = 3;
+          	Additional = 4;
+          	Hidden = 5;
+      	}
+	
+	repeated Category requestedCategories = 5;
 }
 
 message NutrientLoadResponse
