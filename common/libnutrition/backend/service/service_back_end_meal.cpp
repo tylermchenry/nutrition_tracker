@@ -92,6 +92,67 @@ QList<QSharedPointer<Meal> > ServiceBackEnd::loadAllMealsForDay
   return ldata.meals.values();
 }
 
+void ServiceBackEnd::storeMeal(const QSharedPointer<Meal>& meal)
+{
+  MealStoreRequest req;
+  MealStoreResponse resp;
+
+  *(req.add_meals()) = meal->serialize();
+
+  writeMessageAndReadResponse(req, resp);
+
+  if (resp.has_error() && resp.error().iserror()) {
+    throw std::runtime_error("Meal store error: " + resp.error().errormessage());
+  }
+
+  for (int i = 0; i < resp.storedids_size(); ++i) {
+    const MealIdentifier& storedId = resp.storedids(i);
+    if (storedId.mealid() == meal->getMealId() &&
+        QDate::fromString(QString::fromStdString(storedId.date_iso8601()), Qt::ISODate) == meal->getDate() &&
+        storedId.userid() == meal->getOwnerId())
+    {
+      return;
+    }
+  }
+
+  throw std::runtime_error("Failed to store Meal");
+}
+
+void ServiceBackEnd::deleteMeal(const QSharedPointer<Meal>& meal)
+{
+  deleteMeal(meal->getOwnerId(), meal->getDate(), meal->getMealId());
+}
+
+void ServiceBackEnd::deleteMeal(int userId, const QDate& date, int mealId)
+{
+  MealDeleteRequest req;
+  MealDeleteResponse resp;
+
+  MealIdentifier* id = req.add_deleteids();
+
+  id->set_userid(userId);
+  id->set_date_iso8601(date.toString(Qt::ISODate).toStdString());
+  id->set_mealid(mealId);
+
+  writeMessageAndReadResponse(req, resp);
+
+  if (resp.has_error() && resp.error().iserror()) {
+    throw std::runtime_error("Meal delete error: " + resp.error().errormessage());
+  }
+
+  for (int i = 0; i < resp.deletedids_size(); ++i) {
+    const MealIdentifier& delId = resp.deletedids(i);
+    if (delId.mealid() == mealId &&
+        QDate::fromString(QString::fromStdString(delId.date_iso8601()), Qt::ISODate) == date &&
+        delId.userid() == userId)
+    {
+      return;
+    }
+  }
+
+  throw std::runtime_error("Failed to delete Meal");
+}
+
 void ServiceBackEnd::loadResponseData
   (LoadedData& loadedData, const MealLoadResponse& resp)
 {

@@ -50,6 +50,52 @@ QMultiMap<QString, int> ServiceBackEnd::loadSingleFoodNamesForUser(int userId)
   return foodNames;
 }
 
+void ServiceBackEnd::storeSingleFood(const QSharedPointer<SingleFood>& food)
+{
+  SingleFoodStoreRequest req;
+  SingleFoodStoreResponse resp;
+
+  *(req.add_singlefoods()) = food->serialize();
+
+  writeMessageAndReadResponse(req, resp);
+
+  if (resp.has_error() && resp.error().iserror()) {
+    throw std::runtime_error("Single Food store error: " + resp.error().errormessage());
+  }
+
+  for (int i = 0; i < resp.storedids_size(); ++i) {
+    if (resp.storedids(i) == food->getSingleFoodId()) return;
+  }
+
+  throw std::runtime_error("Failed to store Single Food");
+}
+
+void ServiceBackEnd::deleteSingleFood(const QSharedPointer<SingleFood>& food)
+{
+  deleteSingleFood(food->getSingleFoodId());
+}
+
+void ServiceBackEnd::deleteSingleFood(int id)
+{
+  SingleFoodDeleteRequest req;
+  SingleFoodDeleteResponse resp;
+
+  req.add_deleteids(id);
+
+  writeMessageAndReadResponse(req, resp);
+
+  if (resp.has_error() && resp.error().iserror()) {
+    throw std::runtime_error("Single Food delete error: " + resp.error().errormessage());
+  }
+
+  for (int i = 0; i < resp.deletedids_size(); ++i) {
+    if (resp.deletedids(i) == id) return;
+  }
+
+  throw std::runtime_error("Failed to delete Single Food");
+}
+
+
 void ServiceBackEnd::loadResponseData
   (LoadedData& loadedData, const SingleFoodLoadResponse& resp)
 {

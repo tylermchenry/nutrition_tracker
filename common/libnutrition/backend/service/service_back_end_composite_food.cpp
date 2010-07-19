@@ -52,6 +52,51 @@ QMultiMap<QString, int> ServiceBackEnd::loadCompositeFoodNamesForUser
   return foodNames;
 }
 
+void ServiceBackEnd::storeCompositeFood(const QSharedPointer<CompositeFood>& food)
+{
+  CompositeFoodStoreRequest req;
+  CompositeFoodStoreResponse resp;
+
+  *(req.add_compositefoods()) = food->serialize();
+
+  writeMessageAndReadResponse(req, resp);
+
+  if (resp.has_error() && resp.error().iserror()) {
+    throw std::runtime_error("Composite Food store error: " + resp.error().errormessage());
+  }
+
+  for (int i = 0; i < resp.storedids_size(); ++i) {
+    if (resp.storedids(i) == food->getCompositeFoodId()) return;
+  }
+
+  throw std::runtime_error("Failed to store Composite Food");
+}
+
+void ServiceBackEnd::deleteCompositeFood(const QSharedPointer<CompositeFood>& food)
+{
+  deleteCompositeFood(food->getCompositeFoodId());
+}
+
+void ServiceBackEnd::deleteCompositeFood(int id)
+{
+  CompositeFoodDeleteRequest req;
+  CompositeFoodDeleteResponse resp;
+
+  req.add_deleteids(id);
+
+  writeMessageAndReadResponse(req, resp);
+
+  if (resp.has_error() && resp.error().iserror()) {
+    throw std::runtime_error("Composite Food delete error: " + resp.error().errormessage());
+  }
+
+  for (int i = 0; i < resp.deletedids_size(); ++i) {
+    if (resp.deletedids(i) == id) return;
+  }
+
+  throw std::runtime_error("Failed to delete Composite Food");
+}
+
 void ServiceBackEnd::loadResponseData
   (LoadedData& loadedData, const CompositeFoodLoadResponse& resp)
 {

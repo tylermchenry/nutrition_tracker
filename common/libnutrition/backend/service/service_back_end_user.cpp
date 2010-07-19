@@ -79,6 +79,26 @@ QList<QSharedPointer<User> > ServiceBackEnd::loadAllUsers()
   return ldata.users.values();
 }
 
+void ServiceBackEnd::storeUser(const QSharedPointer<User>& user)
+{
+  UserStoreRequest req;
+  UserStoreResponse resp;
+
+  *(req.add_users()) = user->serialize();
+
+  writeMessageAndReadResponse(req, resp);
+
+  if (resp.has_error() && resp.error().iserror()) {
+    throw std::runtime_error("User store error: " + resp.error().errormessage());
+  }
+
+  for (int i = 0; i < resp.storedids_size(); ++i) {
+    if (resp.storedids(i) == user->getId()) return;
+  }
+
+  throw std::runtime_error("Failed to store User");
+}
+
 void ServiceBackEnd::loadResponseData
   (LoadedData& loadedData, const UserLoadResponse& resp)
 {

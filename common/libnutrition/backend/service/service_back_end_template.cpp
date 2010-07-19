@@ -51,6 +51,51 @@ QMultiMap<QString, int> ServiceBackEnd::loadTemplateNamesForUser
   return foodNames;
 }
 
+void ServiceBackEnd::storeTemplate(const QSharedPointer<Template>& templ)
+{
+  TemplateStoreRequest req;
+  TemplateStoreResponse resp;
+
+  *(req.add_templates()) = templ->serialize();
+
+  writeMessageAndReadResponse(req, resp);
+
+  if (resp.has_error() && resp.error().iserror()) {
+    throw std::runtime_error("Template store error: " + resp.error().errormessage());
+  }
+
+  for (int i = 0; i < resp.storedids_size(); ++i) {
+    if (resp.storedids(i) == templ->getTemplateId()) return;
+  }
+
+  throw std::runtime_error("Failed to store Template");
+}
+
+void ServiceBackEnd::deleteTemplate(const QSharedPointer<Template>& templ)
+{
+  deleteTemplate(templ->getTemplateId());
+}
+
+void ServiceBackEnd::deleteTemplate(int id)
+{
+  TemplateDeleteRequest req;
+  TemplateDeleteResponse resp;
+
+  req.add_deleteids(id);
+
+  writeMessageAndReadResponse(req, resp);
+
+  if (resp.has_error() && resp.error().iserror()) {
+    throw std::runtime_error("Template delete error: " + resp.error().errormessage());
+  }
+
+  for (int i = 0; i < resp.deletedids_size(); ++i) {
+    if (resp.deletedids(i) == id) return;
+  }
+
+  throw std::runtime_error("Failed to delete Template");
+}
+
 void ServiceBackEnd::loadResponseData
   (LoadedData& loadedData, const TemplateLoadResponse& resp)
 {
