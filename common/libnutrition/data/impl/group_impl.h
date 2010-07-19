@@ -45,6 +45,8 @@ class GroupImpl : virtual public Group
 
     virtual inline QString getName() const { return name; }
 
+    virtual GroupData serialize() const;
+
     virtual inline bool operator== (const Group& rhs) const
       { return (id == rhs.getId()); }
 

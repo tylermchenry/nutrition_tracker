@@ -15,6 +15,8 @@
 #include "food_amount.h"
 #include "unit.h"
 
+class SpecializedUnitData; // forward decl
+
 class SpecializedUnit
 {
   public:
@@ -60,6 +62,8 @@ class SpecializedUnit
     virtual QString getNameAndAbbreviation() const = 0;
 
     virtual FoodAmount getBaseAmount() const = 0;
+
+    virtual SpecializedUnitData serialize() const = 0;
 
   private:
 

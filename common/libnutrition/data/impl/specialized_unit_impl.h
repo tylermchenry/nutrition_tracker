@@ -46,6 +46,8 @@ class SpecializedUnitImpl : virtual public SpecializedUnit
     virtual inline FoodAmount getBaseAmount() const
       { return FoodAmount(getFood(), amountInGrams, Unit::getUnit("g")); }
 
+    virtual SpecializedUnitData serialize() const;
+
   private:
 
     int foodId;

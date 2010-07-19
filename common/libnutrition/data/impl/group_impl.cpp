@@ -7,6 +7,7 @@
  */
 
 #include "group_impl.h"
+#include "libnutrition/proto/data/group.pb.h"
 #include <QDebug>
 
 GroupImpl::GroupImpl(const QString& id, const QString& name)
@@ -17,4 +18,14 @@ GroupImpl::GroupImpl(const QString& id, const QString& name)
 
 GroupImpl::~GroupImpl()
 {
+}
+
+GroupData GroupImpl::serialize() const
+{
+  GroupData gdata;
+
+  gdata.set_id(id.toStdString());
+  gdata.set_name(name.toStdString());
+
+  return gdata;
 }

@@ -28,6 +28,8 @@
 #include <QWeakPointer>
 #include "libnutrition/data/unit.h"
 
+class NutrientData; // forward decl
+
 /* A nutrient object describes a particular sort of nutrient that may be found
  * in a food. Nutrients are divided into several categories, mainly for display
  * purposes. All nutrients function in the same way.
@@ -98,6 +100,8 @@ class Nutrient
     virtual double getRDI() const = 0;
 
     virtual double getDefaultCalorieDensity() const = 0; // in kcal/g
+
+    virtual NutrientData serialize() const = 0;
 
   private:
 

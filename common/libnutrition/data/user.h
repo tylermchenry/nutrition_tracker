@@ -13,6 +13,8 @@
 #include <QVector>
 #include <QSharedPointer>
 
+class UserData; // forward decl
+
 class User
 {
   public:
@@ -59,6 +61,8 @@ class User
     virtual bool checkPassword(const QString& password) const = 0;
 
     virtual void saveToDatabase() = 0;
+
+    virtual UserData serialize() const = 0;
 
   private:
 

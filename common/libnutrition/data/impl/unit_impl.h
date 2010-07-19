@@ -91,6 +91,8 @@ class UnitImpl : virtual public Unit
       (const QSharedPointer<const Unit>& otherUnit =
         QSharedPointer<const Unit>()) const;
 
+    virtual UnitData serialize() const;
+
     virtual inline bool operator==(const Unit& rhs) const
       { return abbreviation == rhs.getAbbreviation(); }
 

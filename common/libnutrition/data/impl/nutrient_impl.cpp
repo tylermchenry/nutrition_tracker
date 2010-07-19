@@ -6,6 +6,7 @@
  */
 
 #include "nutrient_impl.h"
+#include "libnutrition/proto/data/nutrient.pb.h"
 #include <QVariant>
 #include <QDebug>
 #include <stdexcept>
@@ -58,5 +59,18 @@ double NutrientImpl::getDefaultCalorieDensity() const
   } else {
     return 0;
   }
+}
+
+NutrientData NutrientImpl::serialize() const
+{
+  NutrientData ndata;
+
+  ndata.set_id(id.toStdString());
+  ndata.set_name(name.toStdString());
+  ndata.set_category(static_cast<NutrientData::Category>(category));
+  ndata.set_standardunitabbreviation(standardUnit->getAbbreviation().toStdString());
+  ndata.set_rdi(rdi);
+
+  return ndata;
 }
 

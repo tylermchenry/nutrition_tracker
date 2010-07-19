@@ -37,7 +37,9 @@ class UserImpl : virtual public User
 
     virtual void setPassword(const QString& newPassword);
 
-    void saveToDatabase();
+    virtual void saveToDatabase();
+
+    virtual UserData serialize() const;
 
     // The following methods are only in the Impl class and are not accessible
     // through the interface. They exist for the benefit of the back ends:

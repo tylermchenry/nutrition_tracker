@@ -72,6 +72,8 @@ class NutrientImpl : virtual public Nutrient
 
     virtual double getDefaultCalorieDensity() const; // in kcal/g
 
+    virtual NutrientData serialize() const;
+
   private:
 
     QString id;

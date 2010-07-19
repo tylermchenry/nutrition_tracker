@@ -9,6 +9,7 @@
 #include "user_impl.h"
 #include "libnutrition/data/data_cache.h"
 #include "libnutrition/backend/back_end.h"
+#include "libnutrition/proto/data/user.pb.h"
 #include <QCryptographicHash>
 
 UserImpl::UserImpl(int id, const QString& username, const QString& realName,
@@ -30,6 +31,18 @@ void UserImpl::setPassword(const QString& newPassword)
 void UserImpl::saveToDatabase()
 {
   BackEnd::getBackEnd()->storeUser(DataCache<User>::getInstance().get(id));
+}
+
+UserData UserImpl::serialize() const
+{
+  UserData udata;
+
+  udata.set_userid(id);
+  udata.set_username(username.toStdString());
+  udata.set_realname(realName.toStdString());
+  udata.set_password_sha1_hex(pwSHA1_hex.toStdString());
+
+  return udata;
 }
 
 bool UserImpl::checkPassword(const QString& password) const

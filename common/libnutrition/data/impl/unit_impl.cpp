@@ -6,6 +6,7 @@
  */
 
 #include "unit_impl.h"
+#include "libnutrition/proto/data/unit.pb.h"
 #include <QVariant>
 #include <QDebug>
 #include <stdexcept>
@@ -42,5 +43,18 @@ double UnitImpl::getConversionFactor(const QSharedPointer<const Unit>& otherUnit
     // z = (Bar / Foo) = (Baz / Foo) * (Bar / Baz)
     return basicConversionFactor * basicUnit->getConversionFactor(otherUnit);
   }
+}
+
+UnitData UnitImpl::serialize() const
+{
+  UnitData udata;
+
+  udata.set_abbreviation(abbreviation.toStdString());
+  udata.set_name(name.toStdString());
+  udata.set_dimension(static_cast<UnitData::Dimension>(dimension));
+  udata.set_basicconversionfactor(basicConversionFactor);
+  udata.set_isbasic((basicConversionFactor == 1));
+
+  return udata;
 }
 

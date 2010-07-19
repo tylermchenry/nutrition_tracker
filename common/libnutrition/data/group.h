@@ -27,6 +27,8 @@
 #include <QSharedPointer>
 #include <QWeakPointer>
 
+class GroupData; // forward decl
+
 /* A food group (or category) is a USDA-defined classification of a single
  * (non-composite) food, such as "Vegetables", "Fast Food", "Milk and Cheese",
  * etc. All single foods have exactly one group. A group is a simple tag; it is
@@ -56,6 +58,8 @@ class Group
     virtual QString getId() const = 0;
 
     virtual QString getName() const = 0;
+
+    virtual GroupData serialize() const = 0;
 
     virtual bool operator== (const Group& rhs) const = 0;
 

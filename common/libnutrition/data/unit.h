@@ -27,6 +27,8 @@
 #include <QSharedPointer>
 #include <QWeakPointer>
 
+class UnitData; // forward decl
+
 /* A unit object represents a unit of measurement such as a gram, a fluid ounce,
  * a serving, or a kilocalorie.
  *
@@ -113,6 +115,8 @@ class Unit
     virtual double getConversionFactor
       (const QSharedPointer<const Unit>& otherUnit =
         QSharedPointer<const Unit>()) const = 0;
+
+    virtual UnitData serialize() const = 0;
 
     virtual bool operator==(const Unit& rhs) const = 0;
 
