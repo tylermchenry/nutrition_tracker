@@ -8,18 +8,18 @@ message UnitLoadRequest
 	
 	enum Dimension {
 		Weight = 0;
-        Volume = 1;
-        Quantity = 2;
-        Serving = 3;
-        Energy = 4;
-        IU = 5;
-    }
+        	Volume = 1;
+        	Quantity = 2;
+        	Serving = 3;
+        	Energy = 4;
+        	IU = 5;
+    	}
     
-    repeated Dimension requestedDimensions = 3;
+	repeated Dimension requestedDimensions = 3;
     
-    repeated string requestedAbbreviations = 4;
+    	repeated string requestedAbbreviations = 4;
     
-    optional bool basicUnitsOnly = 5 [default = false];
+    	optional bool basicUnitsOnly = 5 [default = false];
 }
 
 message UnitLoadResponse 
