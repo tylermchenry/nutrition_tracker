@@ -93,7 +93,7 @@ void CompositeFoodImpl::deleteFromDatabase()
     (getCanonicalSharedPointer().dynamicCast<CompositeFood>());
 }
 
-FoodData& CompositeFood::serialize(FoodData& fdata) const
+FoodData& CompositeFoodImpl::serialize(FoodData& fdata) const
 {
   *(fdata.add_compositefoods()) = serialize();
   return fdata;
