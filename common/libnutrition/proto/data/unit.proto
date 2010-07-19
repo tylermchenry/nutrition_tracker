@@ -1,21 +1,21 @@
 message UnitData
 {
-	optional string abbreviation = 1;
+    	optional string abbreviation = 1;
 
-	optional string name = 2;
+    	optional string name = 2;
 
-	enum Dimension {
+    	enum Dimension {
 		Weight = 0;
-        Volume = 1;
-        Quantity = 2;
-        Serving = 3;
-        Energy = 4;
-        IU = 5;
-    }
+        	Volume = 1;
+        	Quantity = 2;
+        	Serving = 3;
+        	Energy = 4;
+        	IU = 5;
+    	}
     
-    optional Dimension dimension = 3;
+    	optional Dimension dimension = 3;
     
-    optional double basicConversionFactor = 4;
+    	optional double basicConversionFactor = 4;
     
-    optional bool isBasic = 5;
+    	optional bool isBasic = 5;
 }	

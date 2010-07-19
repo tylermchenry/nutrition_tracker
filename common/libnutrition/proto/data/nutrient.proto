@@ -1,21 +1,21 @@
 message NutrientData
 {
-	optional string id = 1;
+    	optional string id = 1;
 	
-	optional string name = 2;
+    	optional string name = 2;
 	
-	enum Category {
+    	enum Category {
 		Energy = 0; 
-        Basic = 1;
-        Vitamin = 2;
-        Mineral = 3;
-        Additional = 4;
-        Hidden = 5;
-    }
+        	Basic = 1;
+        	Vitamin = 2;
+        	Mineral = 3;
+        	Additional = 4;
+        	Hidden = 5;
+    	}
     
-    optional Category category = 3 [default = Additional];
+    	optional Category category = 3 [default = Additional];
+ 
+ 	optional string standardUnitAbbreviation = 4;
     
-    optional string standardUnitAbbreviation = 4;
-    
-    optional double RDI = 5;
+    	optional double RDI = 5;
 }
