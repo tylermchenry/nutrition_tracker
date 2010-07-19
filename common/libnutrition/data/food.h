@@ -33,6 +33,7 @@
 #include "libnutrition/data/specialized_unit.h"
 
 class FoodComponent; // Forward decl
+class FoodData; // Forward decl
 
 /* The Food class is the parent class for all edible objects: single foods,
  * composite foods, collections, and meals. The concept of the Food class is
@@ -114,6 +115,8 @@ class Food
     virtual bool isNonce() const = 0;
 
     virtual QSharedPointer<Food> cloneNonce() const = 0;
+
+    virtual FoodData& serialize(FoodData& fdata) const = 0;
 
   protected:
 

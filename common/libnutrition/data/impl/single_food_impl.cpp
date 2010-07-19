@@ -6,6 +6,7 @@
  */
 
 #include "single_food_impl.h"
+#include "libnutrition/proto/data/data.pb.h"
 #include "libnutrition/backend/back_end.h"
 #include <QDebug>
 
@@ -144,6 +145,47 @@ void SingleFoodImpl::deleteFromDatabase()
 {
   BackEnd::getBackEnd()->deleteSingleFood
     (getCanonicalSharedPointer().dynamicCast<SingleFood>());
+}
+
+FoodData& SingleFoodImpl::serialize(FoodData& fdata) const
+{
+  *(fdata.add_singlefoods()) = serialize();
+  return fdata;
+}
+
+SingleFoodData SingleFoodImpl::serialize() const
+{
+  SingleFoodData sfdata;
+
+  sfdata.set_id(id);
+  sfdata.set_name(getName().toStdString());
+  sfdata.set_ownerid(getOwnerId());
+
+  sfdata.set_entrysource(static_cast<SingleFoodData::EntrySource>(entrySource));
+  sfdata.set_groupid(group->getId().toStdString());
+  sfdata.set_percentrefuse(percentRefuse);
+  sfdata.set_refusedescription(refuseDescription.toStdString());
+
+  for (QMap<QString, NutrientAmount>::const_iterator i = nutrients.begin();
+       i != nutrients.end(); ++i)
+  {
+     SingleFoodData_NutrientAmount* namt = sfdata.add_nutrientamounts();
+     namt->set_nutrientid(i.value().getNutrient()->getId().toStdString());
+     namt->set_amount(i.value().getAmount());
+     namt->set_unitabbreviation(i.value().getUnit()->getAbbreviation().toStdString());
+  }
+
+  sfdata.set_weightamount(getBaseAmount(Unit::Dimensions::Weight).getAmount());
+  sfdata.set_volumeamount(getBaseAmount(Unit::Dimensions::Volume).getAmount());
+  sfdata.set_quantityamount(getBaseAmount(Unit::Dimensions::Quantity).getAmount());
+  sfdata.set_servingamount(getBaseAmount(Unit::Dimensions::Serving).getAmount());
+
+  sfdata.set_energydensityfat(calorieDensities[Nutrient::FAT_NAME]);
+  sfdata.set_energydensityprotein(calorieDensities[Nutrient::PROTEIN_NAME]);
+  sfdata.set_energydensitycarbohydrate(calorieDensities[Nutrient::CARBOHYDRATE_NAME]);
+  sfdata.set_energydensityalcohol(calorieDensities[Nutrient::ALCOHOL_NAME]);
+
+  return sfdata;
 }
 
 void SingleFoodImpl::setCalorieDensity(const QString& nutrientName, double density)

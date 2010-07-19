@@ -6,6 +6,7 @@
  */
 
 #include "composite_food_impl.h"
+#include "libnutrition/proto/data/data.pb.h"
 #include "libnutrition/backend/back_end.h"
 #include <QDebug>
 
@@ -90,6 +91,39 @@ void CompositeFoodImpl::deleteFromDatabase()
 {
   BackEnd::getBackEnd()->deleteCompositeFood
     (getCanonicalSharedPointer().dynamicCast<CompositeFood>());
+}
+
+FoodData& CompositeFood::serialize(FoodData& fdata) const
+{
+  *(fdata.add_compositefoods()) = serialize();
+  return fdata;
+}
+
+CompositeFoodData CompositeFoodImpl::serialize() const
+{
+  CompositeFoodData cfdata;
+
+  cfdata.set_id(id);
+  cfdata.set_name(getName().toStdString());
+  cfdata.set_ownerid(getOwnerId());
+
+  cfdata.set_weightamount(getBaseAmount(Unit::Dimensions::Weight).getAmount());
+  cfdata.set_volumeamount(getBaseAmount(Unit::Dimensions::Volume).getAmount());
+  cfdata.set_quantityamount(getBaseAmount(Unit::Dimensions::Quantity).getAmount());
+  cfdata.set_servingamount(getBaseAmount(Unit::Dimensions::Serving).getAmount());
+
+  cfdata.set_creationdate_iso8601(creationDate.toString(Qt::ISODate).toStdString());
+  cfdata.set_expirydate_iso8601(expiryDate.toString(Qt::ISODate).toStdString());
+
+  cfdata.set_isnonce(isNonce());
+
+  for (QMap<int, FoodComponent>::const_iterator i = getRawComponents().begin();
+       i != getRawComponents().end(); ++i)
+  {
+    *(cfdata.add_components()) = i.value().serialize();
+  }
+
+  return cfdata;
 }
 
 QSharedPointer<Food> CompositeFoodImpl::cloneNonce() const

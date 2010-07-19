@@ -9,6 +9,9 @@
 #include "food_component.h"
 #include "food_collection.h"
 #include "food.h"
+#include "single_food.h"
+#include "composite_food.h"
+#include "libnutrition/proto/data/data.pb.h"
 #include <QSet>
 #include <QDebug>
 
@@ -31,6 +34,33 @@ FoodComponent::FoodComponent(const QSharedPointer<FoodCollection>& containingCol
 
 FoodComponent::~FoodComponent()
 {
+}
+
+FoodComponentData FoodComponent::serialize() const
+{
+  FoodComponentData fcdata;
+
+  fcdata.set_id(id);
+
+  if (QSharedPointer<const SingleFood> singleFood =
+      foodAmount.getFood().dynamicCast<const SingleFood>())
+  {
+    fcdata.set_foodid(singleFood->getSingleFoodId());
+    fcdata.set_foodtype(FoodComponentData::SingleFood);
+  }
+  else if (QSharedPointer<const CompositeFood> compositeFood =
+            foodAmount.getFood().dynamicCast<const CompositeFood>())
+  {
+    fcdata.set_foodid(compositeFood->getCompositeFoodId());
+    fcdata.set_foodtype(FoodComponentData::CompositeFood);
+  }
+
+  fcdata.set_amount(foodAmount.getAmount());
+  fcdata.set_unitabbreviation(foodAmount.getUnit()->getAbbreviation().toStdString());
+  fcdata.set_includesrefuse(foodAmount.includesRefuse());
+  fcdata.set_order(order);
+
+  return fcdata;
 }
 
 bool FoodComponent::operator< (const FoodComponent& rhs) const

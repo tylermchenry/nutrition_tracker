@@ -25,6 +25,8 @@
 #include "food_collection.h"
 #include <QDate>
 
+class CompositeFoodData; // forward decl
+
 /* A CompositeFood is a food made up of one or more other foods, which
  * functions logically as a its own food (as opposed to a FoodCollection, which
  * does not logically function in this way).
@@ -83,6 +85,10 @@ class CompositeFood : virtual public FoodCollection
     virtual void setCreationDate(const QDate& date) = 0;
 
     virtual void setExpiryDate(const QDate& date) = 0;
+
+    virtual FoodData& serialize(FoodData& fdata) const = 0;
+
+    virtual CompositeFoodData serialize() const = 0;
 
   protected:
 

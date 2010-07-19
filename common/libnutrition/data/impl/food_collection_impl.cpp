@@ -267,6 +267,11 @@ void FoodCollectionImpl::deleteFromDatabase()
   throw std::logic_error("Attempted to delete a bare food collection from the database.");
 }
 
+FoodData& FoodCollectionImpl::serialize(FoodData& fdata) const
+{
+  throw std::logic_error("Attempted to serialize a bare food collection.");
+}
+
 QSharedPointer<FoodCollection>
   FoodCollectionImpl::getCanonicalSharedPointerToCollection() const
 {

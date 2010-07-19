@@ -25,6 +25,7 @@
 #include "food_amount.h"
 
 class FoodCollection; // Forward decl
+class FoodComponentData; // Forward decl
 
 /* A FoodComponent is a uniquely-identified, ordered component of a
  * particular FoodCollection. Rather than storing FoodAmount objects,
@@ -71,6 +72,8 @@ class FoodComponent
     FoodAmount getFoodAmount() const { return foodAmount; }
 
     int getOrder() const { return order; }
+
+    FoodComponentData serialize() const;
 
     bool operator< (const FoodComponent& rhs) const;
 

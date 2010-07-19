@@ -26,6 +26,8 @@
 #include <QDate>
 #include <QMap>
 
+class MealData; // forward decl
+
 /* A meal is a a collection of foods associated with a unique triplet of
  * (meal ID, user, date). A meal ID refers to a particular named meal, e.g.
  * "Breakfast", "Lunch", "Dinner", or other user-defined identifiers. There may
@@ -93,6 +95,10 @@ class Meal : virtual public FoodCollection
     virtual QDate getDate() const = 0;
 
     virtual QSharedPointer<Meal> getTemporaryClone() const = 0;
+
+    virtual FoodData& serialize(FoodData& fdata) const = 0;
+
+    virtual MealData serialize() const = 0;
 
   protected:
 

@@ -30,6 +30,8 @@
 #include <QMultiMap>
 #include <QSet>
 
+class SingleFoodData; // forward decl
+
 /* A single food is an indivisible food with its own inherent nutrition
  * information. In this case "indivisible" does not necessarily mean that it is
  * a raw agricultural product (e.g. an apple), but simply that no breakdown of
@@ -101,6 +103,10 @@ class SingleFood : virtual public Food
     virtual void setGroup(const QSharedPointer<const Group>& group) = 0;
 
     virtual void setNutrient(const NutrientAmount& nutrientAmount) = 0;
+
+    virtual FoodData& serialize(FoodData& fdata) const = 0;
+
+    virtual SingleFoodData serialize() const = 0;
 
   protected:
 

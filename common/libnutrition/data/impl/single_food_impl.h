@@ -116,6 +116,10 @@ class SingleFoodImpl : public FoodImpl, virtual public SingleFood
 
     virtual void deleteFromDatabase();
 
+    virtual FoodData& serialize(FoodData& fdata) const;
+
+    virtual SingleFoodData serialize() const;
+
     // The following methods are only in the Impl class and are not accessible
     // through the interface. They exist for the benefit of the back ends:
 

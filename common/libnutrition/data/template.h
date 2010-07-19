@@ -24,6 +24,8 @@
 
 #include "food_collection.h"
 
+class TemplateData; // forward decl
+
 class Template : virtual public FoodCollection
 {
   public:
@@ -44,6 +46,10 @@ class Template : virtual public FoodCollection
     virtual ~Template() {};
 
     virtual int getTemplateId() const = 0;
+
+    virtual FoodData& serialize(FoodData& fdata) const = 0;
+
+    virtual TemplateData serialize() const = 0;
 
   protected:
 

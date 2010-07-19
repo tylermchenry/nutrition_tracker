@@ -7,6 +7,7 @@
  */
 
 #include "meal_impl.h"
+#include "libnutrition/proto/data/data.pb.h"
 #include "libnutrition/backend/back_end.h"
 #include <QDebug>
 
@@ -57,3 +58,27 @@ void MealImpl::deleteFromDatabase()
     (getCanonicalSharedPointer().dynamicCast<Meal>());
 }
 
+FoodData& MealImpl::serialize(FoodData& fdata) const
+{
+  *(fdata.add_meals()) = serialize();
+  return fdata;
+}
+
+MealData MealImpl::serialize() const
+{
+  MealData mdata;
+
+  mdata.set_userid(getOwnerId());
+  mdata.set_date_iso8601(date.toString(Qt::ISODate).toStdString());
+  mdata.set_mealid(id);
+  mdata.set_name(getName().toStdString());
+  mdata.set_creatorid(creatorId);
+
+  for (QMap<int, FoodComponent>::const_iterator i = getRawComponents().begin();
+       i != getRawComponents().end(); ++i)
+  {
+    *(mdata.add_components()) = i.value().serialize();
+  }
+
+  return mdata;
+}

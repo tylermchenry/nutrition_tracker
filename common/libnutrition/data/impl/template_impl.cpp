@@ -1,4 +1,5 @@
 #include "template_impl.h"
+#include "libnutrition/proto/data/data.pb.h"
 #include "libnutrition/backend/back_end.h"
 #include <QDebug>
 
@@ -35,4 +36,27 @@ void TemplateImpl::deleteFromDatabase()
 {
   BackEnd::getBackEnd()->deleteTemplate
     (getCanonicalSharedPointer().dynamicCast<Template>());
+}
+
+FoodData& TemplateImpl::serialize(FoodData& fdata) const
+{
+  *(fdata.add_templates()) = serialize();
+  return fdata;
+}
+
+TemplateData TemplateImpl::serialize() const
+{
+  TemplateData tdata;
+
+  tdata.set_id(id);
+  tdata.set_name(getName().toStdString());
+  tdata.set_ownerid(getOwnerId());
+
+  for (QMap<int, FoodComponent>::const_iterator i = getRawComponents().begin();
+       i != getRawComponents().end(); ++i)
+  {
+    *(tdata.add_components()) = i.value().serialize();
+  }
+
+  return tdata;
 }

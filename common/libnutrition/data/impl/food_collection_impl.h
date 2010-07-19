@@ -106,6 +106,8 @@ class FoodCollectionImpl : public FoodImpl, virtual public FoodCollection
 
     virtual void deleteFromDatabase();
 
+    virtual FoodData& serialize(FoodData& fdata) const;
+
     // The following two methods are protected in the interface, but are
     // public in the implementation for the benefit of the backend:
 

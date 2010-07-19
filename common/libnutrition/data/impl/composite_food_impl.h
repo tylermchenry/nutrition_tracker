@@ -98,6 +98,10 @@ class CompositeFoodImpl
 
     virtual QSharedPointer<Food> cloneNonce() const;
 
+    virtual FoodData& serialize(FoodData& fdata) const;
+
+    virtual CompositeFoodData serialize() const;
+
     // The following methods are only in the Impl class and are not accessible
     // through the interface. They exist for the benefit of the back ends:
 

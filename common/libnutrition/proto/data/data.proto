@@ -10,11 +10,11 @@ import "libnutrition/proto/data/user.proto";
 
 message FoodData 
 {
-	optional SingleFoodData singleFoods = 1;
+	repeated SingleFoodData singleFoods = 1;
 	
-	optional CompositeFoodData compositeFoods = 2;
+	repeated CompositeFoodData compositeFoods = 2;
 	
-	optional TemplateData templates = 3;
+	repeated TemplateData templates = 3;
 	
-	optional MealData meals = 4;	
+	repeated MealData meals = 4;	
 }

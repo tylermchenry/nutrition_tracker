@@ -75,6 +75,10 @@ class MealImpl : public FoodCollectionImpl, virtual public Meal
 
     virtual void deleteFromDatabase();
 
+    virtual FoodData& serialize(FoodData& fdata) const;
+
+    virtual MealData serialize() const;
+
   protected:
 
     virtual inline int getTemporaryId() const { return temporaryId; }
