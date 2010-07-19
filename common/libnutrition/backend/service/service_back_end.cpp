@@ -143,6 +143,14 @@ void ServiceBackEnd::writeMessage(const ::google::protobuf::Message& msg)
   writeMessageLength(typeName.length());
   socket.write(typeName.c_str(), typeName.length());
   writeMessageLength(msg.ByteSize());
+
+  // It is necessary to flush the socket before writing the protobuf itself
+  // because QTcpSocket does its own internal buffering, and when writing
+  // the protobuf, we go around that directly to the descriptor. Without a
+  // flush, this can result in the protobuf being written to the network
+  // ahead of the header information.
+
+  socket.flush();
   msg.SerializeToFileDescriptor(socket.socketDescriptor());
 }
 
