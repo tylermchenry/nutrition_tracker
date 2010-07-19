@@ -1,12 +1,5 @@
 import "libnutrition/proto/data/food_component.proto";
 
-message MealIdentifier 
-{
-	optional int32 userId = 1;
-	optional string date_ISO8601 = 2;
-	optional int32 mealId = 3;
-}
-
 message MealData
 {
 	optional int32 userId = 1;

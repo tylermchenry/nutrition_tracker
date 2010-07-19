@@ -1,6 +1,13 @@
 import "libnutrition/proto/data/meal.proto";
 import "libnutrition/proto/service/error.proto";
 
+message MealIdentifier 
+{
+	optional int32 userId = 1;
+	optional string date_ISO8601 = 2;
+	optional int32 mealId = 3;
+}
+
 message MealLoadRequest 
 {
 	optional bool all = 1 [default = false];
