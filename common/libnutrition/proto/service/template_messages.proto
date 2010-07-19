@@ -17,7 +17,7 @@ message TemplateLoadResponse
 
 message TemplateStoreRequest
 {
-	repeated TemplateData templatess = 1;
+	repeated TemplateData templates = 1;
 }
 
 message TemplateStoreResponse
