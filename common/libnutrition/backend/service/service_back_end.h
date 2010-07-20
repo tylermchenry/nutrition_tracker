@@ -247,7 +247,7 @@ template <typename T> void ServiceBackEnd::readResponse(T& t)
   QByteArray type_bytes;
 
   while (type_bytes.size() < static_cast<int>(type_len)) {
-    if (socket.waitForReadyRead(3000)) {
+    if (socket.bytesAvailable() > 0 || socket.waitForReadyRead(3000)) {
       type_bytes += socket.read(type_len - type_bytes.size());
     } else {
       throw std::runtime_error("Socket failed or read timed out");
@@ -265,7 +265,7 @@ template <typename T> void ServiceBackEnd::readResponse(T& t)
   QByteArray bytes;
 
   while (bytes.size() < static_cast<int>(resp_len)) {
-    if (socket.waitForReadyRead(3000)) {
+    if (socket.bytesAvailable() > 0 || socket.waitForReadyRead(3000)) {
       bytes += socket.read(resp_len - bytes.size());
     } else {
       throw std::runtime_error("Socket failed or read timed out");
