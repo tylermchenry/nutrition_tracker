@@ -6,9 +6,9 @@
  */
 
 #include "client_connection.h"
+#include "libnutrition/proto/service/data_messages.pb.h"
 #include <cassert>
 #include <arpa/inet.h>
-#include "libnutrition/proto/service/data_messages.pb.h"
 
 ClientConnection::ClientConnection(QTcpSocket* socket, QObject* parent)
   : QObject(parent), tcpSocket(socket), loggedInUserId(-1)
@@ -70,6 +70,7 @@ void ClientConnection::readData()
         case Fields::ProtocolBuffer:
           qDebug() << "Received a protobuffer named " << messageName
                     << ", length " << protocolBufferLength;
+          assert(partialData.length() == protocolBufferLength);
           handleProtocolBuffer(messageName, partialData);
           currentField = Fields::None;
           break;
@@ -114,8 +115,14 @@ int ClientConnection::computeBytesToRead() const
 void ClientConnection::handleProtocolBuffer
   (const QString& name, const QByteArray& data)
 {
-  if (name.toStdString() == DataLoadRequest().GetTypeName()) {
+  if (name == pbName<DataLoadRequest>()) {
+    DataLoadRequest req;
     DataLoadResponse resp;
+
+//    req.ParsePartialFromArray(data.data(), data.length());
+//
+//    qDebug() << req.ByteSize();
+//    qDebug() << QString::fromStdString(req.DebugString());
 
     resp.mutable_error()->set_iserror(true);
     resp.mutable_error()->set_errormessage("Not implemented");
@@ -149,4 +156,9 @@ void ClientConnection::writeMessage(const ::google::protobuf::Message& msg)
 
   tcpSocket->flush();
   msg.SerializeToFileDescriptor(getSocketDescriptor());
+}
+
+template <typename T> QString ClientConnection::pbName()
+{
+  return QString::fromStdString(T().GetTypeName());
 }

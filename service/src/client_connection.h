@@ -67,6 +67,8 @@ class ClientConnection : public QObject
     void writeMessageLength(quint32 length);
 
     void writeMessage(const ::google::protobuf::Message& msg);
+
+    template <typename T> static QString pbName();
 };
 
 #endif /* CLIENT_CONNECTION_H_ */
