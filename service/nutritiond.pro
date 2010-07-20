@@ -3,24 +3,25 @@ TARGET = nutritiond
 QT += core \
     sql \
     network
-    
-# TODO: Avoid specifying both ../ and ../../
 
+# TODO: Avoid specifying both ../ and ../../
 DEPENDPATH += . \
     src \
     ../src \
     ../common/ \
-    ../../common 
+    ../../common
 INCLUDEPATH += . \
     src \
     ../src \
     ../common/ \
     ../../common
-    
 LIBS += -L../common \
-    -lnutrition
-
-HEADERS += 
-SOURCES += src/main.cpp
+    -lnutrition \
+    -lprotobuf
+HEADERS += src/client_connection.h \
+    src/nutrition_server_application.h
+SOURCES += src/client_connection.cpp \
+    src/nutrition_server_application.cpp \
+    src/main.cpp
 FORMS += 
 RESOURCES += 
