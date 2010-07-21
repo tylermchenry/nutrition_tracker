@@ -98,7 +98,7 @@ namespace NutrientServer {
       for (QList<QSharedPointer<const Nutrient> >::const_iterator i = nutrients.begin();
            i != nutrients.end(); ++i)
       {
-        // Add units
+        resp_objs.unit_objects.addUnit((*i)->getStandardUnit());
       }
     }
 
