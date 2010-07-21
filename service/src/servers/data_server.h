@@ -1,6 +1,7 @@
 #ifndef DATA_SERVER_H_
 #define DATA_SERVER_H_
 
+#include "servers/omissions.h"
 #include "servers/single_food_server.h"
 #include "servers/composite_food_server.h"
 #include "servers/template_server.h"

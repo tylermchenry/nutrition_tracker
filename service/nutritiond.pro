@@ -18,7 +18,8 @@ INCLUDEPATH += . \
 LIBS += -L../common \
     -lnutrition \
     -lprotobuf
-HEADERS += src/servers/omissions.h \
+HEADERS += src/servers/food_server.h \
+    src/servers/omissions.h \
     src/servers/composite_food_server.h \
     src/servers/data_server.h \
     src/servers/group_server.h \
@@ -33,7 +34,8 @@ HEADERS += src/servers/omissions.h \
     src/servers/user_server.h \
     src/client_connection.h \
     src/nutrition_server_application.h
-SOURCES += src/servers/omissions.cpp \
+SOURCES += src/servers/food_server.cpp \
+    src/servers/omissions.cpp \
     src/servers/composite_food_server.cpp \
     src/servers/data_server.cpp \
     src/servers/group_server.cpp \

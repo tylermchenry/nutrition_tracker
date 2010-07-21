@@ -1,13 +1,10 @@
 #ifndef UNIT_SERVER_H_
 #define UNIT_SERVER_H_
 
-#include "servers/omissions.h"
 #include "libnutrition/proto/service/unit_messages.pb.h"
 #include "libnutrition/data/unit.h"
 #include <QString>
 #include <QSet>
-
-class DataLoadResponseObjects; // forward decl
 
 class UnitLoadResponseObjects
 {
@@ -23,7 +20,7 @@ class UnitLoadResponseObjects
 
     UnitLoadResponse serialize() const;
 
-  public:
+  private:
 
     QSet<QString> unitIds;
     QList<QSharedPointer<const Unit> > units;

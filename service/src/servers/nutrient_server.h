@@ -1,13 +1,10 @@
 #ifndef NUTRIENT_SERVER_H_
 #define NUTRIENT_SERVER_H_
 
-#include "servers/omissions.h"
 #include "libnutrition/proto/service/nutrient_messages.pb.h"
 #include "libnutrition/data/nutrient.h"
 #include <QString>
 #include <QSet>
-
-class DataLoadResponseObjects; // forward decl
 
 class NutrientLoadResponseObjects
 {
@@ -23,7 +20,7 @@ class NutrientLoadResponseObjects
 
     NutrientLoadResponse serialize() const;
 
-  public:
+  private:
 
     QSet<QString> nutrientIds;
     QList<QSharedPointer<const Nutrient> > nutrients;

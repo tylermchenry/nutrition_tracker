@@ -1,13 +1,10 @@
 #ifndef GROUP_SERVER_H_
 #define GROUP_SERVER_H_
 
-#include "servers/omissions.h"
 #include "libnutrition/proto/service/group_messages.pb.h"
 #include "libnutrition/data/group.h"
 #include <QString>
 #include <QSet>
-
-class DataLoadResponseObjects; // forward decl
 
 class GroupLoadResponseObjects
 {
@@ -23,7 +20,7 @@ class GroupLoadResponseObjects
 
     GroupLoadResponse serialize() const;
 
-  public:
+  private:
 
     QSet<QString> groupIds;
     QList<QSharedPointer<const Group> > groups;
