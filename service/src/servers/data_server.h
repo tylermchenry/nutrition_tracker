@@ -16,6 +16,7 @@ class DataLoadResponseObjects
 {
   public:
 
+    GroupLoadResponseObjects group_objects;
     UnitLoadResponseObjects unit_objects;
     NutrientLoadResponseObjects nutrient_objects;
 

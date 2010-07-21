@@ -123,6 +123,15 @@ void ClientConnection::handleProtocolBuffer
   } else if (name == pbName<LogInRequest>()) {
     LogInRequest req = parseProtocolBuffer<LogInRequest>(data);
     writeMessage(LoginServer::doLogin(req, loggedInUserId));
+  } else if (name == pbName<NutrientLoadRequest>()) {
+    NutrientLoadRequest req = parseProtocolBuffer<NutrientLoadRequest>(data);
+    writeMessage(NutrientServer::loadNutrients(req).serialize());
+  } else if (name == pbName<UnitLoadRequest>()) {
+    UnitLoadRequest req = parseProtocolBuffer<UnitLoadRequest>(data);
+    writeMessage(UnitServer::loadUnits(req).serialize());
+  } else if (name == pbName<GroupLoadRequest>()) {
+    GroupLoadRequest req = parseProtocolBuffer<GroupLoadRequest>(data);
+    writeMessage(GroupServer::loadGroups(req).serialize());
   }
 }
 

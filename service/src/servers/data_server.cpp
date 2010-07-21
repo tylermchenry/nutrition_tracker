@@ -5,6 +5,10 @@ DataLoadResponse DataLoadResponseObjects::serialize() const
 {
   DataLoadResponse resp;
 
+  if (!group_objects.isEmpty()) {
+    *(resp.mutable_grouploadresponse()) = group_objects.serialize();
+  }
+
   if (!unit_objects.isEmpty()) {
     *(resp.mutable_unitloadresponse()) = unit_objects.serialize();
   }
@@ -22,6 +26,10 @@ namespace DataServer {
   {
     DataLoadResponseObjects resp_objs;
     Omissions omissions(req);
+
+    if (req.has_grouploadrequest()) {
+      GroupServer::loadGroups(req.grouploadrequest(), resp_objs, omissions);
+    }
 
     if (req.has_unitloadrequest()) {
       UnitServer::loadUnits(req.unitloadrequest(), resp_objs, omissions);
