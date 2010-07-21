@@ -123,7 +123,7 @@ void ServiceBackEnd::setOmissions(DataLoadRequest& req)
   }
 
   if (!req.has_userloadrequest()) {
-    req.mutable_nutrientloadrequest()->set_omit(true);
+    req.mutable_userloadrequest()->set_omit(true);
   }
 }
 
@@ -135,6 +135,9 @@ void ServiceBackEnd::writeMessageLength(quint32 length)
 
 void ServiceBackEnd::writeMessage(const ::google::protobuf::Message& msg)
 {
+  qDebug() << "Sending " << QString::fromStdString(msg.GetTypeName()) << " message:";
+  qDebug() << QString::fromStdString(msg.DebugString());
+
   // Temporary simple protocol:
   // [type-length] [type-name] [pb-length] [protocol-buffer]
   // Where lengths are 32-bit unsigned integers in network byte order
@@ -161,7 +164,7 @@ quint32 ServiceBackEnd::readResponseLength()
   QByteArray bytes;
 
   while (bytes.size() < static_cast<int>(sizeof(nbo_length))) {
-    if (socket.waitForReadyRead(3000)) {
+    if (socket.bytesAvailable() > 0 || socket.waitForReadyRead(3000)) {
       bytes += socket.read(sizeof(nbo_length) - bytes.size());
     } else {
       throw std::runtime_error("Socket failed or read timed out");
