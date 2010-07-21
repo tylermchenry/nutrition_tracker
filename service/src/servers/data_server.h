@@ -16,6 +16,7 @@ class DataLoadResponseObjects
 {
   public:
 
+    UnitLoadResponseObjects unit_objects;
     NutrientLoadResponseObjects nutrient_objects;
 
     DataLoadResponse serialize() const;

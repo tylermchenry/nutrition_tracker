@@ -17,6 +17,8 @@ class NutrientLoadResponseObjects
     void addNutrients(const QVector<QSharedPointer<const Nutrient> >& nutrients);
     void addNutrients(const QList<QSharedPointer<const Nutrient> >& nutrients);
 
+    inline bool isEmpty() const { return nutrients.isEmpty(); }
+
     QList<QSharedPointer<const Nutrient> > getNutrients() const;
 
     NutrientLoadResponse serialize() const;

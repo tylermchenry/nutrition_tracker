@@ -5,7 +5,13 @@ DataLoadResponse DataLoadResponseObjects::serialize() const
 {
   DataLoadResponse resp;
 
-  *(resp.mutable_nutrientloadresponse()) = nutrient_objects.serialize();
+  if (!unit_objects.isEmpty()) {
+    *(resp.mutable_unitloadresponse()) = unit_objects.serialize();
+  }
+
+  if (!nutrient_objects.isEmpty()) {
+    *(resp.mutable_nutrientloadresponse()) = nutrient_objects.serialize();
+  }
 
   return resp;
 }
@@ -16,6 +22,10 @@ namespace DataServer {
   {
     DataLoadResponseObjects resp_objs;
     Omissions omissions(req);
+
+    if (req.has_unitloadrequest()) {
+      UnitServer::loadUnits(req.unitloadrequest(), resp_objs, omissions);
+    }
 
     if (req.has_nutrientloadrequest()) {
       NutrientServer::loadNutrients(req.nutrientloadrequest(), resp_objs, omissions);
