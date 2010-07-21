@@ -18,9 +18,35 @@ INCLUDEPATH += . \
 LIBS += -L../common \
     -lnutrition \
     -lprotobuf
-HEADERS += src/client_connection.h \
+HEADERS += src/servers/omissions.h \
+    src/servers/composite_food_server.h \
+    src/servers/data_server.h \
+    src/servers/group_server.h \
+    src/servers/login_server.h \
+    src/servers/meal_server.h \
+    src/servers/nutrient_server.h \
+    src/servers/search_server.h \
+    src/servers/single_food_server.h \
+    src/servers/specialized_unit_server.h \
+    src/servers/template_server.h \
+    src/servers/unit_server.h \
+    src/servers/user_server.h \
+    src/client_connection.h \
     src/nutrition_server_application.h
-SOURCES += src/client_connection.cpp \
+SOURCES += src/servers/omissions.cpp \
+    src/servers/composite_food_server.cpp \
+    src/servers/data_server.cpp \
+    src/servers/group_server.cpp \
+    src/servers/login_server.cpp \
+    src/servers/meal_server.cpp \
+    src/servers/nutrient_server.cpp \
+    src/servers/search_server.cpp \
+    src/servers/single_food_server.cpp \
+    src/servers/specialized_unit_server.cpp \
+    src/servers/template_server.cpp \
+    src/servers/unit_server.cpp \
+    src/servers/user_server.cpp \
+    src/client_connection.cpp \
     src/nutrition_server_application.cpp \
     src/main.cpp
 FORMS += 

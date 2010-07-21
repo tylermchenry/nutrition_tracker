@@ -69,6 +69,8 @@ class ClientConnection : public QObject
     void writeMessage(const ::google::protobuf::Message& msg);
 
     template <typename T> static QString pbName();
+
+    template <typename T> T parseProtocolBuffer(const QByteArray& data);
 };
 
 #endif /* CLIENT_CONNECTION_H_ */

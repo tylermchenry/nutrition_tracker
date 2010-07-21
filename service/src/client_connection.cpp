@@ -7,6 +7,7 @@
 
 #include "client_connection.h"
 #include "libnutrition/proto/service/data_messages.pb.h"
+#include "servers/data_server.h"
 #include <cassert>
 #include <arpa/inet.h>
 
@@ -116,18 +117,8 @@ void ClientConnection::handleProtocolBuffer
   (const QString& name, const QByteArray& data)
 {
   if (name == pbName<DataLoadRequest>()) {
-    DataLoadRequest req;
-    DataLoadResponse resp;
-
-//    req.ParsePartialFromArray(data.data(), data.length());
-//
-//    qDebug() << req.ByteSize();
-//    qDebug() << QString::fromStdString(req.DebugString());
-
-    resp.mutable_error()->set_iserror(true);
-    resp.mutable_error()->set_errormessage("Not implemented");
-
-    writeMessage(resp);
+    DataLoadRequest req = parseProtocolBuffer<DataLoadRequest>(data);
+    writeMessage(DataServer::loadData(req).serialize());
   }
 }
 
@@ -139,6 +130,9 @@ void ClientConnection::writeMessageLength(quint32 length)
 
 void ClientConnection::writeMessage(const ::google::protobuf::Message& msg)
 {
+  qDebug() << "Sending " << QString::fromStdString(msg.GetTypeName()) << " message:";
+  qDebug() << QString::fromStdString(msg.DebugString());
+
   // Temporary simple protocol:
   // [type-length] [type-name] [pb-length] [protocol-buffer]
   // Where lengths are 32-bit unsigned integers in network byte order
@@ -161,4 +155,16 @@ void ClientConnection::writeMessage(const ::google::protobuf::Message& msg)
 template <typename T> QString ClientConnection::pbName()
 {
   return QString::fromStdString(T().GetTypeName());
+}
+
+template <typename T> T ClientConnection::parseProtocolBuffer(const QByteArray& data)
+{
+  T buf;
+
+  buf.ParseFromArray(data.data(), data.length());
+
+  qDebug() << "Received " << QString::fromStdString(buf.GetTypeName()) << " message:";
+  qDebug() << QString::fromStdString(buf.DebugString());
+
+  return buf;
 }
