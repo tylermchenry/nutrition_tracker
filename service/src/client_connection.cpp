@@ -8,6 +8,7 @@
 #include "client_connection.h"
 #include "libnutrition/proto/service/data_messages.pb.h"
 #include "servers/data_server.h"
+#include "servers/login_server.h"
 #include <cassert>
 #include <arpa/inet.h>
 
@@ -119,6 +120,9 @@ void ClientConnection::handleProtocolBuffer
   if (name == pbName<DataLoadRequest>()) {
     DataLoadRequest req = parseProtocolBuffer<DataLoadRequest>(data);
     writeMessage(DataServer::loadData(req).serialize());
+  } else if (name == pbName<LogInRequest>()) {
+    LogInRequest req = parseProtocolBuffer<LogInRequest>(data);
+    writeMessage(LoginServer::doLogin(req, loggedInUserId));
   }
 }
 
