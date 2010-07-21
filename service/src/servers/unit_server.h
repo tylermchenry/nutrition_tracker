@@ -31,12 +31,7 @@ class UnitLoadResponseObjects
 
 namespace UnitServer
 {
-  UnitLoadResponseObjects loadUnits
-    (const UnitLoadRequest& req);
-
-  DataLoadResponseObjects& loadUnits
-      (const UnitLoadRequest& req, DataLoadResponseObjects& resp_objs,
-       const Omissions& omissions);
+  UnitLoadResponseObjects loadUnits(const UnitLoadRequest& req);
 }
 
 #endif /* UNIT_SERVER_H_ */

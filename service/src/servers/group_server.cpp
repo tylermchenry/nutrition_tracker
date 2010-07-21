@@ -52,8 +52,7 @@ GroupLoadResponse GroupLoadResponseObjects::serialize() const
 
 namespace GroupServer {
 
-  GroupLoadResponseObjects loadGroups
-    (const GroupLoadRequest& req)
+  GroupLoadResponseObjects loadGroups(const GroupLoadRequest& req)
   {
     GroupLoadResponseObjects resp_objs;
 
@@ -71,18 +70,6 @@ namespace GroupServer {
       }
 
     }
-
-    return resp_objs;
-  }
-
-  DataLoadResponseObjects& loadGroups
-    (const GroupLoadRequest& req, DataLoadResponseObjects& resp_objs,
-     const Omissions&)
-  {
-    QList<QSharedPointer<const Group> > groups =
-      loadGroups(req).getGroups();
-
-    resp_objs.group_objects.addGroups(groups);
 
     return resp_objs;
   }

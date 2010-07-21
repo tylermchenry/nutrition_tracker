@@ -31,12 +31,7 @@ class NutrientLoadResponseObjects
 
 namespace NutrientServer
 {
-  NutrientLoadResponseObjects loadNutrients
-    (const NutrientLoadRequest& req);
-
-  DataLoadResponseObjects& loadNutrients
-      (const NutrientLoadRequest& req, DataLoadResponseObjects& resp_objs,
-       const Omissions& omissions);
+  NutrientLoadResponseObjects loadNutrients(const NutrientLoadRequest& req);
 }
 
 #endif /* NUTRIENT_SERVER_H_ */

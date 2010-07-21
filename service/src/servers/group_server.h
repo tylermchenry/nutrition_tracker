@@ -31,12 +31,7 @@ class GroupLoadResponseObjects
 
 namespace GroupServer
 {
-  GroupLoadResponseObjects loadGroups
-    (const GroupLoadRequest& req);
-
-  DataLoadResponseObjects& loadGroups
-      (const GroupLoadRequest& req, DataLoadResponseObjects& resp_objs,
-       const Omissions& omissions);
+  GroupLoadResponseObjects loadGroups(const GroupLoadRequest& req);
 }
 
 #endif /* GROUP_SERVER_H_ */

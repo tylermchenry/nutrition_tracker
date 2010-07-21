@@ -52,8 +52,7 @@ NutrientLoadResponse NutrientLoadResponseObjects::serialize() const
 
 namespace NutrientServer {
 
-  NutrientLoadResponseObjects loadNutrients
-    (const NutrientLoadRequest& req)
+  NutrientLoadResponseObjects loadNutrients(const NutrientLoadRequest& req)
   {
     NutrientLoadResponseObjects resp_objs;
 
@@ -79,26 +78,6 @@ namespace NutrientServer {
         resp_objs.addNutrients
           (Nutrient::getAllNutrients(static_cast<Nutrient::Categories::Category>
             (req.requestedcategories(i))));
-      }
-    }
-
-    return resp_objs;
-  }
-
-  DataLoadResponseObjects& loadNutrients
-    (const NutrientLoadRequest& req, DataLoadResponseObjects& resp_objs,
-     const Omissions& omissions)
-  {
-    QList<QSharedPointer<const Nutrient> > nutrients =
-      loadNutrients(req).getNutrients();
-
-    resp_objs.nutrient_objects.addNutrients(nutrients);
-
-    if (!omissions.units) {
-      for (QList<QSharedPointer<const Nutrient> >::const_iterator i = nutrients.begin();
-           i != nutrients.end(); ++i)
-      {
-        resp_objs.unit_objects.addUnit((*i)->getStandardUnit());
       }
     }
 

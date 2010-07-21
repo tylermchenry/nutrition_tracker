@@ -52,8 +52,7 @@ UnitLoadResponse UnitLoadResponseObjects::serialize() const
 
 namespace UnitServer {
 
-  UnitLoadResponseObjects loadUnits
-    (const UnitLoadRequest& req)
+  UnitLoadResponseObjects loadUnits(const UnitLoadRequest& req)
   {
     UnitLoadResponseObjects resp_objs;
 
@@ -94,18 +93,6 @@ namespace UnitServer {
       }
 
     }
-
-    return resp_objs;
-  }
-
-  DataLoadResponseObjects& loadUnits
-    (const UnitLoadRequest& req, DataLoadResponseObjects& resp_objs,
-     const Omissions&)
-  {
-    QList<QSharedPointer<const Unit> > units =
-      loadUnits(req).getUnits();
-
-    resp_objs.unit_objects.addUnits(units);
 
     return resp_objs;
   }

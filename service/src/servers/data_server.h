@@ -16,11 +16,21 @@ class DataLoadResponseObjects
 {
   public:
 
+    explicit DataLoadResponseObjects(const Omissions& omissions)
+      : omissions(omissions)
+    {}
+
     GroupLoadResponseObjects group_objects;
     UnitLoadResponseObjects unit_objects;
     NutrientLoadResponseObjects nutrient_objects;
 
-    DataLoadResponse serialize() const;
+    DataLoadResponse serialize();
+
+  private:
+
+    void acquireDependentObjects();
+
+    Omissions omissions;
 };
 
 namespace DataServer {
