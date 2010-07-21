@@ -41,14 +41,14 @@ class UserImpl : virtual public User
 
     virtual UserData serialize() const;
 
+    virtual bool checkPassword(const QString& password) const;
+
+    virtual bool checkPasswordHash(const QString& password_hash) const;
+
     // The following methods are only in the Impl class and are not accessible
     // through the interface. They exist for the benefit of the back ends:
 
     QString getPwSHA1_hex() const { return pwSHA1_hex; }
-
-  protected:
-
-    virtual bool checkPassword(const QString& password) const;
 
   private:
 

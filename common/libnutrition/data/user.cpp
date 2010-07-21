@@ -50,6 +50,21 @@ QSharedPointer<User> User::createUser
   return user;
 }
 
+QSharedPointer<User> User::createUserWithPasswordHash
+  (const QString& username, const QString& passwordHash,
+   const QString& realName, QString& errorMessage)
+{
+  QSharedPointer<User> user =
+    BackEnd::getBackEnd()->registerAndLogInWithPasswordHash
+      (username, realName, passwordHash, errorMessage);
+
+  if (user) {
+    loggedInUser = user;
+  }
+
+  return user;
+}
+
 QSharedPointer<User> User::logInAs
   (const QString& username, const QString& password, QString& errorMessage)
 {

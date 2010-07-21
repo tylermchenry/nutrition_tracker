@@ -3,7 +3,7 @@ import "libnutrition/proto/service/error.proto";
 message LogInRequest
 {
 	optional string username = 1;
-	optional string password = 2;
+	optional string password_SHA1_hex = 2;
 	optional string realName = 3;
 	optional bool createUser = 4 [default = false];
 }

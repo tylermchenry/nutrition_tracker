@@ -174,8 +174,20 @@ class BackEnd
             QString& errorMessage) = 0;
 
     virtual QSharedPointer<User>
+      logInWithPasswordHash
+        (const QString& username, const QString& password_hash,
+        QString& errorMessage) = 0;
+
+    virtual QSharedPointer<User>
       registerAndLogIn(const QString& username, const QString& realName,
                          const QString& password, QString& errorMessage) = 0;
+
+    virtual QSharedPointer<User>
+      registerAndLogInWithPasswordHash
+        (const QString& username, const QString& realName,
+         const QString& password_hash, QString& errorMessage) = 0;
+
+
 
     /** Search **/
 

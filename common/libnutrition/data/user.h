@@ -37,6 +37,10 @@ class User
       (const QString& username, const QString& password,
        const QString& realName, QString& errorMessage);
 
+    static QSharedPointer<User> createUserWithPasswordHash
+      (const QString& username, const QString& password_hash,
+       const QString& realName, QString& errorMessage);
+
     static QSharedPointer<User> logInAs
       (const QString& username, const QString& password,
        QString& errorMessage);
@@ -59,6 +63,8 @@ class User
     virtual void setPassword(const QString& newPassword) = 0;
 
     virtual bool checkPassword(const QString& password) const = 0;
+
+    virtual bool checkPasswordHash(const QString& password_hash) const = 0;
 
     virtual void saveToDatabase() = 0;
 

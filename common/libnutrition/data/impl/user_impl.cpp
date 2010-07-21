@@ -51,3 +51,8 @@ bool UserImpl::checkPassword(const QString& password) const
     pwSHA1_hex.toUtf8();
 }
 
+bool UserImpl::checkPasswordHash(const QString& password_hash) const
+{
+  return (password_hash == pwSHA1_hex.toUtf8());
+}
+
