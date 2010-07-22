@@ -125,10 +125,11 @@ void ServiceBackEnd::loadResponseData
            QString::fromStdString(tdata.name()),
            tdata.ownerid()));
 
-      setComponents(templ_impl, tdata.components());
-
+      // Must add to cache before setting components, to get canonical pointers
       templ = templ_impl;
       DataCache<Template>::getInstance().insert(id, templ);
+
+      setComponents(templ_impl, tdata.components());
     }
 
     loadedData.templates.insert(id, templ);

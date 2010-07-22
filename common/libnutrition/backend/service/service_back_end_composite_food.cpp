@@ -130,10 +130,11 @@ void ServiceBackEnd::loadResponseData
            QDate::fromString(QString::fromStdString(cfdata.creationdate_iso8601()), Qt::ISODate),
            QDate::fromString(QString::fromStdString(cfdata.expirydate_iso8601()), Qt::ISODate)));
 
-      setComponents(compositeFood_impl, cfdata.components());
-
+      // Must add to cache before setting components, to get canonical pointers
       compositeFood = compositeFood_impl;
       DataCache<CompositeFood>::getInstance().insert(id, compositeFood);
+
+      setComponents(compositeFood_impl, cfdata.components());
     }
 
     loadedData.compositeFoods.insert(id, compositeFood);

@@ -163,9 +163,9 @@ void ServiceBackEnd::loadResponseData
   for (int i = 0; i < resp.meals_size(); ++i) {
 
     const MealData& mdata = resp.meals(i);
-    Meal::MealIdTuple idTuple(mdata.mealid(),
+    Meal::MealIdTuple idTuple(mdata.userid(),
                               QDate::fromString(QString::fromStdString(mdata.date_iso8601()), Qt::ISODate),
-                              mdata.userid());
+                              mdata.mealid());
 
     QSharedPointer<Meal> meal =
       DataCache<Meal>::getInstance().get(idTuple);
@@ -186,10 +186,11 @@ void ServiceBackEnd::loadResponseData
            idTuple.userId,
            idTuple.date));
 
-      setComponents(meal_impl, mdata.components());
-
+      // Must add to cache before setting components, to get canonical pointers
       meal = meal_impl;
       DataCache<Meal>::getInstance().insert(idTuple, meal);
+
+      setComponents(meal_impl, mdata.components());
     }
 
     loadedData.meals.insert(idTuple, meal);
