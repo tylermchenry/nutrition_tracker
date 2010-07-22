@@ -86,4 +86,13 @@ bool Meal::MealIdTuple::operator< (const MealIdTuple& rhs) const
     (userId == rhs.userId && date == rhs.date && mealId < rhs.mealId);
 }
 
+bool Meal::MealIdTuple::operator== (const MealIdTuple& rhs) const
+{
+  return (userId == rhs.userId) && (date == rhs.date) && (mealId == rhs.mealId);
+}
 
+unsigned int qHash(const Meal::MealIdTuple& idTuple)
+{
+  return qHash(idTuple.userId) +
+    3 * qHash(idTuple.date.toString(Qt::ISODate)) + 5 * qHash(idTuple.mealId);
+}

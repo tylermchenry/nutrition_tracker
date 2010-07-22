@@ -59,6 +59,7 @@ class Meal : virtual public FoodCollection
       MealIdTuple(int uid, const QDate& d, int mid);
 
       bool operator< (const MealIdTuple& rhs) const;
+      bool operator== (const MealIdTuple& rhs) const;
     };
 
     // Definitions to make this class cacheable with DataCache
@@ -126,5 +127,7 @@ class Meal : virtual public FoodCollection
 
     friend class MealImpl;
 };
+
+unsigned int qHash(const Meal::MealIdTuple& idTuple);
 
 #endif /* MEAL_H_ */
