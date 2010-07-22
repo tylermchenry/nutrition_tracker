@@ -12,7 +12,7 @@
 #include <cassert>
 
 void FoodLoadResponseObjects::addFood
-(const QSharedPointer<Food>& food)
+(const QSharedPointer<const Food>& food)
 {
   if (food && !foodIds.contains(food->getId())) {
     foodIds.insert(food->getId());
@@ -21,9 +21,9 @@ void FoodLoadResponseObjects::addFood
 }
 
 void FoodLoadResponseObjects::addFoods
-  (const QVector<QSharedPointer<Food> >& foods)
+  (const QVector<QSharedPointer<const Food> >& foods)
 {
-  for (QVector<QSharedPointer<Food> >::const_iterator i = foods.begin();
+  for (QVector<QSharedPointer<const Food> >::const_iterator i = foods.begin();
        i != foods.end(); ++i)
   {
     addFood(*i);
@@ -31,30 +31,35 @@ void FoodLoadResponseObjects::addFoods
 }
 
 void FoodLoadResponseObjects::addFoods
-  (const QList<QSharedPointer<Food> >& foods)
+  (const QList<QSharedPointer<const Food> >& foods)
 {
-  for (QList<QSharedPointer<Food> >::const_iterator i = foods.begin();
+  for (QList<QSharedPointer<const Food> >::const_iterator i = foods.begin();
        i != foods.end(); ++i)
   {
     addFood(*i);
   }
 }
 
-bool FoodLoadResponseObjects::contains(const QSharedPointer<Food>& food) const
+bool FoodLoadResponseObjects::contains(const QSharedPointer<const Food>& food) const
 {
   return (food && foodIds.contains(food->getId()));
 }
 
-QList<QSharedPointer<Food> > FoodLoadResponseObjects::getFoods() const
+QList<QSharedPointer<const Food> > FoodLoadResponseObjects::getFoods() const
 {
   return foods;
+}
+
+QSet<QString> FoodLoadResponseObjects::getFoodIds() const
+{
+  return foodIds;
 }
 
 DataLoadResponse& FoodLoadResponseObjects::serialize(DataLoadResponse& resp) const
 {
   FoodData fdata;
 
-  for (QList<QSharedPointer<Food> >::const_iterator i = foods.begin();
+  for (QList<QSharedPointer<const Food> >::const_iterator i = foods.begin();
        i != foods.end(); ++i)
   {
     (*i)->serialize(fdata);

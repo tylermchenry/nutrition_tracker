@@ -18,21 +18,22 @@ class FoodLoadResponseObjects
 {
   public:
 
-    void addFood(const QSharedPointer<Food>& food);
-    void addFoods(const QVector<QSharedPointer<Food> >& foods);
-    void addFoods(const QList<QSharedPointer<Food> >& foods);
+    void addFood(const QSharedPointer<const Food>& food);
+    void addFoods(const QVector<QSharedPointer<const Food> >& foods);
+    void addFoods(const QList<QSharedPointer<const Food> >& foods);
 
     inline bool isEmpty() const { return foods.isEmpty(); }
-    bool contains(const QSharedPointer<Food>& food);
+    bool contains(const QSharedPointer<const Food>& food) const;
 
-    QList<QSharedPointer<Food> > getFoods() const;
+    QList<QSharedPointer<const Food> > getFoods() const;
+    QSet<QString> getFoodIds() const;
 
     DataLoadResponse& serialize(DataLoadResponse& resp) const;
 
   private:
 
     QSet<QString> foodIds;
-    QList<QSharedPointer<Food> > foods;
+    QList<QSharedPointer<const Food> > foods;
 };
 
 
