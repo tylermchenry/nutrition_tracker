@@ -2,6 +2,7 @@
 #define DATA_SERVER_H_
 
 #include "servers/omissions.h"
+#include "servers/food_server.h"
 #include "servers/single_food_server.h"
 #include "servers/composite_food_server.h"
 #include "servers/template_server.h"
@@ -24,6 +25,7 @@ class DataLoadResponseObjects
     GroupLoadResponseObjects group_objects;
     UnitLoadResponseObjects unit_objects;
     NutrientLoadResponseObjects nutrient_objects;
+    FoodLoadResponseObjects food_objects;
 
     DataLoadResponse serialize();
 

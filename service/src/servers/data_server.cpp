@@ -1,5 +1,6 @@
 #include "servers/data_server.h"
 #include "servers/omissions.h"
+#include <QStack>
 
 DataLoadResponse DataLoadResponseObjects::serialize()
 {
@@ -27,6 +28,42 @@ void DataLoadResponseObjects::acquireDependentObjects()
   // Meals acquire Foods (singles, composites, templates)
 
   // Foods recursively acquire other Foods
+
+  if (!(omissions.single_foods && omissions.composite_foods && omissions.templates))
+  {
+    QStack<QSharedPointer<Food> > acquisitionStack;
+    QList<QSharedPointer<Food> > foods = food_objects.getFoods();
+    FoodLoadResponseObjects new_food_objects;
+
+    for (QList<QSharedPointer<Food> >::const_iterator i = foods.begin();
+        i != foods.end(); ++i)
+    {
+      aquisitionStack.push(*i);
+    }
+
+    while (!acquisitionStack.isEmpty()) {
+
+      QSharedPointer<Food> food = aquisitionStack.pop();
+
+      if (!new_food_objects.contains(food)) {
+        new_food_objects.addFood(food);
+
+        QList<FoodComponent> components = food->getComponents();
+
+        for (QList<FoodComponent>::const_iterator i = components.begin();
+            i != components.end(); ++i)
+        {
+          QSharedPointer<Food> component_food = (*i)->getFoodAmount().getFood();
+
+          if (!new_food_objects.contains(component_food)) {
+            acquisitionStack.push(component_food);
+          }
+        }
+      }
+    }
+
+    food_objects = new_food_objects;
+  }
 
   // Foods acquire Nutrients
 

@@ -23,6 +23,7 @@ class FoodLoadResponseObjects
     void addFoods(const QList<QSharedPointer<Food> >& foods);
 
     inline bool isEmpty() const { return foods.isEmpty(); }
+    bool contains(const QSharedPointer<Food>& food);
 
     QList<QSharedPointer<Food> > getFoods() const;
 

@@ -40,6 +40,11 @@ void FoodLoadResponseObjects::addFoods
   }
 }
 
+bool FoodLoadResponseObjects::contains(const QSharedPointer<Food>& food) const
+{
+  return (food && foodIds.contains(food->getId()));
+}
+
 QList<QSharedPointer<Food> > FoodLoadResponseObjects::getFoods() const
 {
   return foods;
