@@ -40,57 +40,16 @@ void DataLoadResponseObjects::acquireDependentObjects()
   // the order that they appear in the serialized message without having to
   // worry about dependency issues.
 
-  // This is accomplished by performing simultaneous breadth-first searches
-  // starting from each of the initial nodes, and pushing the visited nodes
-  // onto a stack in the order visited. Then, the stack is popped so that the
-  // final collection contains the visited nodes in the reverse order that they
-  // were visited.
+  // This is accomplished by first discovering which foods from the original set
+  // are not dependencies of any other foods in the original set. Then, the
+  // subgraph of the original foods and all of their dependencies is
+  // topologically sorted in reverse, using the independent original foods as
+  // roots, to obtain an ordering where all dependencies appear before the foods
+  // that depend on them. This is the appropriate order for serialization.
 
   if (!(omissions.single_foods && omissions.composite_foods && omissions.templates))
   {
-    QQueue<QSharedPointer<const Food> > bfsQueue;
-    QStack<QSharedPointer<const Food> > visitedFoods;
-    QSet<QString> enqueuedFoodIds = food_objects.getFoodIds();
-
-    bfsQueue.append(food_objects.getFoods());
-
-    while (!bfsQueue.isEmpty()) {
-
-      QSharedPointer<const Food> food = bfsQueue.dequeue();
-
-      if (food) {
-
-        visitedFoods.push(food);
-
-        QVector<FoodAmount> component_amounts = food->getComponentAmounts();
-
-        for (QVector<FoodAmount>::const_iterator i = component_amounts.begin();
-            i != component_amounts.end(); ++i)
-        {
-          QSharedPointer<const Food> component_food = i->getFood();
-
-          // Optimization: If the BFS queue contains, or previously contained,
-          // this food, do not add it to the queue again (this might happen if
-          // two foods in the initial set contain the same component food, or if
-          // one food in the initial set contains another food in the initial
-          // set as a component)
-
-          if (component_food && !enqueuedFoodIds.contains(component_food->getId())) {
-            enqueuedFoodIds.insert(food->getId());
-            bfsQueue.enqueue(component_food);
-          }
-        }
-      }
-    }
-
-    FoodLoadResponseObjects new_food_objects;
-
-    while (!visitedFoods.isEmpty())
-    {
-      new_food_objects.addFood(visitedFoods.pop());
-    }
-
-    food_objects = new_food_objects;
+    food_objects.replaceFoods(reverseTopologicalSort(findSubgraphRoots(food_objects)));
   }
 
   // Foods acquire Nutrients
@@ -109,6 +68,117 @@ void DataLoadResponseObjects::acquireDependentObjects()
       }
     }
   }
+}
+
+QList<QSharedPointer<const Food> > DataLoadResponseObjects::findSubgraphRoots
+  (const FoodLoadResponseObjects& food_objects)
+{
+  // This performs a breadth-first search to discover which foods in the set of
+  // food_objects are not dependencies, directly or indirectly, of any other
+  // foods in the food_objects collection. If food_objects is nonempty, then
+  // here must be at least one of these, otherwise the food graph would have a
+  // cycle (and then the data store would need to be fixed).
+
+  QList<QSharedPointer<const Food> > originalFoods = food_objects.getFoods();
+  QSet<QString> originalFoodIds = food_objects.getFoodIds();
+
+  QQueue<QSharedPointer<const Food> > bfsQueue;
+  QSet<QString> originalFoodIdsWithIncomingEdges;
+  QSet<QString> enqueuedFoodIds;
+
+  bfsQueue.append(originalFoods);
+  enqueuedFoodIds = originalFoodIds;
+
+  while (!bfsQueue.isEmpty()) {
+
+    QSharedPointer<const Food> food = bfsQueue.dequeue();
+
+    if (food) {
+
+      QVector<FoodAmount> component_amounts = food->getComponentAmounts();
+
+      for (QVector<FoodAmount>::const_iterator i = component_amounts.begin();
+      i != component_amounts.end(); ++i)
+      {
+        QSharedPointer<const Food> component_food = i->getFood();
+
+        if (component_food && !enqueuedFoodIds.contains(component_food->getId())) {
+          enqueuedFoodIds.insert(food->getId());
+          bfsQueue.enqueue(component_food);
+        }
+
+        if (component_food && originalFoodIds.contains(component_food->getId())) {
+          originalFoodIdsWithIncomingEdges.insert(component_food->getId());
+        }
+      }
+    }
+  }
+
+  QList<QSharedPointer<const Food> > rootFoods;
+
+  for (QList<QSharedPointer<const Food> >::const_iterator i = originalFoods.begin();
+  i != originalFoods.end(); ++i)
+  {
+    if (*i && !originalFoodIdsWithIncomingEdges.contains((*i)->getId())) {
+      rootFoods.append(*i);
+    }
+  }
+
+  return rootFoods;
+}
+
+QList<QSharedPointer<const Food> > DataLoadResponseObjects::reverseTopologicalSort
+  (const QList<QSharedPointer<const Food> >& rootFoods)
+{
+  // This produces a reverse topological ordering (a postordering) of the DAG
+  // consisting of nodes reachable from the given roots, i.e. dependencies will
+  // appear before the foods that depend on them
+  //
+  // Precondition: items in rootFoods are not dependencies of any food that can
+  // be reached from any of the other root foods, i.e. root foods have no
+  // incoming edges in the subgraph.
+
+  QQueue<QSharedPointer<const Food> > rootFoodsQueue;
+  QList<QSharedPointer<const Food> > ordering;
+  QSet<QString> pushedFoodIds;
+
+  rootFoodsQueue.append(rootFoods);
+
+  while (!rootFoodsQueue.isEmpty()) {
+
+    QSharedPointer<const Food> rootFood = rootFoodsQueue.dequeue();
+    QStack<QSharedPointer<const Food> > dfsStack;
+
+    if (!rootFood) continue;
+
+    dfsStack.push(rootFood);
+    pushedFoodIds.insert(rootFood->getId());
+
+    while (!dfsStack.isEmpty()) {
+
+      QSharedPointer<const Food> food = dfsStack.pop();
+
+      if (food) {
+
+        ordering.prepend(food); // Prepending makes the ordering backwards
+
+        QVector<FoodAmount> component_amounts = food->getComponentAmounts();
+
+        for (QVector<FoodAmount>::const_iterator i = component_amounts.begin();
+            i != component_amounts.end(); ++i)
+        {
+          QSharedPointer<const Food> component_food = i->getFood();
+
+          if (component_food && !pushedFoodIds.contains(component_food->getId())) {
+            dfsStack.push(component_food);
+            pushedFoodIds.insert(food->getId());
+          }
+        }
+      }
+    }
+  }
+
+  return ordering;
 }
 
 namespace DataServer {

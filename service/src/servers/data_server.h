@@ -31,9 +31,15 @@ class DataLoadResponseObjects
 
   private:
 
+    Omissions omissions;
+
     void acquireDependentObjects();
 
-    Omissions omissions;
+    static QList<QSharedPointer<const Food> > findSubgraphRoots
+      (const FoodLoadResponseObjects& food_objects);
+
+    static QList<QSharedPointer<const Food> > reverseTopologicalSort
+      (const QList<QSharedPointer<const Food> >& rootFoods);
 };
 
 namespace DataServer {

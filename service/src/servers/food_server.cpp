@@ -40,6 +40,18 @@ void FoodLoadResponseObjects::addFoods
   }
 }
 
+void FoodLoadResponseObjects::clear()
+{
+  foods.clear();
+  foodIds.clear();
+}
+
+void FoodLoadResponseObjects::replaceFoods(const QList<QSharedPointer<const Food> >& foods)
+{
+  clear();
+  addFoods(foods);
+}
+
 bool FoodLoadResponseObjects::contains(const QSharedPointer<const Food>& food) const
 {
   return (food && foodIds.contains(food->getId()));

@@ -22,6 +22,10 @@ class FoodLoadResponseObjects
     void addFoods(const QVector<QSharedPointer<const Food> >& foods);
     void addFoods(const QList<QSharedPointer<const Food> >& foods);
 
+    void clear();
+
+    void replaceFoods(const QList<QSharedPointer<const Food> >& foods);
+
     inline bool isEmpty() const { return foods.isEmpty(); }
     bool contains(const QSharedPointer<const Food>& food) const;
 
