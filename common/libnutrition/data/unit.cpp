@@ -13,6 +13,8 @@
 
 QString (Unit::* const Unit::cache_get_sort_key)() const = &Unit::getNameAndAbbreviation;
 
+bool Unit::gotAll = false;
+
 QSharedPointer<const Unit> Unit::getPreferredUnit(Dimensions::Dimension dimension)
 {
   return getBasicUnit(dimension);
@@ -29,8 +31,6 @@ QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
 
 QVector<QSharedPointer<const Unit> > Unit::getAllUnits()
 {
-  static bool gotAll = false;
-
   if (gotAll) {
     // TODO: Make this method return a QList so this conversion is unnecessary
     static QVector<QSharedPointer<const Unit> > all;
@@ -66,11 +66,23 @@ QVector<QSharedPointer<const Unit> > Unit::getAllUnits(Dimensions::Dimension dim
     return all[dimension];
   }
 
-  QList<QSharedPointer<Unit> > units =
-    BackEnd::getBackEnd()->loadAllUnits(dimension);
+  QList<QSharedPointer<const Unit> > units;
 
-  for (QList<QSharedPointer<Unit> >::const_iterator i = units.begin();
-  i != units.end(); ++i)
+  if (!gotAll) {
+    QList<QSharedPointer<Unit> > mutable_units =
+      BackEnd::getBackEnd()->loadAllUnits(dimension);
+    for (QList<QSharedPointer<Unit> >::const_iterator i = mutable_units.begin();
+         i != mutable_units.end(); ++i)
+    {
+      units.append(*i);
+    }
+    gotAll = true;
+  } else {
+    units = DataCache<Unit>::getInstance().getAll();
+  }
+
+  for (QList<QSharedPointer<const Unit> >::const_iterator i = units.begin();
+       i != units.end(); ++i)
   {
     all[dimension].push_back(*i);
   }

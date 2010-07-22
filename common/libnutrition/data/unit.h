@@ -126,6 +126,8 @@ class Unit
 
   private:
 
+    static bool gotAll;
+
     static QSharedPointer<const Unit> getBasicUnit
       (Dimensions::Dimension dimension);
 
