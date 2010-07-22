@@ -1,5 +1,6 @@
 #include "servers/data_server.h"
 #include "servers/omissions.h"
+#include "libnutrition/data/food_collection.h"
 #include <QStack>
 #include <QQueue>
 
@@ -47,12 +48,39 @@ void DataLoadResponseObjects::acquireDependentObjects()
   // roots, to obtain an ordering where all dependencies appear before the foods
   // that depend on them. This is the appropriate order for serialization.
 
-  if (!(omissions.single_foods && omissions.composite_foods && omissions.templates))
-  {
-    food_objects.replaceFoods(reverseTopologicalSort(findSubgraphRoots(food_objects)));
+  bool omitAllFoods =
+    (omissions.single_foods && omissions.composite_foods && omissions.templates);
+
+  if (!omitAllFoods) {
+    food_objects.replaceFoods
+      (reverseTopologicalSort(findSubgraphRoots(food_objects)));
   }
 
   // Foods acquire Nutrients
+
+  if (!omissions.nutrients && !omitAllFoods) {
+
+    QList<QSharedPointer<const Food> > foods = food_objects.getFoods();
+
+    for (QList<QSharedPointer<const Food> >::const_iterator i = foods.begin();
+         i != foods.end(); ++i)
+    {
+      // Only need to acquire nutrients from foods with no components, since
+      // we know that as a result of the aquisition above, all components also
+      // appear somewhere in this list.
+
+      if ((*i)->getComponents().isEmpty()) {
+
+        QList<NutrientAmount> nutrientAmounts = (*i)->getNutrients().values();
+
+        for (QList<NutrientAmount>::const_iterator j = nutrientAmounts.begin();
+             j != nutrientAmounts.end(); ++j)
+        {
+          nutrient_objects.addNutrient(j->getNutrient());
+        }
+      }
+    }
+  }
 
   // Nutrients and Specialized Units acquire Units
 
