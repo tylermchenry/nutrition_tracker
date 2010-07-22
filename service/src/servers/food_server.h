@@ -8,6 +8,7 @@
 #ifndef FOOD_SERVER_H_
 #define FOOD_SERVER_H_
 
+#include "servers/omissions.h"
 #include "libnutrition/data/food.h"
 #include <QString>
 #include <QSet>
@@ -32,7 +33,7 @@ class FoodLoadResponseObjects
     QList<QSharedPointer<const Food> > getFoods() const;
     QSet<QString> getFoodIds() const;
 
-    DataLoadResponse& serialize(DataLoadResponse& resp) const;
+    DataLoadResponse& serialize(DataLoadResponse& resp, const Omissions& omissions) const;
 
   private:
 

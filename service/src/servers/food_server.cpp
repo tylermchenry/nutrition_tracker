@@ -67,7 +67,8 @@ QSet<QString> FoodLoadResponseObjects::getFoodIds() const
   return foodIds;
 }
 
-DataLoadResponse& FoodLoadResponseObjects::serialize(DataLoadResponse& resp) const
+DataLoadResponse& FoodLoadResponseObjects::serialize
+  (DataLoadResponse& resp, const Omissions& omissions) const
 {
   FoodData fdata;
 
@@ -78,6 +79,27 @@ DataLoadResponse& FoodLoadResponseObjects::serialize(DataLoadResponse& resp) con
   }
 
   // TODO: See if there is a better way to do this copying
+
+  if (!omissions.single_foods) {
+    for (int i = 0; i < fdata.singlefoods_size(); ++i) {
+      *(resp.mutable_singlefoodloadresponse()->add_singlefoods()) =
+        fdata.singlefoods(i);
+    }
+  }
+
+  if (!omissions.composite_foods) {
+    for (int i = 0; i < fdata.compositefoods_size(); ++i) {
+      *(resp.mutable_compositefoodloadresponse()->add_compositefoods()) =
+        fdata.compositefoods(i);
+    }
+  }
+
+  if (!omissions.templates) {
+    for (int i = 0; i < fdata.templates_size(); ++i) {
+      *(resp.mutable_templateloadresponse()->add_templates()) =
+        fdata.templates(i);
+    }
+  }
 
   assert(fdata.meals_size() == 0);
 

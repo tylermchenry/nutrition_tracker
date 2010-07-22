@@ -26,12 +26,37 @@ DataLoadResponse DataLoadResponseObjects::serialize()
     *(resp.mutable_mealloadresponse()) = meal_objects.serialize();
   }
 
+  if (!food_objects.isEmpty())
+  {
+    food_objects.serialize(resp, omissions);
+  }
+
   return resp;
 }
 
 void DataLoadResponseObjects::acquireDependentObjects()
 {
+  bool omitAllFoods =
+    (omissions.single_foods && omissions.composite_foods && omissions.templates);
+
   // Meals acquire Foods (singles, composites, templates)
+
+  if (!omissions.meals && !omitAllFoods) {
+
+    QList<QSharedPointer<const Meal> > meals = meal_objects.getMeals();
+
+    for (QList<QSharedPointer<const Meal> >::const_iterator i = meals.begin();
+         i != meals.end(); ++i)
+    {
+      QList<FoodComponent> components = (*i)->getComponents();
+
+      for (QList<FoodComponent>::const_iterator j = components.begin();
+           j != components.end(); ++j)
+      {
+        food_objects.addFood(j->getFoodAmount().getFood());
+      }
+    }
+  }
 
   // Foods recursively acquire other Foods
 
@@ -51,9 +76,6 @@ void DataLoadResponseObjects::acquireDependentObjects()
   // topologically sorted in reverse, using the independent original foods as
   // roots, to obtain an ordering where all dependencies appear before the foods
   // that depend on them. This is the appropriate order for serialization.
-
-  bool omitAllFoods =
-    (omissions.single_foods && omissions.composite_foods && omissions.templates);
 
   if (!omitAllFoods) {
     food_objects.replaceFoods
@@ -86,6 +108,13 @@ void DataLoadResponseObjects::acquireDependentObjects()
     }
   }
 
+  // Foods acquire Groups
+
+  if (!omissions.groups && !omitAllFoods) {
+    // TODO: Figure out how to do this without dynamic_cast since only
+    // SingleFood objects have groups.
+  }
+
   // Nutrients and Specialized Units acquire Units
 
   if (!omissions.units) {
@@ -99,6 +128,8 @@ void DataLoadResponseObjects::acquireDependentObjects()
         unit_objects.addUnit((*i)->getStandardUnit());
       }
     }
+
+    // TODO: Acquire Units from Specialized Units
   }
 }
 
