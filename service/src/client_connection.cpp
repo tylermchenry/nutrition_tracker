@@ -119,7 +119,7 @@ void ClientConnection::handleProtocolBuffer
 {
   if (name == pbName<DataLoadRequest>()) {
     DataLoadRequest req = parseProtocolBuffer<DataLoadRequest>(data);
-    DataLoadResponseObjects resp_objs = DataServer::loadData(req);
+    DataLoadResponseObjects resp_objs = DataServer::loadData(req, loggedInUserId);
     writeMessage(resp_objs.serialize());
   } else if (name == pbName<LogInRequest>()) {
     LogInRequest req = parseProtocolBuffer<LogInRequest>(data);

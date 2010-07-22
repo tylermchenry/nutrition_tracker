@@ -22,6 +22,10 @@ DataLoadResponse DataLoadResponseObjects::serialize()
     *(resp.mutable_nutrientloadresponse()) = nutrient_objects.serialize();
   }
 
+  if (!omissions.meals && !meal_objects.isEmpty()) {
+    *(resp.mutable_mealloadresponse()) = meal_objects.serialize();
+  }
+
   return resp;
 }
 
@@ -211,7 +215,7 @@ QList<QSharedPointer<const Food> > DataLoadResponseObjects::reverseTopologicalSo
 
 namespace DataServer {
 
-  DataLoadResponseObjects loadData(const DataLoadRequest& req)
+  DataLoadResponseObjects loadData(const DataLoadRequest& req, int loggedInUserId)
   {
     DataLoadResponseObjects resp_objs((Omissions(req)));
 
@@ -225,6 +229,10 @@ namespace DataServer {
 
     if (req.has_nutrientloadrequest()) {
       resp_objs.nutrient_objects = NutrientServer::loadNutrients(req.nutrientloadrequest());
+    }
+
+    if (req.has_mealloadrequest()) {
+      resp_objs.meal_objects = MealServer::loadMeals(req.mealloadrequest(), loggedInUserId);
     }
 
     return resp_objs;

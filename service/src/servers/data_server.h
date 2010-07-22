@@ -26,6 +26,7 @@ class DataLoadResponseObjects
     UnitLoadResponseObjects unit_objects;
     NutrientLoadResponseObjects nutrient_objects;
     FoodLoadResponseObjects food_objects;
+    MealLoadResponseObjects meal_objects;
 
     DataLoadResponse serialize();
 
@@ -44,7 +45,7 @@ class DataLoadResponseObjects
 
 namespace DataServer {
 
-  DataLoadResponseObjects loadData(const DataLoadRequest& req);
+  DataLoadResponseObjects loadData(const DataLoadRequest& req, int loggedInUserId);
 
 }
 
