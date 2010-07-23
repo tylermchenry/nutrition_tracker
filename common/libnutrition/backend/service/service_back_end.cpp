@@ -11,7 +11,12 @@
 #include "libnutrition/data/impl/food_collection_impl.h"
 #include <string>
 #include <stdexcept>
-#include <arpa/inet.h>
+
+#ifdef WIN32
+  #include <winsock2.h>
+#else
+  #include <arpa/inet.h>
+#endif
 
 ServiceBackEnd::ServiceBackEnd(const QString& remoteHost, quint16 port)
   : loadedAllGroups(false), loadedAllUnits(false), loadedAllNutrients(false)

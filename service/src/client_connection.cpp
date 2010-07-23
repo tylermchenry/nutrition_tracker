@@ -10,7 +10,12 @@
 #include "servers/data_server.h"
 #include "servers/login_server.h"
 #include <cassert>
-#include <arpa/inet.h>
+
+#ifdef WIN32
+  #include <winsock2.h>
+#else
+  #include <arpa/inet.h>
+#endif
 
 ClientConnection::ClientConnection(QTcpSocket* socket, QObject* parent)
   : QObject(parent), tcpSocket(socket), loggedInUserId(-1)

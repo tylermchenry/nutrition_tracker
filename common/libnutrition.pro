@@ -1,12 +1,18 @@
 TEMPLATE = lib
 TARGET = nutrition
 CONFIG += dll \
-    staticlib
+    staticlib 
 VERSION = 0.1.0
 QT += core \
     sql \
     network
 LIBS += -lprotobuf
+
+DEPENDPATH += . \
+    ../ 
+INCLUDEPATH += . \
+    ../ 
+
 HEADERS += libnutrition/backend/service/service_back_end.h \
     libnutrition/backend/mysql/mysql_back_end.h \
     libnutrition/data/data_cache.h \
@@ -110,7 +116,7 @@ probuf_data_decl.input = DATA_PROTOS
 probuf_data_decl.output = libnutrition/proto/data/${QMAKE_FILE_BASE}.pb.h
 probuf_data_decl.commands = protoc \
     --cpp_out="." \
-    ${QMAKE_FILE_NAME}
+    libnutrition/proto/data/${QMAKE_FILE_IN_BASE}.proto
 probuf_data_decl.variable_out = GENERATED_FILES
 QMAKE_EXTRA_COMPILERS += probuf_data_decl
 probuf_data_impl.name = protobuf data implementation
@@ -139,7 +145,7 @@ probuf_service_decl.input = SERVICE_PROTOS
 probuf_service_decl.output = libnutrition/proto/service/${QMAKE_FILE_BASE}.pb.h
 probuf_service_decl.commands = protoc \
     --cpp_out="." \
-    ${QMAKE_FILE_NAME}
+    libnutrition/proto/service/${QMAKE_FILE_IN_BASE}.proto
 probuf_service_decl.variable_out = GENERATED_FILES
 QMAKE_EXTRA_COMPILERS += probuf_service_decl
 probuf_service_impl.name = protobuf service implementation

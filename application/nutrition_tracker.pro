@@ -28,8 +28,12 @@ versiontarget.depends = FORCE
 PRE_TARGETDEPS += version.cpp
 QMAKE_EXTRA_TARGETS += versiontarget
 LIBS += -L../common \
+    -L../common/debug \
+    -L../common/release \
     -lnutrition \
-    -lprotobuf
+    -lprotobuf 
+
+win32:LIBS+=-lpthread    
 
 # Input
 HEADERS += src/dialogs/about.h \
