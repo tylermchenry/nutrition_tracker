@@ -22,6 +22,7 @@ class DataLoadResponseObjects
       : omissions(omissions)
     {}
 
+    UserLoadResponseObjects user_objects;
     GroupLoadResponseObjects group_objects;
     UnitLoadResponseObjects unit_objects;
     NutrientLoadResponseObjects nutrient_objects;

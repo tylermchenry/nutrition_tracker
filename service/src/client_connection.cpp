@@ -161,6 +161,9 @@ void ClientConnection::handleProtocolBuffer
     } else {
       writeMessage(MealServer::loadMeals(req, loggedInUserId).serialize());
     }
+  } else if (name == pbName<UserLoadRequest>()) {
+    UserLoadRequest req = parseProtocolBuffer<UserLoadRequest>(data);
+    writeMessage(UserServer::loadUsers(req).serialize());
   }
 }
 

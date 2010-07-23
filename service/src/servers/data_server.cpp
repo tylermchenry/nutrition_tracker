@@ -10,6 +10,10 @@ DataLoadResponse DataLoadResponseObjects::serialize()
 
   acquireDependentObjects();
 
+  if (!omissions.users && !user_objects.isEmpty()) {
+    *(resp.mutable_userloadresponse()) = user_objects.serialize();
+  }
+
   if (!omissions.groups && !group_objects.isEmpty()) {
     *(resp.mutable_grouploadresponse()) = group_objects.serialize();
   }
@@ -249,6 +253,10 @@ namespace DataServer {
   DataLoadResponseObjects loadData(const DataLoadRequest& req, int loggedInUserId)
   {
     DataLoadResponseObjects resp_objs((Omissions(req)));
+
+    if (req.has_userloadrequest()) {
+      resp_objs.user_objects = UserServer::loadUsers(req.userloadrequest());
+    }
 
     if (req.has_grouploadrequest()) {
       resp_objs.group_objects = GroupServer::loadGroups(req.grouploadrequest());
