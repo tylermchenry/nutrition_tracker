@@ -32,9 +32,33 @@ class MealLoadResponseObjects
     QList<QSharedPointer<const Meal> > meals;
 };
 
+class MealListing
+{
+  public:
+
+    MealListing();
+
+    void addMeal(const QSharedPointer<const Meal>& meal);
+    void addMeal(int id, const QString& name);
+    void addMeals(const QMap<int, QString>& mealNames);
+
+    void setError(const QString& errorMessage = "");
+
+    MealLoadResponse serialize() const;
+
+  private:
+
+    bool isError;
+    QString errorMessage;
+    QMap<int, QString> mealNames;
+};
+
 namespace MealServer
 {
   MealLoadResponseObjects loadMeals
+    (const MealLoadRequest& req, int loggedInUserId);
+
+  MealListing loadMealNames
     (const MealLoadRequest& req, int loggedInUserId);
 }
 
