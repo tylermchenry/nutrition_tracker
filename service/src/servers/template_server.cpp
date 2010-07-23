@@ -9,7 +9,7 @@ namespace TemplateServer {
     if (req.omit()) return resp_objs;
 
     for (int i = 0; i < req.requestedids_size(); ++i) {
-      resp_objs.addFood
+      resp_objs.addObject
         (Template::getTemplate(req.requestedids(i)));
     }
 

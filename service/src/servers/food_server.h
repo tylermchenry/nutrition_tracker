@@ -11,34 +11,21 @@
 #include "servers/omissions.h"
 #include "libnutrition/data/food.h"
 #include "libnutrition/backend/back_end.h"
+#include "libnutrition/proto/service/data_messages.pb.h"
+#include "servers/response_objects.h"
 #include <QString>
 #include <QSet>
+#include <stdexcept>
 
-class DataLoadResponse; // forward decl
 class SingleFoodLoadResponse; // forward decl
 class CompositeFoodLoadResponse; // forward decl
 class TemplateLoadResponse; // forward decl
 
-class FoodLoadResponseObjects
+class FoodLoadResponseObjects : public ResponseObjects<Food, DataLoadResponse, QString>
 {
   public:
 
-    void addFood(const QSharedPointer<const Food>& food);
-    void addFoods(const QVector<QSharedPointer<const Food> >& foods);
-    void addFoods(const QList<QSharedPointer<const Food> >& foods);
-
-    void clear();
-
-    void replaceFoods(const QList<QSharedPointer<const Food> >& foods);
-
     void setError(BackEnd::FoodTypes::FoodType foodType, const QString& errorMessage = "");
-    void setError(const QString& errorMessage = "");
-
-    inline bool isEmpty() const { return foods.isEmpty(); }
-    bool contains(const QSharedPointer<const Food>& food) const;
-
-    QList<QSharedPointer<const Food> > getFoods() const;
-    QSet<QString> getFoodIds() const;
 
     DataLoadResponse& serialize(DataLoadResponse& resp, const Omissions& omissions) const;
 
@@ -48,6 +35,16 @@ class FoodLoadResponseObjects
 
     TemplateLoadResponse serializeTemplates() const;
 
+  protected:
+
+    virtual QString getId
+      (const QSharedPointer<const Food>& food) const
+        { return food->getId(); }
+
+    virtual void addObjectToResponse
+      (DataLoadResponse&, const QSharedPointer<const Food>&) const
+        { throw std::logic_error("Called wrong serialization method on FoodResponseObjects."); }
+
   private:
 
     struct Error {
@@ -56,11 +53,7 @@ class FoodLoadResponseObjects
       Error() : isError(false) {};
     };
 
-    Error error;
     QMap<BackEnd::FoodTypes::FoodType, Error> subErrors;
-
-    QSet<QString> foodIds;
-    QList<QSharedPointer<const Food> > foods;
 
     FoodData getFoodData() const;
 

@@ -11,47 +11,6 @@
 #include "libnutrition/proto/data/data.pb.h"
 #include <cassert>
 
-void FoodLoadResponseObjects::addFood
-(const QSharedPointer<const Food>& food)
-{
-  if (food && !foodIds.contains(food->getId())) {
-    foodIds.insert(food->getId());
-    foods.append(food);
-  }
-}
-
-void FoodLoadResponseObjects::addFoods
-  (const QVector<QSharedPointer<const Food> >& foods)
-{
-  for (QVector<QSharedPointer<const Food> >::const_iterator i = foods.begin();
-       i != foods.end(); ++i)
-  {
-    addFood(*i);
-  }
-}
-
-void FoodLoadResponseObjects::addFoods
-  (const QList<QSharedPointer<const Food> >& foods)
-{
-  for (QList<QSharedPointer<const Food> >::const_iterator i = foods.begin();
-       i != foods.end(); ++i)
-  {
-    addFood(*i);
-  }
-}
-
-void FoodLoadResponseObjects::clear()
-{
-  foods.clear();
-  foodIds.clear();
-}
-
-void FoodLoadResponseObjects::replaceFoods(const QList<QSharedPointer<const Food> >& foods)
-{
-  clear();
-  addFoods(foods);
-}
-
 void FoodLoadResponseObjects::setError
   (BackEnd::FoodTypes::FoodType foodType, const QString& errorMessage)
 {
@@ -64,32 +23,6 @@ void FoodLoadResponseObjects::setError
   }
 
   err.isError = true;
-}
-
-void FoodLoadResponseObjects::setError(const QString& errorMessage)
-{
-  if (error.isError) {
-    error.errorMessage = "Multiple errors occurred while processing this request.";
-  } else {
-    error.errorMessage = errorMessage;
-  }
-
-  error.isError = true;
-}
-
-bool FoodLoadResponseObjects::contains(const QSharedPointer<const Food>& food) const
-{
-  return (food && foodIds.contains(food->getId()));
-}
-
-QList<QSharedPointer<const Food> > FoodLoadResponseObjects::getFoods() const
-{
-  return foods;
-}
-
-QSet<QString> FoodLoadResponseObjects::getFoodIds() const
-{
-  return foodIds;
 }
 
 DataLoadResponse& FoodLoadResponseObjects::serialize
@@ -113,9 +46,7 @@ DataLoadResponse& FoodLoadResponseObjects::serialize
 
   assert(fdata.meals_size() == 0);
 
-  setError(resp, error);
-
-  return resp;
+  return addErrors(resp);
 }
 
 SingleFoodLoadResponse FoodLoadResponseObjects::serializeSingleFoods() const
@@ -180,6 +111,7 @@ TemplateLoadResponse& FoodLoadResponseObjects::serializeTemplates
 
 FoodData FoodLoadResponseObjects::getFoodData() const
 {
+  const QList<QSharedPointer<const Food> > foods = getObjects();
   FoodData fdata;
 
   for (QList<QSharedPointer<const Food> >::const_iterator i = foods.begin();

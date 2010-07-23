@@ -8,7 +8,7 @@
 #ifndef RESPONSE_OBJECTS_H_
 #define RESPONSE_OBJECTS_H_
 
-template <typename T, typename R>
+template <typename T, typename R, typename K = typename T::cache_key_type>
 class ResponseObjects
 {
   public:
@@ -20,17 +20,24 @@ class ResponseObjects
     void addObjects(const QVector<QSharedPointer<const T> >& objs);
     void addObjects(const QList<QSharedPointer<const T> >& objs);
 
+    void clear();
+
+    void replaceObjects(const QList<QSharedPointer<const T> >& objs);
+
     void setError(const QString& errorMessage = "");
 
     inline bool isEmpty() const { return objects.isEmpty(); }
 
+    bool contains(const QSharedPointer<const T>& obj) const;
+
     QList<QSharedPointer<const T> > getObjects() const;
+    QSet<K> getObjectIds() const;
 
     virtual R serialize() const;
 
   protected:
 
-    virtual typename T::cache_key_type getId
+    virtual K getId
       (const QSharedPointer<const T>& obj) const = 0;
 
     virtual void addObjectToResponse
@@ -46,22 +53,22 @@ class ResponseObjects
 
     bool bIsError;
     QString errorMessage;
-    QSet<typename T::cache_key_type> objectIds;
+    QSet<K> objectIds;
     QList<QSharedPointer<const T> > objects;
 };
 
-template <typename T, typename R>
-ResponseObjects<T,R>::ResponseObjects()
+template <typename T, typename R, typename K>
+ResponseObjects<T,R,K>::ResponseObjects()
   : bIsError(false)
 {
 }
 
-template <typename T, typename R>
-void ResponseObjects<T,R>::addObject
+template <typename T, typename R, typename K>
+void ResponseObjects<T,R,K>::addObject
   (const QSharedPointer<const T>& obj)
 {
   if (obj) {
-    typename T::cache_key_type id = getId(obj);
+    K id = getId(obj);
     if (!objectIds.contains(id)) {
       objectIds.insert(id);
       objects.append(obj);
@@ -69,8 +76,8 @@ void ResponseObjects<T,R>::addObject
   }
 }
 
-template <typename T, typename R>
-void ResponseObjects<T,R>::addObjects
+template <typename T, typename R, typename K>
+void ResponseObjects<T,R,K>::addObjects
   (const QVector<QSharedPointer<T> >& objs)
 {
   for (typename QVector<QSharedPointer<T> >::const_iterator i = objs.begin();
@@ -80,8 +87,8 @@ void ResponseObjects<T,R>::addObjects
   }
 }
 
-template <typename T, typename R>
-void ResponseObjects<T,R>::addObjects
+template <typename T, typename R, typename K>
+void ResponseObjects<T,R,K>::addObjects
   (const QVector<QSharedPointer<const T> >& objs)
 {
   for (typename QVector<QSharedPointer<const T> >::const_iterator i = objs.begin();
@@ -91,8 +98,8 @@ void ResponseObjects<T,R>::addObjects
   }
 }
 
-template <typename T, typename R>
-void ResponseObjects<T,R>::addObjects
+template <typename T, typename R, typename K>
+void ResponseObjects<T,R,K>::addObjects
   (const QList<QSharedPointer<const T> >& objs)
 {
   for (typename QList<QSharedPointer<const T> >::const_iterator i = objs.begin();
@@ -102,8 +109,23 @@ void ResponseObjects<T,R>::addObjects
   }
 }
 
-template <typename T, typename R>
-void ResponseObjects<T,R>::setError(const QString& errorMessage)
+template <typename T, typename R, typename K>
+void ResponseObjects<T,R,K>::clear()
+{
+  objects.clear();
+  objectIds.clear();
+}
+
+template <typename T, typename R, typename K>
+void  ResponseObjects<T,R,K>::replaceObjects
+  (const QList<QSharedPointer<const T> >& objs)
+{
+  clear();
+  addObjects(objs);
+}
+
+template <typename T, typename R, typename K>
+void ResponseObjects<T,R,K>::setError(const QString& errorMessage)
 {
   if (bIsError) {
     this->errorMessage = "Multiple errors occurred while processing this request.";
@@ -113,14 +135,26 @@ void ResponseObjects<T,R>::setError(const QString& errorMessage)
   bIsError = true;
 }
 
-template <typename T, typename R>
-QList<QSharedPointer<const T> > ResponseObjects<T,R>::getObjects() const
+template <typename T, typename R, typename K>
+bool ResponseObjects<T,R,K>::contains(const QSharedPointer<const T>& obj) const
+{
+  return (obj && objectIds.contains(getId(obj)));
+}
+
+template <typename T, typename R, typename K>
+QList<QSharedPointer<const T> > ResponseObjects<T,R,K>::getObjects() const
 {
   return objects;
 }
 
-template <typename T, typename R>
-  R ResponseObjects<T,R>::serialize() const
+template <typename T, typename R, typename K>
+QSet<K> ResponseObjects<T,R,K>::getObjectIds() const
+{
+  return objectIds;
+}
+
+template <typename T, typename R, typename K>
+  R ResponseObjects<T,R,K>::serialize() const
 {
   R resp;
 
@@ -133,8 +167,8 @@ template <typename T, typename R>
   return addErrors(resp);
 }
 
-template <typename T, typename R>
-  R& ResponseObjects<T,R>::addErrors(R& resp) const
+template <typename T, typename R, typename K>
+  R& ResponseObjects<T,R,K>::addErrors(R& resp) const
 {
   if (isError()) {
     resp.mutable_error()->set_iserror(true);

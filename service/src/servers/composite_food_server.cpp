@@ -21,7 +21,7 @@ namespace CompositeFoodServer {
     }
 
     for (int i = 0; i < req.requestedids_size(); ++i) {
-      resp_objs.addFood
+      resp_objs.addObject
         (CompositeFood::getCompositeFood(req.requestedids(i)));
     }
 

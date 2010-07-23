@@ -53,7 +53,7 @@ void DataLoadResponseObjects::acquireDependentObjects()
       for (QList<FoodComponent>::const_iterator j = components.begin();
            j != components.end(); ++j)
       {
-        food_objects.addFood(j->getFoodAmount().getFood());
+        food_objects.addObject(j->getFoodAmount().getFood());
       }
     }
   }
@@ -78,7 +78,7 @@ void DataLoadResponseObjects::acquireDependentObjects()
   // that depend on them. This is the appropriate order for serialization.
 
   if (!omitAllFoods) {
-    food_objects.replaceFoods
+    food_objects.replaceObjects
       (reverseTopologicalSort(findSubgraphRoots(food_objects)));
   }
 
@@ -86,7 +86,7 @@ void DataLoadResponseObjects::acquireDependentObjects()
 
   if (!omissions.nutrients && !omitAllFoods) {
 
-    QList<QSharedPointer<const Food> > foods = food_objects.getFoods();
+    QList<QSharedPointer<const Food> > foods = food_objects.getObjects();
 
     for (QList<QSharedPointer<const Food> >::const_iterator i = foods.begin();
          i != foods.end(); ++i)
@@ -142,8 +142,8 @@ QList<QSharedPointer<const Food> > DataLoadResponseObjects::findSubgraphRoots
   // here must be at least one of these, otherwise the food graph would have a
   // cycle (and then the data store would need to be fixed).
 
-  QList<QSharedPointer<const Food> > originalFoods = food_objects.getFoods();
-  QSet<QString> originalFoodIds = food_objects.getFoodIds();
+  QList<QSharedPointer<const Food> > originalFoods = food_objects.getObjects();
+  QSet<QString> originalFoodIds = food_objects.getObjectIds();
 
   QQueue<QSharedPointer<const Food> > bfsQueue;
   QSet<QString> originalFoodIdsWithIncomingEdges;
