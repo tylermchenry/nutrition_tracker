@@ -9,6 +9,13 @@
 #include "libnutrition/proto/service/data_messages.pb.h"
 #include "servers/data_server.h"
 #include "servers/login_server.h"
+#include "servers/nutrient_server.h"
+#include "servers/unit_server.h"
+#include "servers/group_server.h"
+#include "servers/single_food_server.h"
+#include "servers/composite_food_server.h"
+#include "servers/template_server.h"
+#include "servers/meal_server.h"
 #include <cassert>
 
 #ifdef WIN32
@@ -138,6 +145,18 @@ void ClientConnection::handleProtocolBuffer
   } else if (name == pbName<GroupLoadRequest>()) {
     GroupLoadRequest req = parseProtocolBuffer<GroupLoadRequest>(data);
     writeMessage(GroupServer::loadGroups(req).serialize());
+  } else if (name == pbName<SingleFoodLoadRequest>()) {
+    SingleFoodLoadRequest req = parseProtocolBuffer<SingleFoodLoadRequest>(data);
+    writeMessage(SingleFoodServer::loadSingleFoods(req).serializeSingleFoods());
+  } else if (name == pbName<CompositeFoodLoadRequest>()) {
+    CompositeFoodLoadRequest req = parseProtocolBuffer<CompositeFoodLoadRequest>(data);
+    writeMessage(CompositeFoodServer::loadCompositeFoods(req).serializeCompositeFoods());
+  } else if (name == pbName<TemplateLoadRequest>()) {
+    TemplateLoadRequest req = parseProtocolBuffer<TemplateLoadRequest>(data);
+    writeMessage(TemplateServer::loadTemplates(req).serializeTemplates());
+  } else if (name == pbName<MealLoadRequest>()) {
+    MealLoadRequest req = parseProtocolBuffer<MealLoadRequest>(data);
+    writeMessage(MealServer::loadMeals(req, loggedInUserId).serialize());
   }
 }
 

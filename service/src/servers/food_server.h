@@ -10,10 +10,14 @@
 
 #include "servers/omissions.h"
 #include "libnutrition/data/food.h"
+#include "libnutrition/backend/back_end.h"
 #include <QString>
 #include <QSet>
 
 class DataLoadResponse; // forward decl
+class SingleFoodLoadResponse; // forward decl
+class CompositeFoodLoadResponse; // forward decl
+class TemplateLoadResponse; // forward decl
 
 class FoodLoadResponseObjects
 {
@@ -27,6 +31,9 @@ class FoodLoadResponseObjects
 
     void replaceFoods(const QList<QSharedPointer<const Food> >& foods);
 
+    void setError(BackEnd::FoodTypes::FoodType foodType, const QString& errorMessage = "");
+    void setError(const QString& errorMessage = "");
+
     inline bool isEmpty() const { return foods.isEmpty(); }
     bool contains(const QSharedPointer<const Food>& food) const;
 
@@ -35,10 +42,39 @@ class FoodLoadResponseObjects
 
     DataLoadResponse& serialize(DataLoadResponse& resp, const Omissions& omissions) const;
 
+    SingleFoodLoadResponse serializeSingleFoods() const;
+
+    CompositeFoodLoadResponse serializeCompositeFoods() const;
+
+    TemplateLoadResponse serializeTemplates() const;
+
   private:
+
+    struct Error {
+      bool isError;
+      QString errorMessage;
+      Error() : isError(false) {};
+    };
+
+    Error error;
+    QMap<BackEnd::FoodTypes::FoodType, Error> subErrors;
 
     QSet<QString> foodIds;
     QList<QSharedPointer<const Food> > foods;
+
+    FoodData getFoodData() const;
+
+    SingleFoodLoadResponse& serializeSingleFoods
+      (const FoodData& fdata, SingleFoodLoadResponse& resp) const;
+
+    CompositeFoodLoadResponse& serializeCompositeFoods
+      (const FoodData& fdata, CompositeFoodLoadResponse& resp) const;
+
+    TemplateLoadResponse& serializeTemplates
+      (const FoodData& fdata, TemplateLoadResponse& resp) const;
+
+    template <typename T>
+    static void setError(T& resp, const Error& err);
 };
 
 
