@@ -153,7 +153,9 @@ void ViewFood::loadFoodInformation()
   // TODO: Load source name. But currently this only works for single foods, and this
   // might be a composite or a meal
 
-  ui.txtOwner->setText(foodAmount.getFood()->getOwner()->getDisplayName());
+  QSharedPointer<const User> owner = foodAmount.getFood()->getOwner();
+
+  ui.txtOwner->setText(owner ? owner->getDisplayName() : "");
 
   ui.txtAmount->setText(QString::number(foodAmount.getAmount()));
 
