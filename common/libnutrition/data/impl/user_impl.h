@@ -39,7 +39,7 @@ class UserImpl : virtual public User
 
     virtual void saveToDatabase();
 
-    virtual UserData serialize() const;
+    virtual UserData serialize(bool sanitized) const;
 
     virtual bool checkPassword(const QString& password) const;
 

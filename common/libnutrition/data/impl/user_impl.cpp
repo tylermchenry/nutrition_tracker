@@ -33,14 +33,17 @@ void UserImpl::saveToDatabase()
   BackEnd::getBackEnd()->storeUser(DataCache<User>::getInstance().get(id));
 }
 
-UserData UserImpl::serialize() const
+UserData UserImpl::serialize(bool sanitized) const
 {
   UserData udata;
 
   udata.set_userid(id);
   udata.set_username(username.toStdString());
   udata.set_realname(realName.toStdString());
-  udata.set_password_sha1_hex(pwSHA1_hex.toStdString());
+
+  if (!sanitized) {
+    udata.set_password_sha1_hex(pwSHA1_hex.toStdString());
+  }
 
   return udata;
 }

@@ -68,7 +68,7 @@ class User
 
     virtual void saveToDatabase() = 0;
 
-    virtual UserData serialize() const = 0;
+    virtual UserData serialize(bool sanitized = false) const = 0;
 
   private:
 
