@@ -3,27 +3,21 @@
 
 #include "libnutrition/proto/service/nutrient_messages.pb.h"
 #include "libnutrition/data/nutrient.h"
+#include "servers/response_objects.h"
 #include <QString>
 #include <QSet>
 
-class NutrientLoadResponseObjects
+class NutrientLoadResponseObjects : public ResponseObjects<Nutrient, NutrientLoadResponse>
 {
-  public:
+  protected:
 
-    void addNutrient(const QSharedPointer<const Nutrient>& nutrient);
-    void addNutrients(const QVector<QSharedPointer<const Nutrient> >& nutrients);
-    void addNutrients(const QList<QSharedPointer<const Nutrient> >& nutrients);
+    virtual QString getId
+      (const QSharedPointer<const Nutrient>& nutrient) const
+        { return nutrient->getId(); }
 
-    inline bool isEmpty() const { return nutrients.isEmpty(); }
-
-    QList<QSharedPointer<const Nutrient> > getNutrients() const;
-
-    NutrientLoadResponse serialize() const;
-
-  private:
-
-    QSet<QString> nutrientIds;
-    QList<QSharedPointer<const Nutrient> > nutrients;
+    virtual void addObjectToResponse
+      (NutrientLoadResponse& resp, const QSharedPointer<const Nutrient>& nutrient) const
+        { *(resp.add_nutrients()) = nutrient->serialize(); }
 };
 
 namespace NutrientServer

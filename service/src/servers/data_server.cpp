@@ -43,7 +43,7 @@ void DataLoadResponseObjects::acquireDependentObjects()
 
   if (!omissions.meals && !omitAllFoods) {
 
-    QList<QSharedPointer<const Meal> > meals = meal_objects.getMeals();
+    QList<QSharedPointer<const Meal> > meals = meal_objects.getObjects();
 
     for (QList<QSharedPointer<const Meal> >::const_iterator i = meals.begin();
          i != meals.end(); ++i)
@@ -102,7 +102,7 @@ void DataLoadResponseObjects::acquireDependentObjects()
         for (QList<NutrientAmount>::const_iterator j = nutrientAmounts.begin();
              j != nutrientAmounts.end(); ++j)
         {
-          nutrient_objects.addNutrient(j->getNutrient());
+          nutrient_objects.addObject(j->getNutrient());
         }
       }
     }
@@ -120,12 +120,12 @@ void DataLoadResponseObjects::acquireDependentObjects()
   if (!omissions.units) {
     if (!omissions.nutrients) {
 
-      QList<QSharedPointer<const Nutrient> > nutrients = nutrient_objects.getNutrients();
+      QList<QSharedPointer<const Nutrient> > nutrients = nutrient_objects.getObjects();
 
       for (QList<QSharedPointer<const Nutrient> >::const_iterator i = nutrients.begin();
            i != nutrients.end(); ++i)
       {
-        unit_objects.addUnit((*i)->getStandardUnit());
+        unit_objects.addObject((*i)->getStandardUnit());
       }
     }
 

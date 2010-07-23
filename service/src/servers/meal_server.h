@@ -3,33 +3,21 @@
 
 #include "libnutrition/proto/service/meal_messages.pb.h"
 #include "libnutrition/data/meal.h"
+#include "servers/response_objects.h"
 #include <QString>
 #include <QSet>
 
-class MealLoadResponseObjects
+class MealLoadResponseObjects : public ResponseObjects<Meal, MealLoadResponse>
 {
-  public:
+  protected:
 
-    MealLoadResponseObjects();
+    virtual Meal::MealIdTuple getId
+      (const QSharedPointer<const Meal>& meal) const
+        { return meal->getMealIdTuple(); }
 
-    void addMeal(const QSharedPointer<const Meal>& meal);
-    void addMeals(const QVector<QSharedPointer<Meal> >& meals);
-    void addMeals(const QList<QSharedPointer<const Meal> >& meals);
-
-    void setError(const QString& errorMessage = "");
-
-    inline bool isEmpty() const { return meals.isEmpty(); }
-
-    QList<QSharedPointer<const Meal> > getMeals() const;
-
-    MealLoadResponse serialize() const;
-
-  private:
-
-    bool isError;
-    QString errorMessage;
-    QSet<Meal::MealIdTuple> mealIds;
-    QList<QSharedPointer<const Meal> > meals;
+    virtual void addObjectToResponse
+      (MealLoadResponse& resp, const QSharedPointer<const Meal>& meal) const
+        { *(resp.add_meals()) = meal->serialize(); }
 };
 
 class MealListing

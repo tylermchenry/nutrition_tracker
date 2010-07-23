@@ -9,22 +9,20 @@ DEPENDPATH += . \
     src \
     ../src \
     ../common/ \
-    ../../common 
+    ../../common
 INCLUDEPATH += . \
     src \
     ../src \
     ../common/ \
-    ../../common 
-    
+    ../../common
 LIBS += -L../common \
     -L../common/debug \
     -L../common/release \
     -lnutrition \
     -lprotobuf
-
-win32:LIBS+=-lpthread    
-    
-HEADERS += src/servers/food_server.h \
+win32:LIBS += -lpthread
+HEADERS += src/servers/response_objects.h \
+    src/servers/food_server.h \
     src/servers/omissions.h \
     src/servers/composite_food_server.h \
     src/servers/data_server.h \

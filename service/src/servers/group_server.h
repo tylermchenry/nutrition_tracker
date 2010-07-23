@@ -3,27 +3,21 @@
 
 #include "libnutrition/proto/service/group_messages.pb.h"
 #include "libnutrition/data/group.h"
+#include "servers/response_objects.h"
 #include <QString>
 #include <QSet>
 
-class GroupLoadResponseObjects
+class GroupLoadResponseObjects : public ResponseObjects<Group, GroupLoadResponse>
 {
-  public:
+  protected:
 
-    void addGroup(const QSharedPointer<const Group>& group);
-    void addGroups(const QVector<QSharedPointer<const Group> >& groups);
-    void addGroups(const QList<QSharedPointer<const Group> >& groups);
+    virtual QString getId
+      (const QSharedPointer<const Group>& group) const
+        { return group->getId(); }
 
-    inline bool isEmpty() const { return groups.isEmpty(); }
-
-    QList<QSharedPointer<const Group> > getGroups() const;
-
-    GroupLoadResponse serialize() const;
-
-  private:
-
-    QSet<QString> groupIds;
-    QList<QSharedPointer<const Group> > groups;
+    virtual void addObjectToResponse
+      (GroupLoadResponse& resp, const QSharedPointer<const Group>& group) const
+        { *(resp.add_groups()) = group->serialize(); }
 };
 
 namespace GroupServer

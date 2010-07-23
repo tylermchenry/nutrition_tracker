@@ -3,53 +3,6 @@
 #include "libnutrition/data/unit.h"
 #include <cassert>
 
-void UnitLoadResponseObjects::addUnit
-(const QSharedPointer<const Unit>& unit)
-{
-  if (unit && !unitIds.contains(unit->getAbbreviation())) {
-    unitIds.insert(unit->getAbbreviation());
-    units.append(unit);
-  }
-}
-
-void UnitLoadResponseObjects::addUnits
-  (const QVector<QSharedPointer<const Unit> >& units)
-{
-  for (QVector<QSharedPointer<const Unit> >::const_iterator i = units.begin();
-       i != units.end(); ++i)
-  {
-    addUnit(*i);
-  }
-}
-
-void UnitLoadResponseObjects::addUnits
-  (const QList<QSharedPointer<const Unit> >& units)
-{
-  for (QList<QSharedPointer<const Unit> >::const_iterator i = units.begin();
-       i != units.end(); ++i)
-  {
-    addUnit(*i);
-  }
-}
-
-QList<QSharedPointer<const Unit> > UnitLoadResponseObjects::getUnits() const
-{
-  return units;
-}
-
-UnitLoadResponse UnitLoadResponseObjects::serialize() const
-{
-  UnitLoadResponse resp;
-
-  for (QList<QSharedPointer<const Unit> >::const_iterator i = units.begin();
-       i != units.end(); ++i)
-  {
-    *(resp.add_units()) = (*i)->serialize();
-  }
-
-  return resp;
-}
-
 namespace UnitServer {
 
   UnitLoadResponseObjects loadUnits(const UnitLoadRequest& req)
@@ -60,7 +13,7 @@ namespace UnitServer {
 
     if (req.all()) {
 
-      resp_objs.addUnits(Unit::getAllUnits());
+      resp_objs.addObjects(Unit::getAllUnits());
 
     } else {
 
@@ -68,11 +21,11 @@ namespace UnitServer {
 
       for (int i = 0; i < req.requesteddimensions_size(); ++i) {
         if (!basicUnitsOnly) {
-          resp_objs.addUnits
+          resp_objs.addObjects
             (Unit::getAllUnits(static_cast<Unit::Dimensions::Dimension>
               (req.requesteddimensions(i))));
         } else {
-          resp_objs.addUnit(Unit::getPreferredUnit
+          resp_objs.addObject(Unit::getPreferredUnit
                             (static_cast<Unit::Dimensions::Dimension>
                               (req.requesteddimensions(i))));
         }
@@ -80,14 +33,14 @@ namespace UnitServer {
 
       for (int i = 0; i < req.requestedabbreviations_size(); ++i) {
         if (!basicUnitsOnly) {
-          resp_objs.addUnit
+          resp_objs.addObject
             (Unit::getUnit(QString::fromStdString(req.requestedabbreviations(i))));
         } else {
           QSharedPointer<const Unit> unit =
             Unit::getUnit(QString::fromStdString(req.requestedabbreviations(i)));
 
           if (unit->getConversionFactor() == 1) {
-            resp_objs.addUnit(unit);
+            resp_objs.addObject(unit);
           }
         }
       }

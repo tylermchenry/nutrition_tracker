@@ -3,73 +3,6 @@
 #include "libnutrition/data/meal.h"
 #include <cassert>
 
-MealLoadResponseObjects::MealLoadResponseObjects()
-  : isError(false)
-{
-}
-
-void MealLoadResponseObjects::addMeal
-  (const QSharedPointer<const Meal>& meal)
-{
-  if (meal && !mealIds.contains(meal->getMealIdTuple())) {
-    mealIds.insert(meal->getMealIdTuple());
-    meals.append(meal);
-  }
-}
-
-void MealLoadResponseObjects::addMeals
-  (const QVector<QSharedPointer<Meal> >& meals)
-{
-  for (QVector<QSharedPointer<Meal> >::const_iterator i = meals.begin();
-       i != meals.end(); ++i)
-  {
-    addMeal(*i);
-  }
-}
-
-void MealLoadResponseObjects::addMeals
-  (const QList<QSharedPointer<const Meal> >& meals)
-{
-  for (QList<QSharedPointer<const Meal> >::const_iterator i = meals.begin();
-       i != meals.end(); ++i)
-  {
-    addMeal(*i);
-  }
-}
-
-void MealLoadResponseObjects::setError(const QString& errorMessage)
-{
-  if (isError) {
-    this->errorMessage = "Multiple errors occurred while processing this request.";
-  } else {
-    this->errorMessage = errorMessage;
-  }
-  isError = true;
-}
-
-QList<QSharedPointer<const Meal> > MealLoadResponseObjects::getMeals() const
-{
-  return meals;
-}
-
-MealLoadResponse MealLoadResponseObjects::serialize() const
-{
-  MealLoadResponse resp;
-
-  for (QList<QSharedPointer<const Meal> >::const_iterator i = meals.begin();
-       i != meals.end(); ++i)
-  {
-    *(resp.add_meals()) = (*i)->serialize();
-  }
-
-  if (isError) {
-    resp.mutable_error()->set_iserror(true);
-    resp.mutable_error()->set_errormessage(errorMessage.toStdString());
-  }
-
-  return resp;
-}
-
 MealListing::MealListing()
   : isError(false)
 {
@@ -162,12 +95,12 @@ namespace MealServer {
         }
 
         if (id.has_mealid()) {
-          resp_objs.addMeal(Meal::getMeal
+          resp_objs.addObject(Meal::getMeal
             (userId,
              QDate::fromString(QString::fromStdString(id.date_iso8601()), Qt::ISODate),
              id.mealid()));
         } else {
-          resp_objs.addMeals(Meal::getMealsForDay
+          resp_objs.addObjects(Meal::getMealsForDay
             (userId,
              QDate::fromString(QString::fromStdString(id.date_iso8601()), Qt::ISODate)));
         }

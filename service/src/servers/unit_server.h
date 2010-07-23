@@ -3,27 +3,21 @@
 
 #include "libnutrition/proto/service/unit_messages.pb.h"
 #include "libnutrition/data/unit.h"
+#include "servers/response_objects.h"
 #include <QString>
 #include <QSet>
 
-class UnitLoadResponseObjects
+class UnitLoadResponseObjects : public ResponseObjects<Unit, UnitLoadResponse>
 {
-  public:
+  protected:
 
-    void addUnit(const QSharedPointer<const Unit>& unit);
-    void addUnits(const QVector<QSharedPointer<const Unit> >& units);
-    void addUnits(const QList<QSharedPointer<const Unit> >& units);
+    virtual QString getId
+      (const QSharedPointer<const Unit>& unit) const
+        { return unit->getAbbreviation(); }
 
-    inline bool isEmpty() const { return units.isEmpty(); }
-
-    QList<QSharedPointer<const Unit> > getUnits() const;
-
-    UnitLoadResponse serialize() const;
-
-  private:
-
-    QSet<QString> unitIds;
-    QList<QSharedPointer<const Unit> > units;
+    virtual void addObjectToResponse
+      (UnitLoadResponse& resp, const QSharedPointer<const Unit>& unit) const
+        { *(resp.add_units()) = unit->serialize(); }
 };
 
 namespace UnitServer
