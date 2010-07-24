@@ -284,8 +284,10 @@ template <typename T> void ServiceBackEnd::readResponse(T& t)
 
   t.ParseFromArray(bytes.data(), resp_len);
 
+#ifdef VERBOSE_DEBUG
   qDebug() << "Received " << QString::fromStdString(respType) << " message:";
   qDebug() << QString::fromStdString(t.DebugString());
+#endif
 }
 
 template <typename T> void ServiceBackEnd::writeMessageAndReadResponse

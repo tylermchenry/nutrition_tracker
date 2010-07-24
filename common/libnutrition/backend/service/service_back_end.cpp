@@ -141,8 +141,10 @@ void ServiceBackEnd::writeMessageLength(quint32 length)
 
 void ServiceBackEnd::writeMessage(const ::google::protobuf::Message& msg)
 {
+#ifdef VERBOSE_DEBUG
   qDebug() << "Sending " << QString::fromStdString(msg.GetTypeName()) << " message:";
   qDebug() << QString::fromStdString(msg.DebugString());
+#endif
 
   // Temporary simple protocol:
   // [type-length] [type-name] [pb-length] [protocol-buffer]
