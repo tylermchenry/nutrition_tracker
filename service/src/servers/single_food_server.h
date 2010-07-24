@@ -10,6 +10,9 @@
 namespace SingleFoodServer
 {
   FoodLoadResponseObjects loadSingleFoods(const SingleFoodLoadRequest& req);
+
+  FoodLoadResponseObjects& loadSingleFoods
+    (FoodLoadResponseObjects& resp_objs, const SingleFoodLoadRequest& req);
 }
 
 #endif /* SINGLE_FOOD_SERVER_H_ */

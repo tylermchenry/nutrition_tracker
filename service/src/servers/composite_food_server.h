@@ -10,6 +10,9 @@
 namespace CompositeFoodServer
 {
   FoodLoadResponseObjects loadCompositeFoods(const CompositeFoodLoadRequest& req);
+
+  FoodLoadResponseObjects& loadCompositeFoods
+    (FoodLoadResponseObjects& resp_objs, const CompositeFoodLoadRequest& req);
 }
 
 #endif /* COMPOSITE_FOOD_SERVER_H_ */

@@ -287,11 +287,28 @@ namespace DataServer {
     }
 
     if (req.has_nutrientloadrequest()) {
-      resp_objs.nutrient_objects = NutrientServer::loadNutrients(req.nutrientloadrequest());
+      resp_objs.nutrient_objects =
+        NutrientServer::loadNutrients(req.nutrientloadrequest());
     }
 
     if (req.has_mealloadrequest()) {
-      resp_objs.meal_objects = MealServer::loadMeals(req.mealloadrequest(), loggedInUserId);
+      resp_objs.meal_objects = MealServer::loadMeals
+        (req.mealloadrequest(), loggedInUserId);
+    }
+
+    if (req.has_singlefoodloadrequest()) {
+      SingleFoodServer::loadSingleFoods
+        (resp_objs.food_objects, req.singlefoodloadrequest());
+    }
+
+    if (req.has_compositefoodloadrequest()) {
+      CompositeFoodServer::loadCompositeFoods
+        (resp_objs.food_objects, req.compositefoodloadrequest());
+    }
+
+    if (req.has_templateloadrequest()) {
+      TemplateServer::loadTemplates
+        (resp_objs.food_objects, req.templateloadrequest());
     }
 
     return resp_objs;

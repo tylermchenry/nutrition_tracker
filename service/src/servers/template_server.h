@@ -10,6 +10,9 @@
 namespace TemplateServer
 {
   FoodLoadResponseObjects loadTemplates(const TemplateLoadRequest& req);
+
+  FoodLoadResponseObjects& loadTemplates
+    (FoodLoadResponseObjects& resp_objs, const TemplateLoadRequest& req);
 }
 
 #endif /* TEMPLATE_SERVER_H_ */

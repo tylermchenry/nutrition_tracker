@@ -6,6 +6,12 @@ namespace CompositeFoodServer {
   {
     FoodLoadResponseObjects resp_objs;
 
+    return loadCompositeFoods(resp_objs, req);
+  }
+
+  FoodLoadResponseObjects& loadCompositeFoods
+    (FoodLoadResponseObjects& resp_objs, const CompositeFoodLoadRequest& req)
+  {
     if (req.omit()) return resp_objs;
 
     if (req.omitexpired()) {

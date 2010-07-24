@@ -6,6 +6,12 @@ namespace SingleFoodServer {
   {
     FoodLoadResponseObjects resp_objs;
 
+    return loadSingleFoods(resp_objs, req);
+  }
+
+  FoodLoadResponseObjects& loadSingleFoods
+    (FoodLoadResponseObjects& resp_objs, const SingleFoodLoadRequest& req)
+  {
     if (req.omit()) return resp_objs;
 
     for (int i = 0; i < req.requestedids_size(); ++i) {

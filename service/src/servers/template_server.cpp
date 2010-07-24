@@ -6,6 +6,12 @@ namespace TemplateServer {
   {
     FoodLoadResponseObjects resp_objs;
 
+    return loadTemplates(resp_objs, req);
+  }
+
+  FoodLoadResponseObjects& loadTemplates
+    (FoodLoadResponseObjects& resp_objs, const TemplateLoadRequest& req)
+  {
     if (req.omit()) return resp_objs;
 
     for (int i = 0; i < req.requestedids_size(); ++i) {
