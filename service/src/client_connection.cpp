@@ -141,6 +141,9 @@ void ClientConnection::handleProtocolBuffer
   } else if (name == pbName<UnitLoadRequest>()) {
     UnitLoadRequest req = parseProtocolBuffer<UnitLoadRequest>(data);
     writeMessage(UnitServer::loadUnits(req).serialize());
+  } else if (name == pbName<SpecializedUnitLoadRequest>()) {
+    SpecializedUnitLoadRequest req = parseProtocolBuffer<SpecializedUnitLoadRequest>(data);
+    writeMessage(SpecializedUnitServer::loadSpecializedUnits(req).serialize());
   } else if (name == pbName<GroupLoadRequest>()) {
     GroupLoadRequest req = parseProtocolBuffer<GroupLoadRequest>(data);
     writeMessage(GroupServer::loadGroups(req).serialize());

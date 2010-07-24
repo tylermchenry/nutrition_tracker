@@ -22,6 +22,11 @@ DataLoadResponse DataLoadResponseObjects::serialize()
     *(resp.mutable_unitloadresponse()) = unit_objects.serialize();
   }
 
+  if (!omissions.specializedUnits && !specialized_unit_objects.isEmpty()) {
+    *(resp.mutable_specializedunitloadresponse()) =
+        specialized_unit_objects.serialize();
+  }
+
   if (!omissions.nutrients && !nutrient_objects.isEmpty()) {
     *(resp.mutable_nutrientloadresponse()) = nutrient_objects.serialize();
   }
@@ -133,7 +138,16 @@ void DataLoadResponseObjects::acquireDependentObjects()
       }
     }
 
-    // TODO: Acquire Units from Specialized Units
+    if (!omissions.specializedUnits) {
+      QList<QSharedPointer<const SpecializedUnit> > specializedUnits =
+        specialized_unit_objects.getObjects();
+
+      for (QList<QSharedPointer<const SpecializedUnit> >::const_iterator i =
+          specializedUnits.begin(); i != specializedUnits.end(); ++i)
+      {
+        unit_objects.addObject((*i)->getBaseAmount().getUnit());
+      }
+    }
   }
 }
 
@@ -264,6 +278,12 @@ namespace DataServer {
 
     if (req.has_unitloadrequest()) {
       resp_objs.unit_objects = UnitServer::loadUnits(req.unitloadrequest());
+    }
+
+    if (req.has_specializedunitloadrequest()) {
+      resp_objs.specialized_unit_objects =
+        SpecializedUnitServer::loadSpecializedUnits
+          (req.specializedunitloadrequest());
     }
 
     if (req.has_nutrientloadrequest()) {

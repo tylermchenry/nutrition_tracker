@@ -25,6 +25,7 @@ class DataLoadResponseObjects
     UserLoadResponseObjects user_objects;
     GroupLoadResponseObjects group_objects;
     UnitLoadResponseObjects unit_objects;
+    SpecializedUnitLoadResponseObjects specialized_unit_objects;
     NutrientLoadResponseObjects nutrient_objects;
     FoodLoadResponseObjects food_objects;
     MealLoadResponseObjects meal_objects;
