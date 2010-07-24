@@ -14,6 +14,7 @@ class ResponseObjects
   public:
 
     ResponseObjects();
+    virtual ~ResponseObjects() {}
 
     void addObject(const QSharedPointer<const T>& obj);
     void addObjects(const QVector<QSharedPointer<T> >& objs);
