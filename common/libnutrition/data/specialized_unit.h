@@ -29,6 +29,7 @@ class SpecializedUnit
       SpecializedUnitIdTuple(int fid, int s);
 
       bool operator< (const SpecializedUnitIdTuple& rhs) const;
+      bool operator== (const SpecializedUnitIdTuple& rhs) const;
     };
 
     // Definitions to make this class cacheable with DataCache
@@ -69,5 +70,7 @@ class SpecializedUnit
 
     friend class SpecializedUnitImpl;
 };
+
+int qHash(const SpecializedUnit::SpecializedUnitIdTuple& idTuple);
 
 #endif /* SPECIALIZED_UNIT_H_ */

@@ -57,3 +57,14 @@ bool SpecializedUnit::SpecializedUnitIdTuple::operator<
   return foodId < rhs.foodId ||
     (foodId == rhs.foodId && sequence < rhs.sequence);
 }
+
+bool SpecializedUnit::SpecializedUnitIdTuple::operator==
+  (const SpecializedUnitIdTuple& rhs) const
+{
+  return (foodId == rhs.foodId) && (sequence == rhs.sequence);
+}
+
+int qHash(const SpecializedUnit::SpecializedUnitIdTuple& idTuple)
+{
+  return qHash(idTuple.foodId) + 3 * qHash(idTuple.sequence);
+}
