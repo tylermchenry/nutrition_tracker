@@ -33,7 +33,8 @@ LIBS += -L../common \
     -lnutrition \
     -lprotobuf 
 
-win32:LIBS+=-lpthread    
+win32:LIBS+=-lpthread \
+    -lwsock32
 
 # Input
 HEADERS += src/dialogs/about.h \

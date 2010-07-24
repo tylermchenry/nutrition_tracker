@@ -20,7 +20,8 @@ LIBS += -L../common \
     -L../common/release \
     -lnutrition \
     -lprotobuf
-win32:LIBS += -lpthread
+win32:LIBS += -lpthread \
+    -lwsock32
 HEADERS += src/servers/response_objects.h \
     src/servers/food_server.h \
     src/servers/omissions.h \

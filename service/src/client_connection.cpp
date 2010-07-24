@@ -16,6 +16,7 @@
 #include "servers/composite_food_server.h"
 #include "servers/template_server.h"
 #include "servers/meal_server.h"
+#include <QByteArray>
 #include <cassert>
 
 #ifdef WIN32
@@ -36,6 +37,8 @@ ClientConnection::ClientConnection(QTcpSocket* socket, QObject* parent)
   connect(tcpSocket, SIGNAL(disconnected()), tcpSocket, SLOT(deleteLater()));
 
   connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(readData()));
+
+  qDebug() << "New client connection";
 }
 
 ClientConnection::~ClientConnection()
@@ -53,6 +56,8 @@ int ClientConnection::getSocketDescriptor() const
 
 void ClientConnection::readData()
 {
+  qDebug() << "Received data from client";
+
   while (tcpSocket->bytesAvailable() > 0) {
 
     if (currentField == Fields::None) {
@@ -61,9 +66,14 @@ void ClientConnection::readData()
 
     int bytesToRead = computeBytesToRead();
 
+    qDebug() << "Before read, partial data size is " << partialData.size();
+    qDebug() << "Want to read up to " << bytesToRead << " bytes";
+
     assert(bytesToRead > 0);
 
     partialData += tcpSocket->read(bytesToRead);
+
+    qDebug() << "After read, partial data size is " << partialData.size();
 
     if (computeBytesToRead() <= 0) {
       // Finished the previous field
@@ -72,19 +82,23 @@ void ClientConnection::readData()
         case Fields::MessageNameLength:
           messageNameLength = ntohl(*reinterpret_cast<quint32*>(partialData.data()));
           currentField = Fields::MessageName;
+          qDebug() << "Finished reading message name length. Is: " << messageNameLength;
           break;
         case Fields::MessageName:
           messageName = QString::fromUtf8(partialData.data(), partialData.length());
           currentField = Fields::ProtocolBufferLength;
+          qDebug() << "Finished reading message name Is: " << messageName;
           break;
         case Fields::ProtocolBufferLength:
           protocolBufferLength = ntohl(*reinterpret_cast<quint32*>(partialData.data()));
           currentField = Fields::ProtocolBuffer;
+          qDebug() << "Finished reading protocol buffer length. Is: " << protocolBufferLength;
           break;
         case Fields::ProtocolBuffer:
           qDebug() << "Received a protobuffer named " << messageName
                     << ", length " << protocolBufferLength;
           assert(partialData.length() == protocolBufferLength);
+          qDebug() << "Finished reading protocol buffer";
           handleProtocolBuffer(messageName, partialData);
           currentField = Fields::None;
           break;
@@ -99,6 +113,7 @@ void ClientConnection::socketDisconnected()
 {
   tcpSocket = NULL;
   emit disconnected();
+  qDebug() << "Client disconnected";
 }
 
 void ClientConnection::resetFields()
@@ -129,6 +144,9 @@ int ClientConnection::computeBytesToRead() const
 void ClientConnection::handleProtocolBuffer
   (const QString& name, const QByteArray& data)
 {
+  qDebug() << "Name of PB is: " << name;
+  qDebug() << "For LogInRequest, want: " << pbName<LogInRequest>();
+
   if (name == pbName<DataLoadRequest>()) {
     DataLoadRequest req = parseProtocolBuffer<DataLoadRequest>(data);
     DataLoadResponseObjects resp_objs = DataServer::loadData(req, loggedInUserId);
@@ -187,6 +205,19 @@ void ClientConnection::writeMessage(const ::google::protobuf::Message& msg)
   tcpSocket->write(typeName.c_str(), typeName.length());
   writeMessageLength(msg.ByteSize());
 
+#ifdef WIN32
+
+  // Because windows has different sorts of descriptors for files and
+  // sockets, SerializeToFileDescriptor does not work on network sockets
+  // under Windows, so we must extract the data and then send it via Qt
+
+  QByteArray message(msg.ByteSize(), '\0');
+
+  msg.SerializeToArray(message.data(), message.length());
+  tcpSocket->write(message.data(), message.length());
+
+#else
+
   // It is necessary to flush the socket before writing the protobuf itself
   // because QTcpSocket does its own internal buffering, and when writing
   // the protobuf, we go around that directly to the descriptor. Without a
@@ -195,6 +226,8 @@ void ClientConnection::writeMessage(const ::google::protobuf::Message& msg)
 
   tcpSocket->flush();
   msg.SerializeToFileDescriptor(getSocketDescriptor());
+
+#endif
 }
 
 template <typename T> QString ClientConnection::pbName()

@@ -14,6 +14,7 @@
 
 #ifdef WIN32
   #include <winsock2.h>
+  #include <QByteArray>
 #else
   #include <arpa/inet.h>
 #endif
@@ -152,6 +153,19 @@ void ServiceBackEnd::writeMessage(const ::google::protobuf::Message& msg)
   socket.write(typeName.c_str(), typeName.length());
   writeMessageLength(msg.ByteSize());
 
+#ifdef WIN32
+
+  // Because windows has different sorts of descriptors for files and
+  // sockets, SerializeToFileDescriptor does not work on network sockets
+  // under Windows, so we must extract the data and then send it via Qt
+
+  QByteArray message(msg.ByteSize(), '\0');
+
+  msg.SerializeToArray(message.data(), message.length());
+  socket.write(message.data(), message.length());
+
+#else
+
   // It is necessary to flush the socket before writing the protobuf itself
   // because QTcpSocket does its own internal buffering, and when writing
   // the protobuf, we go around that directly to the descriptor. Without a
@@ -160,6 +174,9 @@ void ServiceBackEnd::writeMessage(const ::google::protobuf::Message& msg)
 
   socket.flush();
   msg.SerializeToFileDescriptor(socket.socketDescriptor());
+
+#endif
+
 }
 
 quint32 ServiceBackEnd::readResponseLength()
