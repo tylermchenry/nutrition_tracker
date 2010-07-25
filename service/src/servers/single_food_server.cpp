@@ -28,4 +28,37 @@ namespace SingleFoodServer {
 
     return resp_objs;
   }
+
+  SingleFoodListing loadSingleFoodNames
+    (const SingleFoodLoadRequest& req, int loggedInUserId)
+  {
+    SingleFoodListing listing;
+
+    if (req.omit()) return listing;
+
+    assert(req.nameandidonly());
+
+    for (int i = 0; i < req.requestedids_size(); ++i)
+    {
+      listing.addObject(SingleFood::getSingleFood(req.requestedids(i)));
+    }
+
+    bool accessViolation = false;
+
+    for (int i = 0; i < req.requesteduserids_size(); ++i)
+    {
+      if (req.requesteduserids(i) == loggedInUserId) {
+        listing.addObjects(SingleFood::getFoodsForUser(req.requesteduserids(i)));
+      } else {
+        accessViolation = true;
+      }
+    }
+
+    if (accessViolation) {
+      listing.setError("Some requested food names were omitted because they "
+                       "belong to another user.");
+    }
+
+    return listing;
+  }
 }

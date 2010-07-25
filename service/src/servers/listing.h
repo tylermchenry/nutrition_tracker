@@ -10,6 +10,7 @@
 
 #include "response_objects.h"
 #include <QPair>
+#include <QMultiMap>
 
 template <typename T, typename R, typename K = typename T::cache_key_type>
 class Listing : public ResponseObjects<QPair<K, QString>, R, K>
@@ -19,6 +20,7 @@ class Listing : public ResponseObjects<QPair<K, QString>, R, K>
     void addObject(const QSharedPointer<const T>& obj);
     void addObject(const K& id, const QString& name);
     void addObjects(const QMap<K, QString>& objectNames);
+    void addObjects(const QMultiMap<QString, K>& objectNames);
 
   protected:
 
@@ -60,6 +62,16 @@ void Listing<T,R,K>::addObjects(const QMap<K, QString>& objectNames)
       i != objectNames.end(); ++i)
   {
     addObject(i.key(), i.value());
+  }
+}
+
+template<typename T, typename R, typename K>
+void Listing<T,R,K>::addObjects(const QMultiMap<QString, K>& objectNames)
+{
+  for (typename QMultiMap<QString, K>::const_iterator i = objectNames.begin();
+      i != objectNames.end(); ++i)
+  {
+    addObject(i.value(), i.key());
   }
 }
 
