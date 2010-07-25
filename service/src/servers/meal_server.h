@@ -4,6 +4,7 @@
 #include "libnutrition/proto/service/meal_messages.pb.h"
 #include "libnutrition/data/meal.h"
 #include "servers/response_objects.h"
+#include "servers/listing.h"
 #include <QString>
 #include <QSet>
 
@@ -20,25 +21,25 @@ class MealLoadResponseObjects : public ResponseObjects<Meal, MealLoadResponse>
         { *(resp.add_meals()) = meal->serialize(); }
 };
 
-class MealListing
+class MealListing : public Listing<Meal, MealLoadResponse, int>
 {
-  public:
+  protected:
 
-    MealListing();
+     virtual int getId
+       (const QSharedPointer<const Meal>& meal) const
+         { return meal->getMealId(); }
 
-    void addMeal(const QSharedPointer<const Meal>& meal);
-    void addMeal(int id, const QString& name);
-    void addMeals(const QMap<int, QString>& mealNames);
+     virtual QString getName
+       (const QSharedPointer<const Meal>& meal) const
+         { return meal->getName(); }
 
-    void setError(const QString& errorMessage = "");
-
-    MealLoadResponse serialize() const;
-
-  private:
-
-    bool isError;
-    QString errorMessage;
-    QMap<int, QString> mealNames;
+     virtual void addListingToResponse
+       (MealLoadResponse& resp, const int& id, const QString& name) const
+         {
+           MealData* mdata = resp.add_meals();
+           mdata->set_mealid(id);
+           mdata->set_name(name.toStdString());
+         }
 };
 
 namespace MealServer

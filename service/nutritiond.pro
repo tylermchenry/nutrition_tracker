@@ -22,7 +22,8 @@ LIBS += -L../common \
     -lprotobuf
 win32:LIBS += -lpthread \
     -lwsock32
-HEADERS += src/servers/response_objects.h \
+HEADERS += src/servers/listing.h \
+    src/servers/response_objects.h \
     src/servers/food_server.h \
     src/servers/omissions.h \
     src/servers/composite_food_server.h \
