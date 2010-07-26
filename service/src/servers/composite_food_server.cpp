@@ -40,4 +40,41 @@ namespace CompositeFoodServer {
 
     return resp_objs;
   }
+
+  CompositeFoodListing loadCompositeFoodNames
+    (const CompositeFoodLoadRequest& req, int loggedInUserId)
+  {
+    CompositeFoodListing listing(req.includedatesinname());
+
+    if (req.omit()) return listing;
+
+    assert(req.nameandidonly());
+
+    if (req.omitexpired()) {
+      listing.setError("Omission of expired composite foods is not yet supported.");
+    }
+
+    for (int i = 0; i < req.requestedids_size(); ++i)
+    {
+      listing.addObject(CompositeFood::getCompositeFood(req.requestedids(i)));
+    }
+
+    bool accessViolation = false;
+
+    for (int i = 0; i < req.requesteduserids_size(); ++i)
+    {
+      if (req.requesteduserids(i) == loggedInUserId) {
+        listing.addObjects(CompositeFood::getFoodsForUser(req.requesteduserids(i)));
+      } else {
+        accessViolation = true;
+      }
+    }
+
+    if (accessViolation) {
+      listing.setError("Some requested food names were omitted because they "
+                       "belong to another user.");
+    }
+
+    return listing;
+  }
 }
