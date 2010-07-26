@@ -12,6 +12,10 @@ QList<MySQLBackEnd::SearchResult> MySQLBackEnd::searchFoods
 {
   QSqlQuery query(db);
 
+  int userId = request.userId;
+
+  userId = (userId >= 0) ? userId : User::getLoggedInUser()->getId();
+
   QString food_sourceRestrictions;
 
   if (!request.sourceUSDA) {
@@ -26,13 +30,13 @@ QList<MySQLBackEnd::SearchResult> MySQLBackEnd::searchFoods
   if (!request.sourceOthers) {
     if (food_sourceRestrictions != "") food_sourceRestrictions += " AND ";
     food_sourceRestrictions = " (Entry_Src != 'Custom' OR User_Id == "
-        + QString::number(User::getLoggedInUser()->getId()) + ")";
+        + QString::number(userId) + ")";
   }
 
   if (!request.sourceSelf) {
     if (food_sourceRestrictions != "") food_sourceRestrictions += " AND ";
     food_sourceRestrictions = " (Entry_Src != 'Custom' OR User_Id != "
-        + QString::number(User::getLoggedInUser()->getId()) + ")";
+        + QString::number(userId) + ")";
   }
 
   QString composite_sourceRestrictions;

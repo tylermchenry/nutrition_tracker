@@ -209,11 +209,13 @@ class BackEnd
 
       int maxResults;
 
+      int userId;
+
       SearchRequest()
       : searchSingleFoods(true), searchComposites(true),
         searchTemplates(false), sourceUSDA(true), sourceImport(true),
         sourceSelf(true), sourceOthers(true), includeExpired(false),
-        maxResults(500)
+        maxResults(500), userId(-1)
       {}
     };
 
