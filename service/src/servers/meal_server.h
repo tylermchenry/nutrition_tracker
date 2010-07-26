@@ -12,6 +12,10 @@ class MealLoadResponseObjects : public ResponseObjects<Meal, MealLoadResponse>
 {
   protected:
 
+    virtual bool isValid
+      (const QSharedPointer<const Meal>& meal) const
+        { return !meal.isNull(); }
+
     virtual Meal::MealIdTuple getId
       (const QSharedPointer<const Meal>& meal) const
         { return meal->getMealIdTuple(); }

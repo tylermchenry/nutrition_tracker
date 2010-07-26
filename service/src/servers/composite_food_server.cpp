@@ -31,7 +31,7 @@ namespace CompositeFoodServer {
         (CompositeFood::getCompositeFood(req.requestedids(i)));
     }
 
-    if (req.requestedids_size() > 0) {
+    if (req.requesteduserids_size() > 0) {
       resp_objs.setError(BackEnd::FoodTypes::CompositeFood,
                          "Requesting all composite foods for particular user(s) "
                          "without the nameAndIdOnly option is not currently "

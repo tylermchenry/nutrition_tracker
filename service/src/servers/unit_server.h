@@ -11,6 +11,10 @@ class UnitLoadResponseObjects : public ResponseObjects<Unit, UnitLoadResponse>
 {
   protected:
 
+    virtual bool isValid
+      (const QSharedPointer<const Unit>& unit) const
+        { return !unit.isNull(); }
+
     virtual QString getId
       (const QSharedPointer<const Unit>& unit) const
         { return unit->getAbbreviation(); }

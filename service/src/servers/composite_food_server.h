@@ -21,6 +21,10 @@ class CompositeFoodListing : public Listing<CompositeFood, CompositeFoodLoadResp
 
   protected:
 
+    virtual bool isValid
+      (const QSharedPointer<const CompositeFood>& compositeFood) const
+        { return !compositeFood.isNull(); }
+
     virtual int getId
       (const QSharedPointer<const CompositeFood>& compositeFood) const
         { return compositeFood->getCompositeFoodId(); }

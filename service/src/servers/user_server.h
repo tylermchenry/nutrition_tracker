@@ -11,6 +11,10 @@ class UserLoadResponseObjects : public ResponseObjects<User, UserLoadResponse>
 {
   protected:
 
+    virtual bool isValid
+      (const QSharedPointer<const User>& user) const
+        { return !user.isNull(); }
+
     virtual int getId
       (const QSharedPointer<const User>& user) const
         { return user->getId(); }

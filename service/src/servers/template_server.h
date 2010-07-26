@@ -12,6 +12,10 @@ class TemplateListing : public Listing<Template, TemplateLoadResponse>
 {
   protected:
 
+    virtual bool isValid
+      (const QSharedPointer<const Template>& templ) const
+        { return !templ.isNull(); }
+
     virtual int getId
       (const QSharedPointer<const Template>& templ) const
         { return templ->getTemplateId(); }

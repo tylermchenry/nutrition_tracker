@@ -12,6 +12,10 @@ class SpecializedUnitLoadResponseObjects
 {
   protected:
 
+    virtual bool isValid
+      (const QSharedPointer<const SpecializedUnit>& specializedUnit) const
+        { return !specializedUnit.isNull(); }
+
     virtual SpecializedUnit::SpecializedUnitIdTuple getId
       (const QSharedPointer<const SpecializedUnit>& specializedUnit) const
         { return specializedUnit->getSpecializedUnitIdTuple(); }

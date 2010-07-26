@@ -11,6 +11,10 @@ class GroupLoadResponseObjects : public ResponseObjects<Group, GroupLoadResponse
 {
   protected:
 
+    virtual bool isValid
+      (const QSharedPointer<const Group>& group) const
+        { return !group.isNull(); }
+
     virtual QString getId
       (const QSharedPointer<const Group>& group) const
         { return group->getId(); }

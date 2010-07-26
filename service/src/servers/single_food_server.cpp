@@ -19,7 +19,7 @@ namespace SingleFoodServer {
         (SingleFood::getSingleFood(req.requestedids(i)));
     }
 
-    if (req.requestedids_size() > 0) {
+    if (req.requesteduserids_size() > 0) {
       resp_objs.setError(BackEnd::FoodTypes::SingleFood,
                          "Requesting all single foods for particular user(s) "
                          "without the nameAndIdOnly option is not currently "

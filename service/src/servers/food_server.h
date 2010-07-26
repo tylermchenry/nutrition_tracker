@@ -37,6 +37,10 @@ class FoodLoadResponseObjects : public ResponseObjects<Food, DataLoadResponse, Q
 
   protected:
 
+    virtual bool isValid
+      (const QSharedPointer<const Food>& food) const
+        { return !food.isNull(); }
+
     virtual QString getId
       (const QSharedPointer<const Food>& food) const
         { return food->getId(); }

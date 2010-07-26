@@ -11,6 +11,10 @@ class NutrientLoadResponseObjects : public ResponseObjects<Nutrient, NutrientLoa
 {
   protected:
 
+    virtual bool isValid
+      (const QSharedPointer<const Nutrient>& nutrient) const
+        { return !nutrient.isNull(); }
+
     virtual QString getId
       (const QSharedPointer<const Nutrient>& nutrient) const
         { return nutrient->getId(); }

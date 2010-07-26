@@ -12,21 +12,25 @@ class SingleFoodListing : public Listing<SingleFood, SingleFoodLoadResponse>
 {
   protected:
 
-     virtual int getId
-       (const QSharedPointer<const SingleFood>& singleFood) const
-         { return singleFood->getSingleFoodId(); }
+    virtual bool isValid
+      (const QSharedPointer<const SingleFood>& singleFood) const
+        { return !singleFood.isNull(); }
 
-     virtual QString getName
-       (const QSharedPointer<const SingleFood>& singleFood) const
-         { return singleFood->getName(); }
+    virtual int getId
+      (const QSharedPointer<const SingleFood>& singleFood) const
+        { return singleFood->getSingleFoodId(); }
 
-     virtual void addListingToResponse
-       (SingleFoodLoadResponse& resp, const int& id, const QString& name) const
-         {
-           SingleFoodData* sfdata = resp.add_singlefoods();
-           sfdata->set_id(id);
-           sfdata->set_name(name.toStdString());
-         }
+    virtual QString getName
+      (const QSharedPointer<const SingleFood>& singleFood) const
+        { return singleFood->getName(); }
+
+    virtual void addListingToResponse
+      (SingleFoodLoadResponse& resp, const int& id, const QString& name) const
+    {
+      SingleFoodData* sfdata = resp.add_singlefoods();
+      sfdata->set_id(id);
+      sfdata->set_name(name.toStdString());
+    }
 };
 
 namespace SingleFoodServer
