@@ -29,6 +29,10 @@ class MealListing : public Listing<Meal, MealLoadResponse, int>
 {
   protected:
 
+    virtual bool isValid
+      (const QSharedPointer<const Meal>& meal) const
+        { return !meal.isNull(); }
+
      virtual int getId
        (const QSharedPointer<const Meal>& meal) const
          { return meal->getMealId(); }

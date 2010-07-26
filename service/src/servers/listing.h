@@ -20,16 +20,17 @@ class Listing : public ResponseObjects<QPair<K, QString>, R, K, QPair<K, QString
 
     void addObject(const V& obj);
     void addObject(const K& id, const QString& name);
+    void addObjects(const QList<V>& objs);
     void addObjects(const QMap<K, QString>& objectNames);
     void addObjects(const QMultiMap<QString, K>& objectNames);
 
   protected:
 
-    virtual K getId
-      (const V& obj) const = 0;
+    virtual bool isValid (const V& obj) const = 0;
 
-    virtual QString getName
-      (const V& obj) const = 0;
+    virtual K getId (const V& obj) const = 0;
+
+    virtual QString getName (const V& obj) const = 0;
 
     virtual void addListingToResponse
       (R& resp, const K& id, const QString& name) const = 0;
@@ -47,7 +48,7 @@ class Listing : public ResponseObjects<QPair<K, QString>, R, K, QPair<K, QString
 template<typename T, typename R, typename K, typename V>
 void Listing<T,R,K,V>::addObject(const V& obj)
 {
-  if (obj) addObject(getId(obj), getName(obj));
+  if (isValid(obj)) addObject(getId(obj), getName(obj));
 }
 
 template<typename T, typename R, typename K, typename V>
@@ -55,6 +56,16 @@ void Listing<T,R,K,V>::addObject(const K& id, const QString& name)
 {
   ResponseObjects<QPair<K, QString>, R, K, QPair<K, QString> >::
     addObject(qMakePair(id, name));
+}
+
+template<typename T, typename R, typename K, typename V>
+void Listing<T,R,K,V>::addObjects(const QList<V>& objs)
+{
+  for (typename QList<V>::const_iterator i = objs.begin();
+      i != objs.end(); ++i)
+  {
+    addObject(*i);
+  }
 }
 
 template<typename T, typename R, typename K, typename V>

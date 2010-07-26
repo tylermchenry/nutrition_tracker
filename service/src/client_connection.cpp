@@ -16,6 +16,7 @@
 #include "servers/composite_food_server.h"
 #include "servers/template_server.h"
 #include "servers/meal_server.h"
+#include "servers/search_server.h"
 #include <QByteArray>
 #include <cassert>
 
@@ -178,6 +179,9 @@ void ClientConnection::handleProtocolBuffer
   } else if (name == pbName<UserLoadRequest>()) {
     UserLoadRequest req = parseProtocolBuffer<UserLoadRequest>(data);
     writeMessage(UserServer::loadUsers(req).serialize());
+  } else if (name == pbName<SearchRequest>()) {
+    SearchRequest req = parseProtocolBuffer<SearchRequest>(data);
+    writeMessage(SearchServer::searchFoods(req, loggedInUserId).serialize());
   }
 }
 
