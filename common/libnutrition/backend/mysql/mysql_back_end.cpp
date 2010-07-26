@@ -35,6 +35,13 @@ QMultiMap<QString, QPair<BackEnd::FoodTypes::FoodType, int> >
     loadFoodNamesForUser(userId, BackEnd::FoodTypes::Template, includeExpired);
 }
 
+void MySQLBackEnd::fillReadOnlyCaches()
+{
+  loadAllUnits();
+  loadAllGroups();
+  loadAllNutrients();
+}
+
 QPair<QList<QSharedPointer<Unit> >,
       QList<QSharedPointer<SpecializedUnit> > >
   MySQLBackEnd::loadAllUnitsForFood(int foodId)

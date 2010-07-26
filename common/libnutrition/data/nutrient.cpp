@@ -19,24 +19,19 @@ const QString Nutrient::ALCOHOL_NAME = "Alcohol";
 
 QString (Nutrient::* const Nutrient::cache_get_sort_key)() const = &Nutrient::getName;
 
+QVector<QSharedPointer<const Nutrient> > Nutrient::all;
+QMap<QString, QSharedPointer<const Nutrient> > Nutrient::allByName;
+QMap<Nutrient::Categories::Category, QVector<QSharedPointer<const Nutrient> > >
+  Nutrient::allByCategory;
+
 QSharedPointer<const Nutrient> Nutrient::getNutrientByName(const QString& name)
 {
-  static QMap<QString, QSharedPointer<const Nutrient> > nutrientsByName;
-
-  if (nutrientsByName.empty()) {
-    QVector<QSharedPointer<const Nutrient> > all = getAllNutrients();
-
-    for (QVector<QSharedPointer<const Nutrient> >::const_iterator i = all.begin();
-        i != all.end(); ++i)
-    {
-      if (*i) {
-        nutrientsByName.insert((*i)->getName(), *i);
-      }
-    }
+  if (allByName.empty()) {
+    getAllNutrients();
   }
 
-  if (nutrientsByName.contains(name)) {
-    return nutrientsByName[name];
+  if (allByName.contains(name)) {
+    return allByName[name];
   } else {
     return QSharedPointer<const Nutrient>();
   }
@@ -53,58 +48,47 @@ QSharedPointer<const Nutrient> Nutrient::getNutrient(const QString& id)
 
 QVector<QSharedPointer<const Nutrient> > Nutrient::getAllNutrients()
 {
-  static bool gotAll = false;
-
-  if (gotAll) {
-    static QVector<QSharedPointer<const Nutrient> > all;
-
-    if (all.empty()) {
-      // TODO: Make this method return a QList so this conversion is unnecessary
-      all = DataCache<Nutrient>::getInstance().getAll().toVector();
-    }
-
-    return all;
-  }
-
-  QList<QSharedPointer<Nutrient> > nutrients =
+  if (all.isEmpty()) {
     BackEnd::getBackEnd()->loadAllNutrients();
-
-  gotAll = !nutrients.empty();
-
-  QVector<QSharedPointer<const Nutrient> > nutrientsVec;
-
-  for (QList<QSharedPointer<Nutrient> >::const_iterator i = nutrients.begin();
-       i != nutrients.end(); ++i)
-  {
-    nutrientsVec.push_back(*i);
+    setAllLoaded();
   }
 
-  return nutrientsVec;
+  return all;
 }
 
 QVector<QSharedPointer<const Nutrient> > Nutrient::getAllNutrients
   (Categories::Category category)
 {
-  static QMap<Categories::Category, QVector<QSharedPointer<const Nutrient> > > all;
+  if (allByCategory[category].isEmpty()) {
+    QList<QSharedPointer<Nutrient> > mutable_byCategory =
+      BackEnd::getBackEnd()->loadAllNutrients(category);
 
-  if (!all[category].empty()) {
-    return all[category];
+    for (QList<QSharedPointer<Nutrient> >::const_iterator i = mutable_byCategory.begin();
+         i != mutable_byCategory.end(); ++i)
+    {
+      allByCategory[category].append(*i);
+    }
   }
 
-  QList<QSharedPointer<Nutrient> > nutrients =
-    BackEnd::getBackEnd()->loadAllNutrients(category);
+  return allByCategory[category];
+}
 
-  QVector<QSharedPointer<const Nutrient> > nutrientsVec;
+void Nutrient::setAllLoaded()
+{
+  // TODO: Make this method return a QList so this conversion is unnecessary
+  all = DataCache<Nutrient>::getInstance().getAll().toVector();
 
-  for (QList<QSharedPointer<Nutrient> >::const_iterator i = nutrients.begin();
-       i != nutrients.end(); ++i)
+  allByName.clear();
+  allByCategory.clear();
+
+  for (QVector<QSharedPointer<const Nutrient> >::const_iterator i = all.begin();
+      i != all.end(); ++i)
   {
-    nutrientsVec.push_back(*i);
+    if (*i) {
+      allByName.insert((*i)->getName(), *i);
+      allByCategory[(*i)->getCategory()].append(*i);
+    }
   }
-
-  all[category] = nutrientsVec;
-
-  return nutrientsVec;
 }
 
 Nutrient::Categories::Category Nutrient::Categories::fromHumanReadable(const QString& str)

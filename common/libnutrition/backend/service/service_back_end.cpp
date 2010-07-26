@@ -91,6 +91,29 @@ QMultiMap<QString, QPair<BackEnd::FoodTypes::FoodType, int> >
   return foodNames;
 }
 
+void ServiceBackEnd::fillReadOnlyCaches()
+{
+  // Take advantage of the ability for a single DataLoadRequest to get all
+  // units, nutrients, and groups at once
+
+  DataLoadRequest req;
+  DataLoadResponse resp;
+  LoadedData ldata;
+
+  req.mutable_unitloadrequest()->set_all(true);
+  req.mutable_grouploadrequest()->set_all(true);
+  req.mutable_nutrientloadrequest()->set_all(true);
+
+  setOmissions(req);
+
+  writeMessageAndReadResponse(req, resp);
+  loadResponseData(ldata, resp, true);
+
+  loadedAllUnits = true;
+  loadedAllGroups = true;
+  loadedAllNutrients = true;
+}
+
 QPair<QList<QSharedPointer<Unit> >,
       QList<QSharedPointer<SpecializedUnit> > >
   ServiceBackEnd::loadAllUnitsForFood(int foodId)
@@ -201,7 +224,7 @@ quint32 ServiceBackEnd::readResponseLength()
 }
 
 void ServiceBackEnd::loadResponseData
-  (LoadedData& loadedData, const DataLoadResponse& resp)
+  (LoadedData& loadedData, const DataLoadResponse& resp, bool allReadOnly)
 {
   if (resp.has_error() && resp.error().iserror()) {
     throw std::runtime_error("Service protocol load error: " +
@@ -222,7 +245,7 @@ void ServiceBackEnd::loadResponseData
   // Depend on nothing:
 
   if (resp.has_grouploadresponse()) {
-    loadResponseData(loadedData, resp.grouploadresponse());
+    loadResponseData(loadedData, resp.grouploadresponse(), allReadOnly);
   }
 
   if (resp.has_userloadresponse()) {
@@ -230,7 +253,7 @@ void ServiceBackEnd::loadResponseData
   }
 
   if (resp.has_unitloadresponse()) {
-    loadResponseData(loadedData, resp.unitloadresponse());
+    loadResponseData(loadedData, resp.unitloadresponse(), allReadOnly);
   }
 
   // Depend on Unit:
@@ -240,7 +263,7 @@ void ServiceBackEnd::loadResponseData
   }
 
   if (resp.has_nutrientloadresponse()) {
-    loadResponseData(loadedData, resp.nutrientloadresponse());
+    loadResponseData(loadedData, resp.nutrientloadresponse(), allReadOnly);
   }
 
   // Depend on Nutrient:

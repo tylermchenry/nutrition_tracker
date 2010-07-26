@@ -50,6 +50,10 @@ class GroupImpl : virtual public Group
     virtual inline bool operator== (const Group& rhs) const
       { return (id == rhs.getId()); }
 
+    // Exists only in the impl for the benefit of the back end
+    static void setAllLoaded()
+      { Group::setAllLoaded(); }
+
   private:
 
     QString id;

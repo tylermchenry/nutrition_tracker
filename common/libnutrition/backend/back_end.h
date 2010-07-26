@@ -56,6 +56,8 @@ class BackEnd
       loadFoodNamesForUser
         (int userId, FoodTypes::FoodType type, bool includeExpired = false);
 
+    virtual void fillReadOnlyCaches() = 0;
+
     /** Single Foods **/
 
     virtual QSharedPointer<SingleFood> loadSingleFood(int id) = 0;

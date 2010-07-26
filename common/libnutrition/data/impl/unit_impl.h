@@ -96,6 +96,10 @@ class UnitImpl : virtual public Unit
     virtual inline bool operator==(const Unit& rhs) const
       { return abbreviation == rhs.getAbbreviation(); }
 
+    // This is only in the impl for the benefit of the back end
+    static void setAllLoaded()
+      { Unit::setAllLoaded(); }
+
   protected:
 
     virtual inline double getBasicConversionFactor() const

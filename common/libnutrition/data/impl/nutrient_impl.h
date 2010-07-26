@@ -74,6 +74,10 @@ class NutrientImpl : virtual public Nutrient
 
     virtual NutrientData serialize() const;
 
+    // Only in the impl, for the benefit of the back end
+    static void setAllLoaded()
+      { Nutrient::setAllLoaded(); }
+
   private:
 
     QString id;

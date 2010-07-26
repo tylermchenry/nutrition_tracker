@@ -34,24 +34,8 @@ QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
 QVector<QSharedPointer<const Unit> > Unit::getAllUnits()
 {
   if (all.isEmpty()) {
-
     BackEnd::getBackEnd()->loadAllUnits();
-
-    // TODO: Make this method return a QList so this conversion is unnecessary
-    all = DataCache<Unit>::getInstance().getAll().toVector();
-
-    allByDimension.clear();
-    basicUnits.clear();
-
-    // Pre-fill the allByDimension and basicUnits caches
-    for (QVector<QSharedPointer<const Unit> >::const_iterator i = all.begin();
-         i != all.end(); ++i)
-    {
-      allByDimension[(*i)->getDimension()].append(*i);
-      if ((*i)->getConversionFactor() == 1) {
-        basicUnits[(*i)->getDimension()] = *i;
-      }
-    }
+    setAllLoaded();
   }
 
   return all;
@@ -72,6 +56,25 @@ QVector<QSharedPointer<const Unit> > Unit::getAllUnits(Dimensions::Dimension dim
   }
 
   return allByDimension[dimension];
+}
+
+void Unit::setAllLoaded()
+{
+  // TODO: Make this method return a QList so this conversion is unnecessary
+  all = DataCache<Unit>::getInstance().getAll().toVector();
+
+  allByDimension.clear();
+  basicUnits.clear();
+
+  // Pre-fill the allByDimension and basicUnits caches
+  for (QVector<QSharedPointer<const Unit> >::const_iterator i = all.begin();
+       i != all.end(); ++i)
+  {
+    allByDimension[(*i)->getDimension()].append(*i);
+    if ((*i)->getBasicConversionFactor() == 1) {
+      basicUnits[(*i)->getDimension()] = *i;
+    }
+  }
 }
 
 QSharedPointer<const Unit> Unit::getBasicUnit(Dimensions::Dimension dimension)

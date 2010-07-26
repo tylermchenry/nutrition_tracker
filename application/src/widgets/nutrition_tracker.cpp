@@ -111,15 +111,6 @@ void NutritionTracker::updateBalance()
 
 void NutritionTracker::loadCurrentDayFoodsFromDatabase()
 {
-  static bool primed = false;
-
-  if (!primed) {
-    Nutrient::getAllNutrients();
-    Group::getAllGroups();
-    Unit::getAllUnits();
-    primed = true;
-  }
-
   QVector<QSharedPointer<Meal> > meals = Meal::getMealsForDay
     (User::getLoggedInUser()->getId(), getSelectedDate());
 

@@ -33,6 +33,8 @@ class MySQLBackEnd : public BackEnd
         (int userId, FoodTypes::FoodType type, bool includeExpired = false)
     { return BackEnd::loadFoodNamesForUser(userId, type, includeExpired); }
 
+    virtual void fillReadOnlyCaches();
+
     /** Single Foods **/
 
     virtual QSharedPointer<SingleFood> loadSingleFood(int id);

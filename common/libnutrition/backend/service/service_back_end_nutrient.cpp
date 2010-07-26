@@ -68,7 +68,7 @@ QList<QSharedPointer<Nutrient> > ServiceBackEnd::loadAllNutrients
 }
 
 void ServiceBackEnd::loadResponseData
-  (LoadedData& loadedData, const NutrientLoadResponse& resp)
+  (LoadedData& loadedData, const NutrientLoadResponse& resp, bool all)
 {
   if (resp.has_error() && resp.error().iserror()) {
     throw std::runtime_error("Nutrient load error: " + resp.error().errormessage());
@@ -89,5 +89,9 @@ void ServiceBackEnd::loadResponseData
 
     DataCache<Nutrient>::getInstance().insert(id, nutrient);
     loadedData.nutrients.insert(id, nutrient);
+  }
+
+  if (all) {
+    NutrientImpl::setAllLoaded();
   }
 }

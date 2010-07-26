@@ -85,7 +85,7 @@ QSharedPointer<const Unit> ServiceBackEnd::loadBasicUnit
 }
 
 void ServiceBackEnd::loadResponseData
-  (LoadedData& loadedData, const UnitLoadResponse& resp)
+  (LoadedData& loadedData, const UnitLoadResponse& resp, bool all)
 {
   if (resp.has_error() && resp.error().iserror()) {
     throw std::runtime_error("Unit load error: " + resp.error().errormessage());
@@ -109,5 +109,9 @@ void ServiceBackEnd::loadResponseData
 
     DataCache<Unit>::getInstance().insert(abbr, unit);
     loadedData.units.insert(abbr, unit);
+  }
+
+  if (all) {
+    UnitImpl::setAllLoaded();
   }
 }

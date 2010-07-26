@@ -63,7 +63,13 @@ class Group
 
     virtual bool operator== (const Group& rhs) const = 0;
 
+  protected:
+
+    static void setAllLoaded();
+
   private:
+
+    static QVector<QSharedPointer<const Group> > all;
 
     friend class GroupImpl;
 };

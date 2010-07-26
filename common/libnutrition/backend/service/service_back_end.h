@@ -59,6 +59,8 @@ class ServiceBackEnd : public BackEnd
          (int userId, FoodTypes::FoodType type, bool includeExpired = false)
     { return BackEnd::loadFoodNamesForUser(userId, type, includeExpired); }
 
+    virtual void fillReadOnlyCaches();
+
     /** Single Foods **/
 
     virtual QSharedPointer<SingleFood> loadSingleFood(int id);
@@ -230,16 +232,16 @@ class ServiceBackEnd : public BackEnd
       QMap<QString, QSharedPointer<Group> > groups;
     };
 
-    void loadResponseData(LoadedData& loadedData, const DataLoadResponse& resp);
+    void loadResponseData(LoadedData& loadedData, const DataLoadResponse& resp, bool allReadOnly = false);
     void loadResponseData(LoadedData& loadedData, const SingleFoodLoadResponse& resp);
     void loadResponseData(LoadedData& loadedData, const CompositeFoodLoadResponse& resp);
     void loadResponseData(LoadedData& loadedData, const TemplateLoadResponse& resp);
     void loadResponseData(LoadedData& loadedData, const MealLoadResponse& resp);
     void loadResponseData(LoadedData& loadedData, const UserLoadResponse& resp);
-    void loadResponseData(LoadedData& loadedData, const NutrientLoadResponse& resp);
-    void loadResponseData(LoadedData& loadedData, const UnitLoadResponse& resp);
+    void loadResponseData(LoadedData& loadedData, const NutrientLoadResponse& resp, bool all = false);
+    void loadResponseData(LoadedData& loadedData, const UnitLoadResponse& resp, bool all = false);
     void loadResponseData(LoadedData& loadedData, const SpecializedUnitLoadResponse& resp);
-    void loadResponseData(LoadedData& loadedData, const GroupLoadResponse& resp);
+    void loadResponseData(LoadedData& loadedData, const GroupLoadResponse& resp, bool all = false);
 
     void setComponents
       (const QSharedPointer<FoodCollectionImpl>& collection_impl,

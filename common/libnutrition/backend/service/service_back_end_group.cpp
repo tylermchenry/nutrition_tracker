@@ -46,7 +46,7 @@ QList<QSharedPointer<Group> > ServiceBackEnd::loadAllGroups()
 }
 
 void ServiceBackEnd::loadResponseData
-  (LoadedData& loadedData, const GroupLoadResponse& resp)
+  (LoadedData& loadedData, const GroupLoadResponse& resp, bool all)
 {
   if (resp.has_error() && resp.error().iserror()) {
     throw std::runtime_error("Group load error: " + resp.error().errormessage());
@@ -62,5 +62,9 @@ void ServiceBackEnd::loadResponseData
 
     DataCache<Group>::getInstance().insert(id, group);
     loadedData.groups.insert(id, group);
+  }
+
+  if (all) {
+    GroupImpl::setAllLoaded();
   }
 }

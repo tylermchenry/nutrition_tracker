@@ -125,6 +125,8 @@ class Unit
 
     virtual double getBasicConversionFactor() const = 0;
 
+    static void setAllLoaded();
+
   private:
 
     static QVector<QSharedPointer<const Unit> > all;

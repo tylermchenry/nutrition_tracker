@@ -103,7 +103,15 @@ class Nutrient
 
     virtual NutrientData serialize() const = 0;
 
+  protected:
+
+    static void setAllLoaded();
+
   private:
+
+    static QVector<QSharedPointer<const Nutrient> > all;
+    static QMap<QString, QSharedPointer<const Nutrient> > allByName;
+    static QMap<Categories::Category, QVector<QSharedPointer<const Nutrient> > > allByCategory;
 
     friend class NutrientImpl;
 };

@@ -12,6 +12,7 @@
 #include "dialogs/user_login.h"
 #include "libnutrition/data/single_food.h"
 #include "libnutrition/backend/mysql/mysql_back_end.h"
+#include "libnutrition/backend/service/service_back_end.h"
 #include <QtGui/QInputDialog>
 #include <QtGui/QLabel>
 #include <QtGui/QStatusBar>
@@ -97,6 +98,8 @@ void NutritionTrackerMain::show()
 
   BackEnd::setBackEnd(QSharedPointer<MySQLBackEnd>(new MySQLBackEnd("nutrition_db")));
 
+//  BackEnd::setBackEnd(QSharedPointer<ServiceBackEnd>(new ServiceBackEnd("localhost")));
+
   UserLogin loginPrompt(this);
 
   if (!loginPrompt.tryAutoLogIn()) {
@@ -114,6 +117,8 @@ void NutritionTrackerMain::show()
     User::getLoggedInUser()->getDisplayName() + ".";
 
   statusBar()->addPermanentWidget(new QLabel(statusMessage, statusBar()), 100);
+
+  BackEnd::getBackEnd()->fillReadOnlyCaches();
 
   static_cast<NutritionTracker*>(centralWidget())->initialize();
 }
