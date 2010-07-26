@@ -8,6 +8,7 @@
 
 #include "food_collection.h"
 #include "impl/food_collection_impl.h"
+#include "libnutrition/backend/back_end.h"
 #include "data_cache.h"
 #include "single_food.h"
 #include "composite_food.h"
@@ -39,9 +40,24 @@ QSharedPointer<FoodCollection> FoodCollection::createFoodCollection
 QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
   FoodCollection::getFoodsForUser(int userId)
 {
-  return getFoodsForUser(userId, ContainedTypes::SingleFood) +
-    getFoodsForUser(userId, ContainedTypes::CompositeFood) +
-    getFoodsForUser(userId, ContainedTypes::Template);
+  QMultiMap<QString, QPair<BackEnd::FoodTypes::FoodType, int> > foodNames;
+  QMultiMap<QString, QPair<ContainedTypes::ContainedType, int> > rv_foodNames;
+
+  foodNames = BackEnd::getBackEnd()->loadFoodNamesForUser(userId, true);
+
+  for (QMultiMap<QString, QPair<BackEnd::FoodTypes::FoodType, int> >::const_iterator i =
+       foodNames.begin(); i != foodNames.end(); ++i)
+  {
+    // TODO: Get rid of ContainedType entirely in favor of BackEnd::FoodTypes
+
+    ContainedTypes::ContainedType ctype =
+      ContainedTypes::fromHumanReadable
+        (BackEnd::FoodTypes::toContainedType(i.value().first));
+
+    rv_foodNames.insert(i.key(), qMakePair(ctype, i.value().second));
+  }
+
+  return rv_foodNames;
 }
 
 QMultiMap<QString, QPair<FoodCollection::ContainedTypes::ContainedType, int> >
@@ -80,6 +96,7 @@ FoodCollection::ContainedTypes::ContainedType FoodCollection::ContainedTypes::fr
 
   if (lowerStr == "food")          return ContainedTypes::SingleFood;
   if (lowerStr == "compositefood") return ContainedTypes::CompositeFood;
+  if (lowerStr == "template")      return ContainedTypes::Template;
 
   throw std::range_error("String does not describe a contained type.");
 }
@@ -89,6 +106,7 @@ QString FoodCollection::ContainedTypes::toHumanReadable(ContainedType src)
   switch (src) {
     case SingleFood:    return "Food";
     case CompositeFood: return "CompositeFood";
+    case Template:      return "Template";
     default:     throw std::range_error("ContainedType enumeration out of range.");
   }
 }
