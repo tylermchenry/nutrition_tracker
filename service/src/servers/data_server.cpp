@@ -35,9 +35,49 @@ DataLoadResponse DataLoadResponseObjects::serialize()
     *(resp.mutable_mealloadresponse()) = meal_objects.serialize();
   }
 
-  if (!food_objects.isEmpty())
+  if (!(omissions.single_foods && omissions.composite_foods && omissions.templates) &&
+      !food_objects.isEmpty())
   {
     food_objects.serialize(resp, omissions);
+  }
+
+  if (!omissions.single_foods && !single_food_listing.isEmpty())
+  {
+    SingleFoodLoadResponse sf_resp = single_food_listing.serialize();
+
+    for (int i = 0; i < sf_resp.singlefoods_size(); ++i) {
+      (*resp.mutable_singlefoodloadresponse()->add_singlefoods()) =
+        sf_resp.singlefoods(i);
+    }
+  }
+
+  if (!omissions.composite_foods && !composite_food_listing.isEmpty())
+  {
+    CompositeFoodLoadResponse cf_resp = composite_food_listing.serialize();
+
+    for (int i = 0; i < cf_resp.compositefoods_size(); ++i) {
+      (*resp.mutable_compositefoodloadresponse()->add_compositefoods()) =
+          cf_resp.compositefoods(i);
+    }
+  }
+
+  if (!omissions.templates && !template_listing.isEmpty())
+  {
+    TemplateLoadResponse t_resp = template_listing.serialize();
+
+    for (int i = 0; i < t_resp.templates_size(); ++i) {
+      (*resp.mutable_templateloadresponse()->add_templates()) =
+        t_resp.templates(i);
+    }
+  }
+
+  if (!omissions.meals && !meal_listing.isEmpty())
+  {
+    MealLoadResponse m_resp = meal_listing.serialize();
+
+    for (int i = 0; i < m_resp.meals_size(); ++i) {
+      (*resp.mutable_mealloadresponse()->add_meals()) = m_resp.meals(i);
+    }
   }
 
   return resp;
@@ -292,23 +332,43 @@ namespace DataServer {
     }
 
     if (req.has_mealloadrequest()) {
-      resp_objs.meal_objects = MealServer::loadMeals
-        (req.mealloadrequest(), loggedInUserId);
+      if (req.mealloadrequest().nameandidonly()) {
+        resp_objs.meal_listing = MealServer::loadMealNames
+            (req.mealloadrequest(), loggedInUserId);
+      } else {
+        resp_objs.meal_objects = MealServer::loadMeals
+          (req.mealloadrequest(), loggedInUserId);
+      }
     }
 
     if (req.has_singlefoodloadrequest()) {
-      SingleFoodServer::loadSingleFoods
-        (resp_objs.food_objects, req.singlefoodloadrequest());
+      if (req.singlefoodloadrequest().nameandidonly()) {
+        resp_objs.single_food_listing = SingleFoodServer::loadSingleFoodNames
+          (req.singlefoodloadrequest(), loggedInUserId);
+      } else {
+        SingleFoodServer::loadSingleFoods
+          (resp_objs.food_objects, req.singlefoodloadrequest());
+      }
     }
 
     if (req.has_compositefoodloadrequest()) {
-      CompositeFoodServer::loadCompositeFoods
-        (resp_objs.food_objects, req.compositefoodloadrequest());
+      if (req.compositefoodloadrequest().nameandidonly()) {
+        resp_objs.composite_food_listing = CompositeFoodServer::loadCompositeFoodNames
+          (req.compositefoodloadrequest(), loggedInUserId);
+      } else {
+        CompositeFoodServer::loadCompositeFoods
+          (resp_objs.food_objects, req.compositefoodloadrequest());
+      }
     }
 
     if (req.has_templateloadrequest()) {
-      TemplateServer::loadTemplates
-        (resp_objs.food_objects, req.templateloadrequest());
+      if (req.templateloadrequest().nameandidonly()) {
+        resp_objs.template_listing = TemplateServer::loadTemplateNames
+          (req.templateloadrequest(), loggedInUserId);
+      } else {
+        TemplateServer::loadTemplates
+          (resp_objs.food_objects, req.templateloadrequest());
+      }
     }
 
     return resp_objs;

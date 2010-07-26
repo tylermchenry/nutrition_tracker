@@ -12,9 +12,12 @@ class CompositeFoodListing : public Listing<CompositeFood, CompositeFoodLoadResp
 {
   public:
 
-    explicit CompositeFoodListing(bool includeDatesInName)
+    explicit CompositeFoodListing(bool includeDatesInName = false)
       : includeDatesInName(includeDatesInName)
     {}
+
+    void setIncludeDatesInName(bool includeDatesInName)
+    { this->includeDatesInName = includeDatesInName; }
 
   protected:
 

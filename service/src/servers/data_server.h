@@ -30,11 +30,18 @@ class DataLoadResponseObjects
     FoodLoadResponseObjects food_objects;
     MealLoadResponseObjects meal_objects;
 
+    SingleFoodListing single_food_listing;
+    CompositeFoodListing composite_food_listing;
+    TemplateListing template_listing;
+    MealListing meal_listing;
+
     DataLoadResponse serialize();
 
   private:
 
     Omissions omissions;
+
+    void removeDuplicateListings();
 
     void acquireDependentObjects();
 

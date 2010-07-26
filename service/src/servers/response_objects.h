@@ -21,6 +21,7 @@ class ResponseObjects
     void addObjects(const QVector<QSharedPointer<const T> >& objs);
     void addObjects(const QList<QSharedPointer<const T> >& objs);
 
+    void removeObjects(const QSet<K>& ids);
     void clear();
 
     void replaceObjects(const QList<QSharedPointer<const T> >& objs);
@@ -107,6 +108,16 @@ void ResponseObjects<T,R,K>::addObjects
        i != objs.end(); ++i)
   {
     addObject(*i);
+  }
+}
+
+template <typename T, typename R, typename K>
+void ResponseObjects<T,R,K>::removeObjects(const QSet<K>& ids)
+{
+  objectIds -= ids;
+  for (typename QSet<K>::const_iterator i = ids.begin(); i != ids.end(); ++i)
+  {
+    objects.remove(*i);
   }
 }
 
