@@ -22,6 +22,7 @@
 #ifndef UNIT_H_
 #define UNIT_H_
 
+#include <QMap>
 #include <QString>
 #include <QVector>
 #include <QSharedPointer>
@@ -126,7 +127,9 @@ class Unit
 
   private:
 
-    static bool gotAll;
+    static QVector<QSharedPointer<const Unit> > all;
+    static QMap<Dimensions::Dimension, QVector<QSharedPointer<const Unit> > > allByDimension;
+    static QMap<Dimensions::Dimension, QSharedPointer<const Unit> > basicUnits;
 
     static QSharedPointer<const Unit> getBasicUnit
       (Dimensions::Dimension dimension);

@@ -13,7 +13,9 @@
 
 QString (Unit::* const Unit::cache_get_sort_key)() const = &Unit::getNameAndAbbreviation;
 
-bool Unit::gotAll = false;
+QVector<QSharedPointer<const Unit> > Unit::all;
+QMap<Unit::Dimensions::Dimension, QVector<QSharedPointer<const Unit> > > Unit::allByDimension;
+QMap<Unit::Dimensions::Dimension, QSharedPointer<const Unit> > Unit::basicUnits;
 
 QSharedPointer<const Unit> Unit::getPreferredUnit(Dimensions::Dimension dimension)
 {
@@ -31,83 +33,59 @@ QSharedPointer<const Unit> Unit::getUnit(const QString& abbreviation)
 
 QVector<QSharedPointer<const Unit> > Unit::getAllUnits()
 {
-  if (gotAll) {
-    // TODO: Make this method return a QList so this conversion is unnecessary
-    static QVector<QSharedPointer<const Unit> > all;
+  if (all.isEmpty()) {
 
-    if (all.empty()) {
-      all = DataCache<Unit>::getInstance().getAll().toVector();
-    }
-
-    return all;
-  }
-
-  QList<QSharedPointer<Unit> > units =
     BackEnd::getBackEnd()->loadAllUnits();
 
-  gotAll = !units.empty();
+    // TODO: Make this method return a QList so this conversion is unnecessary
+    all = DataCache<Unit>::getInstance().getAll().toVector();
 
-  QVector<QSharedPointer<const Unit> > unitsVec;
+    allByDimension.clear();
+    basicUnits.clear();
 
-  for (QList<QSharedPointer<Unit> >::const_iterator i = units.begin();
-       i != units.end(); ++i)
-  {
-    unitsVec.push_back(*i);
+    // Pre-fill the allByDimension and basicUnits caches
+    for (QVector<QSharedPointer<const Unit> >::const_iterator i = all.begin();
+         i != all.end(); ++i)
+    {
+      allByDimension[(*i)->getDimension()].append(*i);
+      if ((*i)->getConversionFactor() == 1) {
+        basicUnits[(*i)->getDimension()] = *i;
+      }
+    }
   }
 
-  return unitsVec;
+  return all;
 }
 
 QVector<QSharedPointer<const Unit> > Unit::getAllUnits(Dimensions::Dimension dimension)
 {
-  static QMap<Dimensions::Dimension, QVector<QSharedPointer<const Unit> > > all;
+  if (allByDimension[dimension].empty()) {
 
-  if (!all[dimension].empty()) {
-    return all[dimension];
-  }
-
-  QList<QSharedPointer<const Unit> > units;
-
-  if (!gotAll) {
     QList<QSharedPointer<Unit> > mutable_units =
       BackEnd::getBackEnd()->loadAllUnits(dimension);
+
     for (QList<QSharedPointer<Unit> >::const_iterator i = mutable_units.begin();
          i != mutable_units.end(); ++i)
     {
-      units.append(*i);
+      allByDimension[dimension].push_back(*i);
     }
-    gotAll = true;
-  } else {
-    units = DataCache<Unit>::getInstance().getAll();
   }
 
-  for (QList<QSharedPointer<const Unit> >::const_iterator i = units.begin();
-       i != units.end(); ++i)
-  {
-    all[dimension].push_back(*i);
-  }
-
-  return all[dimension];
+  return allByDimension[dimension];
 }
 
 QSharedPointer<const Unit> Unit::getBasicUnit(Dimensions::Dimension dimension)
 {
-  static QMap<Dimensions::Dimension, QSharedPointer<const Unit> > basicUnits;
-
-  if (basicUnits.contains(dimension)) {
-
-    return basicUnits[dimension];
-
-  } else {
+  if (!basicUnits.contains(dimension)) {
 
     QSharedPointer<const Unit> basicUnit = BackEnd::getBackEnd()->loadBasicUnit(dimension);
 
     if (basicUnit) {
       basicUnits[dimension] = basicUnit;
     }
-
-    return basicUnit;
   }
+
+  return basicUnits[dimension];
 }
 
 const QVector<Unit::Dimensions::Dimension>& Unit::Dimensions::getAllDimensions()
