@@ -31,5 +31,64 @@ namespace UserServer {
     return resp_objs;
   }
 
+  StoredUserListing storeUsers(const UserStoreRequest& req, int loggedInUserId)
+  {
+    StoredUserListing confirmations;
+    bool accessViolation = false;
+
+    for (int i = 0; i < req.users_size(); ++i) {
+      const UserData& userData = req.users(i);
+
+      if (userData.userid() == loggedInUserId) {
+
+        QSharedPointer<User> user = User::getUser(userData.userid());
+
+        if (userData.has_realname()) {
+          user->setRealName(QString::fromStdString(userData.realname()));
+        }
+
+        if (userData.has_password_sha1_hex()) {
+          // TODO: Accept password hashes
+          if (!userData.has_password_plain()) {
+            confirmations.setError("Password for " + user->getUsername() + " "
+                                   "was not changed. Hashed passwords are not "
+                                   "yet supported when storing users.");
+          }
+        }
+
+        if (userData.has_password_plain()) {
+          user->setPassword(QString::fromStdString(userData.password_plain()));
+        }
+
+        if (userData.has_username()) {
+          if (user->getUsername() != QString::fromStdString(userData.username())) {
+            confirmations.setError("Username for " + user->getUsername() + " "
+                                   "was not changed. Changing usernames is not "
+                                   "supported.");
+          }
+        }
+
+        try {
+          user->saveToDatabase();
+          confirmations.addObject(user);
+        } catch (const std::exception& ex) {
+          confirmations.setError("Failed to save changes to user " +
+                                 user->getUsername() + ". Error was: " +
+                                 QString::fromStdString(ex.what()));
+        }
+
+      } else {
+
+        accessViolation = true;
+      }
+    }
+
+    if (accessViolation) {
+      confirmations.setError("Some user data was not stored because it does not "
+                             "correspond to the currently logged in user.");
+    }
+
+    return confirmations;
+  }
 
 }

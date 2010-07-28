@@ -130,45 +130,73 @@ void ClientConnection::handleProtocolBuffer
   (const QString& name, const QByteArray& data)
 {
   if (name == pbName<DataLoadRequest>()) {
+
     DataLoadRequest req = parseProtocolBuffer<DataLoadRequest>(data);
     DataLoadResponseObjects resp_objs = DataServer::loadData(req, loggedInUserId);
     writeMessage(resp_objs.serialize());
+
   } else if (name == pbName<LogInRequest>()) {
+
     LogInRequest req = parseProtocolBuffer<LogInRequest>(data);
     writeMessage(LoginServer::doLogin(req, loggedInUserId));
+
   } else if (name == pbName<NutrientLoadRequest>()) {
+
     NutrientLoadRequest req = parseProtocolBuffer<NutrientLoadRequest>(data);
     writeMessage(NutrientServer::loadNutrients(req).serialize());
+
   } else if (name == pbName<UnitLoadRequest>()) {
+
     UnitLoadRequest req = parseProtocolBuffer<UnitLoadRequest>(data);
     writeMessage(UnitServer::loadUnits(req).serialize());
+
   } else if (name == pbName<SpecializedUnitLoadRequest>()) {
+
     SpecializedUnitLoadRequest req = parseProtocolBuffer<SpecializedUnitLoadRequest>(data);
     writeMessage(SpecializedUnitServer::loadSpecializedUnits(req).serialize());
+
   } else if (name == pbName<GroupLoadRequest>()) {
+
     GroupLoadRequest req = parseProtocolBuffer<GroupLoadRequest>(data);
     writeMessage(GroupServer::loadGroups(req).serialize());
+
   } else if (name == pbName<SingleFoodLoadRequest>()) {
+
     SingleFoodLoadRequest req = parseProtocolBuffer<SingleFoodLoadRequest>(data);
     if (req.nameandidonly()) {
       writeMessage(SingleFoodServer::loadSingleFoodNames(req, loggedInUserId).serialize());
     } else {
       writeMessage(SingleFoodServer::loadSingleFoods(req).serializeSingleFoods());
     }
+
+  } else if (name == pbName<SingleFoodStoreRequest>()) {
+
+    SingleFoodStoreRequest req = parseProtocolBuffer<SingleFoodStoreRequest>(data);
+    writeMessage(SingleFoodServer::storeSingleFoods(req, loggedInUserId).serialize());
+
+  } else if (name == pbName<SingleFoodDeleteRequest>()) {
+
+    SingleFoodDeleteRequest req = parseProtocolBuffer<SingleFoodDeleteRequest>(data);
+    writeMessage(SingleFoodServer::deleteSingleFoods(req, loggedInUserId).serialize());
+
   } else if (name == pbName<CompositeFoodLoadRequest>()) {
+
     CompositeFoodLoadRequest req = parseProtocolBuffer<CompositeFoodLoadRequest>(data);
     if (req.nameandidonly()) {
       writeMessage(CompositeFoodServer::loadCompositeFoodNames(req, loggedInUserId).serialize());
     } else {
       writeMessage(CompositeFoodServer::loadCompositeFoods(req).serializeCompositeFoods());
     }
+
   } else if (name == pbName<TemplateLoadRequest>()) {
+
     TemplateLoadRequest req = parseProtocolBuffer<TemplateLoadRequest>(data);
     if (req.nameandidonly()) {
       writeMessage(TemplateServer::loadTemplateNames(req, loggedInUserId).serialize());
     } else {
       writeMessage(TemplateServer::loadTemplates(req).serializeTemplates());
     }
+
   } else if (name == pbName<MealLoadRequest>()) {
     MealLoadRequest req = parseProtocolBuffer<MealLoadRequest>(data);
     if (req.nameandidonly()) {
@@ -176,12 +204,22 @@ void ClientConnection::handleProtocolBuffer
     } else {
       writeMessage(MealServer::loadMeals(req, loggedInUserId).serialize());
     }
+
   } else if (name == pbName<UserLoadRequest>()) {
+
     UserLoadRequest req = parseProtocolBuffer<UserLoadRequest>(data);
     writeMessage(UserServer::loadUsers(req).serialize());
+
+  } else if (name == pbName<UserStoreRequest>()) {
+
+    UserStoreRequest req = parseProtocolBuffer<UserStoreRequest>(data);
+    writeMessage(UserServer::storeUsers(req, loggedInUserId).serialize());
+
   } else if (name == pbName<SearchRequest>()) {
+
     SearchRequest req = parseProtocolBuffer<SearchRequest>(data);
     writeMessage(SearchServer::searchFoods(req, loggedInUserId).serialize());
+
   }
 }
 

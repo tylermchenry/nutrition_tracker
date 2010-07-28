@@ -8,7 +8,8 @@
 #include <QString>
 #include <QSet>
 
-class SingleFoodListing : public Listing<SingleFood, SingleFoodLoadResponse>
+template <typename R>
+class SingleFoodListingBase : public Listing<SingleFood, R>
 {
   protected:
 
@@ -23,6 +24,11 @@ class SingleFoodListing : public Listing<SingleFood, SingleFoodLoadResponse>
     virtual QString getName
       (const QSharedPointer<const SingleFood>& singleFood) const
         { return singleFood->getName(); }
+};
+
+class SingleFoodListing : public SingleFoodListingBase<SingleFoodLoadResponse>
+{
+  protected:
 
     virtual void addListingToResponse
       (SingleFoodLoadResponse& resp, const int& id, const QString& name) const
@@ -31,6 +37,24 @@ class SingleFoodListing : public Listing<SingleFood, SingleFoodLoadResponse>
       sfdata->set_id(id);
       sfdata->set_name(name.toStdString());
     }
+};
+
+class StoredSingleFoodListing : public SingleFoodListingBase<SingleFoodStoreResponse>
+{
+  protected:
+
+    virtual void addListingToResponse
+      (SingleFoodStoreResponse& resp, const int& id, const QString&) const
+        { resp.add_storedids(id); }
+};
+
+class DeletedSingleFoodListing : public SingleFoodListingBase<SingleFoodDeleteResponse>
+{
+  protected:
+
+    virtual void addListingToResponse
+      (SingleFoodDeleteResponse& resp, const int& id, const QString&) const
+        { resp.add_deletedids(id); }
 };
 
 namespace SingleFoodServer
@@ -42,6 +66,12 @@ namespace SingleFoodServer
 
   SingleFoodListing loadSingleFoodNames
     (const SingleFoodLoadRequest& req, int loggedInUserId);
+
+  StoredSingleFoodListing storeSingleFoods
+    (const SingleFoodStoreRequest& req, int loggedInUserId);
+
+  DeletedSingleFoodListing deleteSingleFoods
+    (const SingleFoodDeleteRequest& req, int loggedInUserId);
 }
 
 #endif /* SINGLE_FOOD_SERVER_H_ */
