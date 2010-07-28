@@ -101,6 +101,16 @@ NutrientAmount SingleFoodImpl::getCaloriesFromNutrientId
   }
 }
 
+double SingleFoodImpl::getCalorieDensityForNutrientId
+  (const QString& nutrId) const
+{
+  if (calorieDensities.contains(nutrId)) {
+    return calorieDensities[nutrId];
+  } else {
+    return 0;
+  }
+}
+
 void SingleFoodImpl::setEntrySource(EntrySources::EntrySource source)
 {
   this->entrySource = source;

@@ -98,6 +98,9 @@ class SingleFoodImpl : public FoodImpl, virtual public SingleFood
     virtual NutrientAmount getCaloriesFromNutrientId
       (const QString& nutrId) const;
 
+    virtual double getCalorieDensityForNutrientId
+      (const QString& nutrId) const;
+
     virtual inline QVector<QSharedPointer<const SpecializedUnit> >
       getAllSpecializedUnits() const
         { return SpecializedUnit::getAllSpecializedUnitsForFoodId(id); }

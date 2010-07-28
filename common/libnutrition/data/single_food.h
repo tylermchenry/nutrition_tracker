@@ -92,6 +92,9 @@ class SingleFood : virtual public Food
 
     virtual QString getRefuseDescription() const = 0;
 
+    virtual double getCalorieDensityForNutrientId
+      (const QString& nutrId) const = 0;
+
     virtual QVector<QSharedPointer<const SpecializedUnit> >
       getAllSpecializedUnits() const = 0;
 
