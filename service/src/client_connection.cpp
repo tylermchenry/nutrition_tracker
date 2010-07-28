@@ -207,29 +207,10 @@ void ClientConnection::writeMessage(const ::google::protobuf::Message& msg)
   tcpSocket->write(typeName.c_str(), typeName.length());
   writeMessageLength(msg.ByteSize());
 
-#ifdef WIN32
-
-  // Because windows has different sorts of descriptors for files and
-  // sockets, SerializeToFileDescriptor does not work on network sockets
-  // under Windows, so we must extract the data and then send it via Qt
-
   QByteArray message(msg.ByteSize(), '\0');
 
   msg.SerializeToArray(message.data(), message.length());
   tcpSocket->write(message.data(), message.length());
-
-#else
-
-  // It is necessary to flush the socket before writing the protobuf itself
-  // because QTcpSocket does its own internal buffering, and when writing
-  // the protobuf, we go around that directly to the descriptor. Without a
-  // flush, this can result in the protobuf being written to the network
-  // ahead of the header information.
-
-  tcpSocket->flush();
-  msg.SerializeToFileDescriptor(getSocketDescriptor());
-
-#endif
 }
 
 template <typename T> QString ClientConnection::pbName()
