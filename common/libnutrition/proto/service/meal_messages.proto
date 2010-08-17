@@ -1,4 +1,5 @@
 import "libnutrition/proto/data/meal.proto";
+import "libnutrition/proto/data/food_component.proto";
 import "libnutrition/proto/service/error.proto";
 
 message MealIdentifier 
@@ -32,6 +33,7 @@ message MealStoreRequest
 message MealStoreResponse
 {
 	repeated MealIdentifier storedIds = 1;
+	repeated ComponentModification componentModifications = 2;
 	optional Error error = 100;
 }
 

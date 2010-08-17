@@ -1,4 +1,5 @@
 import "libnutrition/proto/data/composite_food.proto";
+import "libnutrition/proto/data/food_component.proto";
 import "libnutrition/proto/service/error.proto";
 
 message CompositeFoodLoadRequest 
@@ -25,6 +26,7 @@ message CompositeFoodStoreRequest
 message CompositeFoodStoreResponse
 {
 	repeated int32 storedIds = 1;
+	repeated ComponentModification componentModifications = 2;
 	optional Error error = 100;
 }
 
