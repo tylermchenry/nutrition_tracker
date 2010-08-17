@@ -87,6 +87,9 @@ class Amount
     SA& operator*= (double rhs);
     SA& operator/= (double rhs);
 
+    bool operator== (const Amount<S, SA>& rhs) const;
+    bool operator!= (const Amount<S, SA>& rhs) const;
+
   protected:
 
     Amount(const QSharedPointer<S>& substance =
@@ -258,6 +261,19 @@ SA& Amount<S, SA>::operator/= (double rhs)
   amount = std::max(amount / rhs, 0.0);
 
   return dynamic_cast<SA&>(*this);
+}
+
+template<typename S, typename SA>
+bool Amount<S, SA>::operator== (const Amount<S, SA>& rhs) const
+{
+  return (substance == rhs.substance) && (amount == rhs.amount) &&
+    (unit == rhs.unit);
+}
+
+template<typename S, typename SA>
+bool Amount<S, SA>::operator!= (const Amount<S, SA>& rhs) const
+{
+  return !(*this == rhs);
 }
 
 #endif /* AMOUNT_H_ */
