@@ -92,6 +92,9 @@ class FoodCollection : virtual public Food
 
     virtual void removeComponent(const FoodComponent& component) = 0;
 
+    virtual QList<FoodComponent> changeComponentOrder
+      (const FoodComponent& component, int order) = 0;
+
     virtual void clearComponents() = 0;
 
     virtual QVector<FoodComponent> merge

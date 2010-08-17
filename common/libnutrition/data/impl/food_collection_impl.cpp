@@ -199,6 +199,30 @@ void FoodCollectionImpl::removeComponent(const FoodComponent& component)
   }
 }
 
+QList<FoodComponent> FoodCollectionImpl::changeComponentOrder
+  (const FoodComponent& component, int order)
+{
+  // Slides everything down one, if necessary
+  QList<FoodComponent> reorderedComponents;
+
+  if (hasComponent(component)) {
+
+    components.remove(component.getOrder());
+
+    if (components.contains(order)) {
+      reorderedComponents = changeComponentOrder(components[order], order+1);
+    }
+
+    components[order] =
+      FoodComponent(getCanonicalSharedPointerToCollection(), component.getId(),
+                    component.getFoodAmount(), order);
+
+    reorderedComponents.append(components[order]);
+  }
+
+  return reorderedComponents;
+}
+
 void FoodCollectionImpl::clearComponents()
 {
   for (QMap<int, FoodComponent>::const_iterator i = components.begin(); i != components.end(); ++i)
