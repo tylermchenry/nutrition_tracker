@@ -3,6 +3,7 @@ TARGET = nutritiond
 QT += core \
     sql \
     network
+DEFINES += VERBOSE_DEBUG
 
 # TODO: Avoid specifying both ../ and ../../
 DEPENDPATH += . \
@@ -22,7 +23,8 @@ LIBS += -L../common \
     -lprotobuf
 win32:LIBS += -lpthread \
     -lwsock32
-HEADERS += src/servers/listing.h \
+HEADERS += src/servers/update_components.h \
+    src/servers/listing.h \
     src/servers/response_objects.h \
     src/servers/food_server.h \
     src/servers/omissions.h \
@@ -40,7 +42,8 @@ HEADERS += src/servers/listing.h \
     src/servers/user_server.h \
     src/client_connection.h \
     src/nutrition_server_application.h
-SOURCES += src/servers/food_server.cpp \
+SOURCES += src/servers/update_components.cpp \
+    src/servers/food_server.cpp \
     src/servers/omissions.cpp \
     src/servers/composite_food_server.cpp \
     src/servers/data_server.cpp \
