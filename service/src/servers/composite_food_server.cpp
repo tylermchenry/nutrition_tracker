@@ -1,4 +1,5 @@
 #include "servers/composite_food_server.h"
+#include "servers/update_components.h"
 
 namespace CompositeFoodServer {
 
@@ -76,5 +77,160 @@ namespace CompositeFoodServer {
     }
 
     return listing;
+  }
+
+  StoredCompositeFoodListing storeCompositeFoods
+    (const CompositeFoodStoreRequest& req, int loggedInUserId)
+  {
+    StoredCompositeFoodListing confirmations;
+    bool accessViolation = false;
+    bool idsMissing = false;
+    bool idsInvalid = false;
+
+    for (int i = 0; i < req.compositefoods_size(); ++i) {
+      const CompositeFoodData& foodData = req.compositefoods(i);
+
+      if (foodData.has_id()) {
+        QSharedPointer<CompositeFood> food = CompositeFood::getCompositeFood(foodData.id());
+
+        if (food) {
+
+          if (food->getOwnerId() == loggedInUserId) {
+
+            if (foodData.has_name()) {
+              food->setName(QString::fromStdString(foodData.name()));
+            }
+
+            UpdateComponents::ComponentModifications componentModifications =
+              UpdateComponents::updateComponents(food, foodData.components());
+
+            if (foodData.has_weightamount()) {
+              food->setBaseAmount
+                (foodData.weightamount(),
+                 Unit::getPreferredUnit(Unit::Dimensions::Weight));
+            }
+
+            if (foodData.has_volumeamount()) {
+              food->setBaseAmount
+                (foodData.volumeamount(),
+                 Unit::getPreferredUnit(Unit::Dimensions::Volume));
+            }
+
+            if (foodData.has_quantityamount()) {
+              food->setBaseAmount
+                (foodData.quantityamount(),
+                 Unit::getPreferredUnit(Unit::Dimensions::Quantity));
+            }
+
+            if (foodData.has_servingamount()) {
+              food->setBaseAmount
+                (foodData.servingamount(),
+                 Unit::getPreferredUnit(Unit::Dimensions::Serving));
+            }
+
+            if (foodData.has_creationdate_iso8601()) {
+              food->setCreationDate
+                (QDate::fromString
+                   (QString::fromStdString(foodData.creationdate_iso8601()),
+                    Qt::ISODate));
+            }
+
+            if (foodData.has_expirydate_iso8601()) {
+              food->setExpiryDate
+                (QDate::fromString
+                  (QString::fromStdString(foodData.expirydate_iso8601()),
+                   Qt::ISODate));
+            }
+
+            if (foodData.has_isnonce() && foodData.isnonce() != food->isNonce())
+            {
+              confirmations.setError("Could not change nonce status of food " +
+                                     food->getName() + ". Changing nonce "
+                                     "status is not supported.");
+            }
+
+            try {
+              food->saveToDatabase();
+              confirmations.addObject(food);
+            } catch (const std::exception& ex) {
+              confirmations.setError("Failed to store food " + food->getName() +
+                                     " to database. Error was: " +
+                                     QString::fromStdString(ex.what()));
+            }
+
+          } else {
+            accessViolation = true;
+          }
+        } else {
+          idsInvalid = true;
+        }
+      } else {
+        idsMissing = true;
+      }
+    }
+
+    if (accessViolation) {
+      confirmations.setError("Some food data was not stored because it is not "
+                             "owned by the currently logged in user.");
+    }
+
+    if (idsMissing) {
+      confirmations.setError("Some food data was not stored because the request "
+                             "contained no ID number");
+    }
+
+    if (idsInvalid) {
+      confirmations.setError("Some food data was not stored because the "
+                             "supplied ID numbers were invalid");
+    }
+
+    return confirmations;
+  }
+
+  DeletedCompositeFoodListing deleteCompositeFoods
+    (const CompositeFoodDeleteRequest& req, int loggedInUserId)
+  {
+    DeletedCompositeFoodListing confirmations;
+    bool accessViolation = false;
+    bool idsInvalid = false;
+
+    for (int i = 0; i < req.deleteids_size(); ++i) {
+
+      QSharedPointer<CompositeFood> food = CompositeFood::getCompositeFood(req.deleteids(i));
+
+      if (food) {
+
+        if (food->getOwnerId() == loggedInUserId) {
+
+          try {
+            // TODO: Prevent users from deleting foods that are used by other
+            //        users, or silently make system-owned copies
+            food->deleteFromDatabase();
+            confirmations.addObject(food);
+          } catch (const std::exception& ex) {
+            confirmations.setError("Failed to delete food " + food->getName() +
+                                   " from database. Error was: " +
+                                   QString::fromStdString(ex.what()));
+          }
+
+        } else {
+          accessViolation = true;
+        }
+      } else {
+        idsInvalid = true;
+      }
+    }
+
+    if (accessViolation) {
+      confirmations.setError("Some food data was not deleted because it is not "
+                             "owned by the currently logged in user.");
+    }
+
+    if (idsInvalid) {
+      confirmations.setError("Some food data was not deleted because the "
+                             "supplied ID numbers were invalid");
+    }
+
+    return confirmations;
   }
 }

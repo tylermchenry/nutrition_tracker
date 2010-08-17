@@ -8,17 +8,9 @@
 #include <QString>
 #include <QSet>
 
-class CompositeFoodListing : public Listing<CompositeFood, CompositeFoodLoadResponse>
+template <typename R>
+class CompositeFoodListingBase : public Listing<CompositeFood, R>
 {
-  public:
-
-    explicit CompositeFoodListing(bool includeDatesInName = false)
-      : includeDatesInName(includeDatesInName)
-    {}
-
-    void setIncludeDatesInName(bool includeDatesInName)
-    { this->includeDatesInName = includeDatesInName; }
-
   protected:
 
     virtual bool isValid
@@ -28,6 +20,25 @@ class CompositeFoodListing : public Listing<CompositeFood, CompositeFoodLoadResp
     virtual int getId
       (const QSharedPointer<const CompositeFood>& compositeFood) const
         { return compositeFood->getCompositeFoodId(); }
+
+    virtual QString getName
+      (const QSharedPointer<const CompositeFood>& compositeFood) const
+        { return compositeFood->getName(); }
+};
+
+class CompositeFoodListing
+  : public CompositeFoodListingBase<CompositeFoodLoadResponse>
+{
+  public:
+
+    explicit CompositeFoodListing(bool includeDatesInName = false)
+      : includeDatesInName(includeDatesInName)
+    {}
+
+    void setIncludeDatesInName(bool includeDatesInName)
+      { this->includeDatesInName = includeDatesInName; }
+
+  protected:
 
     virtual QString getName
       (const QSharedPointer<const CompositeFood>& compositeFood) const
@@ -54,6 +65,25 @@ class CompositeFoodListing : public Listing<CompositeFood, CompositeFoodLoadResp
     bool includeDatesInName;
 };
 
+class StoredCompositeFoodListing
+  : public CompositeFoodListingBase<CompositeFoodStoreResponse>
+{
+  protected:
+
+    virtual void addListingToResponse
+      (CompositeFoodStoreResponse& resp, const int& id, const QString&) const
+        { resp.add_storedids(id); }
+};
+
+class DeletedCompositeFoodListing
+  : public CompositeFoodListingBase<CompositeFoodDeleteResponse>
+{
+  protected:
+
+    virtual void addListingToResponse
+      (CompositeFoodDeleteResponse& resp, const int& id, const QString&) const
+        { resp.add_deletedids(id); }
+};
 
 namespace CompositeFoodServer
 {
@@ -64,6 +94,12 @@ namespace CompositeFoodServer
 
   CompositeFoodListing loadCompositeFoodNames
     (const CompositeFoodLoadRequest& req, int loggedInUserId);
+
+  StoredCompositeFoodListing storeCompositeFoods
+    (const CompositeFoodStoreRequest& req, int loggedInUserId);
+
+  DeletedCompositeFoodListing deleteCompositeFoods
+    (const CompositeFoodDeleteRequest& req, int loggedInUserId);
 }
 
 #endif /* COMPOSITE_FOOD_SERVER_H_ */
