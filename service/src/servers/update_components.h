@@ -39,60 +39,25 @@ namespace UpdateComponents {
   ComponentModifications updateComponents
     (const QSharedPointer<FoodCollection>& collection,
      const google::protobuf::RepeatedPtrField<FoodComponentData>& components);
-
-  template <typename R>
-  R& addComponentModificationsToResponse
-    (R& response, int collectionId, const ComponentModifications& modifications)
-  {
-    QSet<int> modifiedIds = modifications.idAssignments.keys().toSet();
-    modifiedIds.unite(modifications.orderChanges.keys().toSet());
-
-    for (QSet<int>::const_iterator i = modifiedIds.begin();
-         i != modifiedIds.end(); ++i)
-    {
-      ::ComponentModification* cmod = response.add_componentmodifications();
-
-      cmod->set_collectionid(collectionId);
-
-      if (modifications.idAssignments.contains(*i)) {
-        cmod->set_oldcomponentid(modifications.idAssignments[*i]);
-      } else {
-        cmod->set_oldcomponentid(*i); // Set anyway for easy client lookup
-      }
-
-      cmod->set_newcomponentid(*i); // Always set this for consistency
-
-      if (modifications.orderChanges.contains(*i)) {
-        cmod->set_oldorder(modifications.orderChanges[*i].first);
-        cmod->set_neworder(modifications.orderChanges[*i].second);
-      }
-    }
-
-    return response;
-  }
 }
 
-template <typename K, typename R>
+template <typename K, typename R, typename CK = K>
 class ComponentModificationListing
 {
   public:
 
     typedef UpdateComponents::ComponentModifications ComponentModifications;
 
-    void addModifications(const K& id, const ComponentModifications& mods)
-    {
-      if (mods.isError()) {
-        respObjs.setError(mods.getErrorMessage());
-      }
+    ComponentModificationListing();
 
-      return respObjs.addObject(qMakePair(id, mods));
-    }
+    void addModifications(const K& id, const ComponentModifications& mods);
 
-    virtual R serialize() const
-       { return respObjs.serialize(); }
+    virtual R serialize() const;
+    virtual R serialize(R& resp) const;
 
-    virtual R serialize(R& resp) const
-       { return respObjs.serialize(resp); }
+  protected:
+
+    virtual void setId(CK& pb_id, const K& id) const = 0;
 
   private:
 
@@ -100,24 +65,180 @@ class ComponentModificationListing
       : public ResponseObjects<QPair<K, ComponentModifications>,
                                 R, K, QPair<K, ComponentModifications> >
       {
+        public:
+
+          CMLResponseObjects(const ComponentModificationListing& listing);
+
         protected:
 
-          virtual bool isValid (const QPair<K, ComponentModifications>&) const
-            { return true; }
+          virtual bool isValid
+            (const QPair<K, ComponentModifications>&) const;
 
-          virtual K getId (const QPair<K, ComponentModifications>& obj) const
-            { return obj.first; }
+          virtual K getId
+            (const QPair<K, ComponentModifications>& obj) const;
 
           virtual ComponentModifications getName
-            (const QPair<K, ComponentModifications>& obj) const
-            { return obj.second; }
+            (const QPair<K, ComponentModifications>& obj) const;
 
           virtual void addObjectToResponse
-            (R& resp, const QPair<K, ComponentModifications>& obj) const
-            { addComponentModificationsToResponse(resp, obj.first, obj.second); }
+            (R& resp, const QPair<K, ComponentModifications>& obj) const;
+
+        private:
+
+          const ComponentModificationListing& listing;
+
+          template <typename T>
+            void addModifications
+              (T* pb_mods, const K& id, const ComponentModifications& mods) const;
+
+          template <typename S, typename T>
+            void setId(S*, T* pb_mods, const K& id) const;
+
+          template <typename S, typename T>
+            void setId(S, T* pb_mods, const K& id) const;
       };
 
     CMLResponseObjects respObjs;
 };
+
+template <typename K, typename R, typename CK>
+ComponentModificationListing<K,R,CK>::ComponentModificationListing()
+  : respObjs(*this)
+{
+}
+
+template <typename K, typename R, typename CK>
+void ComponentModificationListing<K,R,CK>::addModifications
+  (const K& id, const ComponentModifications& mods)
+{
+  if (mods.isError()) {
+    respObjs.setError(mods.getErrorMessage());
+  }
+
+  return respObjs.addObject(qMakePair(id, mods));
+}
+
+template <typename K, typename R, typename CK>
+R ComponentModificationListing<K,R,CK>::serialize() const
+{
+  return respObjs.serialize();
+}
+
+template <typename K, typename R, typename CK>
+R ComponentModificationListing<K,R,CK>::serialize(R& resp) const
+{
+  return respObjs.serialize(resp);
+}
+
+template <typename K, typename R, typename CK>
+ComponentModificationListing<K,R,CK>::CMLResponseObjects::
+  CMLResponseObjects(const ComponentModificationListing& listing)
+    : listing(listing)
+{
+}
+
+template <typename K, typename R, typename CK>
+bool ComponentModificationListing<K,R,CK>::CMLResponseObjects::isValid
+  (const QPair<K, ComponentModifications>&) const
+{
+  return true;
+}
+
+template <typename K, typename R, typename CK>
+K ComponentModificationListing<K,R,CK>::CMLResponseObjects::getId
+  (const QPair<K, ComponentModifications>& obj) const
+{
+  return obj.first;
+}
+
+template <typename K, typename R, typename CK>
+typename ComponentModificationListing<K,R,CK>::ComponentModifications
+ComponentModificationListing<K,R,CK>::CMLResponseObjects::getName
+  (const QPair<K, ComponentModifications>& obj) const
+{
+  return obj.second;
+}
+
+template <typename K, typename R, typename CK>
+void ComponentModificationListing<K,R,CK>::CMLResponseObjects::
+  addObjectToResponse
+    (R& resp, const QPair<K, ComponentModifications>& obj) const
+{
+   addModifications(resp.add_componentmodifications(), obj.first, obj.second);
+}
+
+/**
+ * The following three methods, along with the setId method in the main listing
+ * object, accomplish a crude form of duck-typing. The issue is that the type
+ * of the pb_mods sub-message is distinct between response messages for stores
+ * of different collection-derived types. However, they all have the same
+ * physical structure: one field named collectionid, and another repeated field
+ * named componentmodifications.
+ *
+ * The latter field is always of the type ComponentModification, so this is
+ * easy to handle. The hard part is the collectionid, which is a simple int
+ * for composite foods and templates, but a structure (sub-message) for meals.
+ * Thus, we need a virtual function callback to set this id (the pure-virtual
+ * setId method in the listing class). But moreover, we need to be able to
+ * distinguish between structure ids and integer ids at compile time, because
+ * the syntax and methods names for setting these two types of data in a
+ * protocol buffer are completely different!
+ *
+ * What helps us distinguish is the CK template prameter (for collection key),
+ * which is the protobuffer type that represents the key. If it is a structured
+ * key, it should be a pointer, otherwise it should not be. The
+ * CMLResponseObjects class has an overloaded setId method which takes either a
+ * pointer or not-a-pointer and uses the integral or structured means of setting
+ * the ID depending on which is instantiated.
+ */
+
+template <typename K, typename R, typename CK>
+template <typename T>
+  void ComponentModificationListing<K,R,CK>::CMLResponseObjects::
+    addModifications(T* pb_mods, const K& id, const ComponentModifications& mods) const
+{
+  QSet<int> modifiedIds = mods.idAssignments.keys().toSet();
+  modifiedIds.unite(mods.orderChanges.keys().toSet());
+
+  setId(CK(), pb_mods, id);
+
+  for (QSet<int>::const_iterator i = modifiedIds.begin();
+       i != modifiedIds.end(); ++i)
+  {
+    ::ComponentModification* cmod = pb_mods->add_componentmodifications();
+
+    if (mods.idAssignments.contains(*i)) {
+      cmod->set_oldcomponentid(mods.idAssignments[*i]);
+    } else {
+      cmod->set_oldcomponentid(*i); // Set anyway for easy client lookup
+    }
+
+    cmod->set_newcomponentid(*i); // Always set this for consistency
+
+    if (mods.orderChanges.contains(*i)) {
+      cmod->set_oldorder(mods.orderChanges[*i].first);
+      cmod->set_neworder(mods.orderChanges[*i].second);
+    }
+  }
+}
+
+template <typename K, typename R, typename CK>
+template <typename S, typename T>
+  void ComponentModificationListing<K,R,CK>::CMLResponseObjects::
+  setId(S*, T* pb_mods, const K& id) const
+{
+  listing.setId(*(pb_mods->mutable_collectionid()), id);
+}
+
+
+template <typename K, typename R, typename CK>
+template <typename S, typename T>
+  void ComponentModificationListing<K,R,CK>::CMLResponseObjects::
+  setId(S, T* pb_mods, const K& id) const
+{
+  CK pb_id;
+  listing.setId(pb_id, id);
+  pb_mods->set_collectionid(pb_id);
+}
 
 #endif /* UPDATE_COMPONENTS_H_ */

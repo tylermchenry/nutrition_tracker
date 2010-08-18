@@ -33,7 +33,14 @@ message MealStoreRequest
 message MealStoreResponse
 {
 	repeated MealIdentifier storedIds = 1;
-	repeated ComponentModification componentModifications = 2;
+	
+	message MealComponentModification {
+		optional MealIdentifier collectionId = 1; 
+		repeated ComponentModification componentModifications = 2;
+	}
+	
+	repeated MealComponentModification componentModifications = 2;
+	
 	optional Error error = 100;
 }
 

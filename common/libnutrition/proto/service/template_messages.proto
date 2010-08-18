@@ -24,7 +24,14 @@ message TemplateStoreRequest
 message TemplateStoreResponse
 {
 	repeated int32 storedIds = 1;
-	repeated ComponentModification componentModifications = 2;
+	
+	message TemplateComponentModification {
+		optional int32 collectionId = 1; 
+		repeated ComponentModification componentModifications = 2;
+	}
+	
+	repeated TemplateComponentModification componentModifications = 2;
+	
 	optional Error error = 100;
 }
 

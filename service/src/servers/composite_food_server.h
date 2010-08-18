@@ -89,6 +89,9 @@ class StoredCompositeFoodListing
 
   protected:
 
+    virtual void setId(int& collectionId, const int& id) const
+      { collectionId = id; }
+
     virtual void addListingToResponse
       (CompositeFoodStoreResponse& resp, const int& id, const QString&) const
         { resp.add_storedids(id); }

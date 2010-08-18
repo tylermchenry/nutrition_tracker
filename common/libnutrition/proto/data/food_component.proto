@@ -23,8 +23,6 @@ message FoodComponentData
 
 message ComponentModification
 {
-	optional int32 collectionId = 1;
-
 	optional int32 oldComponentId = 2;
 
 	optional int32 newComponentId = 3;
