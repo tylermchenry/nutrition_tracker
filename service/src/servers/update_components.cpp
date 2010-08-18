@@ -13,9 +13,36 @@
 
 namespace UpdateComponents {
 
+  ComponentModifications::ComponentModifications()
+    : bIsError(false)
+  {
+  }
+
+  void ComponentModifications::setError(const QString& errorMessage)
+  {
+    if (bIsError) {
+      this->errorMessage = "Multiple errors occurred while updating components.";
+    } else {
+      this->errorMessage = errorMessage;
+    }
+
+    bIsError = true;
+  }
+
+  bool ComponentModifications::isError() const
+  {
+    return bIsError;
+  }
+
+  QString ComponentModifications::getErrorMessage() const
+  {
+    return errorMessage;
+  }
+
   QMap<int, FoodComponent> createReceivedComponents
     (const QSharedPointer<FoodCollection>& collection,
-     const google::protobuf::RepeatedPtrField<FoodComponentData>& pb_components)
+     const google::protobuf::RepeatedPtrField<FoodComponentData>& pb_components,
+     QList<QString>& errors)
   {
     QMap<int, FoodComponent> componentsById;
 
@@ -36,7 +63,7 @@ namespace UpdateComponents {
         } else if (type == FoodCollection::ContainedTypes::CompositeFood) {
           food = CompositeFood::getCompositeFood(fcData.foodid());
         } else {
-          // TODO: Report an error in the received data
+          errors.append("A component food type was invalid.");
           continue;
         }
 
@@ -44,7 +71,7 @@ namespace UpdateComponents {
           (QString::fromStdString(fcData.unitabbreviation()));
 
         if (!food || !unit) {
-          // TODO: Report an error in the received data
+          errors.append("A component food or unit ID was invalid.");
           continue;
         }
 
@@ -55,7 +82,7 @@ namespace UpdateComponents {
       }
       else
       {
-        // TODO: Report an error in the received data
+        errors.append("A component had incomplete data.");
       }
     }
 
@@ -80,7 +107,8 @@ namespace UpdateComponents {
   void deleteRemovedComponents
     (const QSharedPointer<FoodCollection>& collection,
      const QList<int> idsToKeep,
-     QMap<int, FoodComponent>& existingComponentsById)
+     QMap<int, FoodComponent>& existingComponentsById,
+     QList<QString>& /* errors */)
   {
     QList<FoodComponent> componentsToRemove;
 
@@ -103,7 +131,8 @@ namespace UpdateComponents {
   QMap<int, int> addNewComponents
     (const QSharedPointer<FoodCollection>& collection,
      const QMap<int, FoodComponent>& receivedComponentsById,
-     QMap<int, FoodComponent>& existingComponentsById)
+     QMap<int, FoodComponent>& existingComponentsById,
+     QList<QString>& errors)
    {
     QMap<int, int> idAssignments;
 
@@ -117,7 +146,7 @@ namespace UpdateComponents {
           idAssignments[i.key()] = component.getId();
           existingComponentsById[component.getId()] = component;
         } else {
-          // TODO: Report an error; this component is new but not temporary!
+          errors.append("A new component had a non-temporary ID.");
         }
       }
     }
@@ -129,7 +158,8 @@ namespace UpdateComponents {
     (const QSharedPointer<FoodCollection>& collection,
      const QMap<int, FoodComponent>& receivedComponentsById,
      const QMap<int, int>& idAssignments,
-     QMap<int, FoodComponent>& existingComponentsById)
+     QMap<int, FoodComponent>& existingComponentsById,
+     QList<QString>& /* errors */)
   {
     for (QMap<int, FoodComponent>::const_iterator i = receivedComponentsById.begin();
          i != receivedComponentsById.end(); ++i)
@@ -164,7 +194,8 @@ namespace UpdateComponents {
   ComponentModifications recordModifications
     (const QMap<int, FoodComponent>& receivedComponentsById,
      const QMap<int, int>& idAssignments,
-     const QMap<int, FoodComponent>& existingComponentsById)
+     const QMap<int, FoodComponent>& existingComponentsById,
+     const QList<QString>& errors)
   {
     ComponentModifications modifications;
 
@@ -191,6 +222,11 @@ namespace UpdateComponents {
       }
     }
 
+    for (QList<QString>::const_iterator i = errors.begin(); i != errors.end(); ++i)
+    {
+      modifications.setError(*i);
+    }
+
     return modifications;
   }
 
@@ -198,23 +234,26 @@ namespace UpdateComponents {
     (const QSharedPointer<FoodCollection>& collection,
      const google::protobuf::RepeatedPtrField<FoodComponentData>& pb_components)
   {
+    QList<QString> errors;
+
     QMap<int, FoodComponent> existingComponentsById =
       getExistingComponents(collection);
 
     const QMap<int, FoodComponent> receivedComponentsById =
-      createReceivedComponents(collection, pb_components);
+      createReceivedComponents(collection, pb_components, errors);
 
     deleteRemovedComponents
-      (collection, receivedComponentsById.keys(), existingComponentsById);
+      (collection, receivedComponentsById.keys(), existingComponentsById, errors);
 
     const QMap<int, int> idAssignments = addNewComponents
-      (collection, receivedComponentsById, existingComponentsById);
+      (collection, receivedComponentsById, existingComponentsById, errors);
 
     updateOrderingAndAmounts
-      (collection, receivedComponentsById, idAssignments, existingComponentsById);
+      (collection, receivedComponentsById, idAssignments,
+       existingComponentsById, errors);
 
     return recordModifications
-      (receivedComponentsById, idAssignments, existingComponentsById);
+      (receivedComponentsById, idAssignments, existingComponentsById, errors);
   }
 }
 

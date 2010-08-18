@@ -101,8 +101,9 @@ namespace CompositeFoodServer {
               food->setName(QString::fromStdString(foodData.name()));
             }
 
-            UpdateComponents::ComponentModifications componentModifications =
-              UpdateComponents::updateComponents(food, foodData.components());
+            confirmations.addModifications
+              (food->getCompositeFoodId(),
+               UpdateComponents::updateComponents(food, foodData.components()));
 
             if (foodData.has_weightamount()) {
               food->setBaseAmount

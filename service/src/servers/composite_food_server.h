@@ -5,6 +5,7 @@
 #include "libnutrition/data/composite_food.h"
 #include "servers/food_server.h"
 #include "servers/listing.h"
+#include "servers/update_components.h"
 #include <QString>
 #include <QSet>
 
@@ -66,8 +67,26 @@ class CompositeFoodListing
 };
 
 class StoredCompositeFoodListing
-  : public CompositeFoodListingBase<CompositeFoodStoreResponse>
+  : public CompositeFoodListingBase<CompositeFoodStoreResponse>,
+    public ComponentModificationListing<int, CompositeFoodStoreResponse>
 {
+  public:
+
+    virtual CompositeFoodStoreResponse serialize() const
+    {
+      CompositeFoodStoreResponse resp;
+      return serialize(resp);
+    }
+
+    virtual CompositeFoodStoreResponse serialize
+      (CompositeFoodStoreResponse& resp) const
+    {
+      CompositeFoodListingBase<CompositeFoodStoreResponse>::serialize(resp);
+      ComponentModificationListing<int, CompositeFoodStoreResponse>::serialize
+        (resp);
+      return resp;
+    }
+
   protected:
 
     virtual void addListingToResponse
