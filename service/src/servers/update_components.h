@@ -41,6 +41,13 @@ namespace UpdateComponents {
      const google::protobuf::RepeatedPtrField<FoodComponentData>& components);
 }
 
+/**
+ * CK is the type of Collection Key, which is they type of the collectionId
+ * field within the componentModifications sub-message of the response type R.
+ * If this is a fundamental type (e.g. int), CK should be that type. If it
+ * is structured sub-message, CK should be a *pointer* to the type of the sub-
+ * message.
+ */
 template <typename K, typename R, typename CK = K>
 class ComponentModificationListing
 {
