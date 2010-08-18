@@ -39,6 +39,7 @@ class ResponseObjects
     QSet<K> getObjectIds() const;
 
     virtual R serialize() const;
+    virtual R serialize(R& resp) const;
 
   protected:
 
@@ -172,7 +173,12 @@ template <typename T, typename R, typename K, typename V>
   R ResponseObjects<T,R,K,V>::serialize() const
 {
   R resp;
+  return serialize(resp);
+}
 
+template <typename T, typename R, typename K, typename V>
+  R ResponseObjects<T,R,K,V>::serialize(R& resp) const
+{
   for (typename QList<V>::const_iterator i = objects.begin();
        i != objects.end(); ++i)
   {
@@ -186,8 +192,13 @@ template <typename T, typename R, typename K, typename V>
   R& ResponseObjects<T,R,K,V>::addErrors(R& resp) const
 {
   if (isError()) {
+    if (resp.has_error() && resp.error().iserror()) {
+      resp.mutable_error()->set_errormessage
+        ("Multiple errors occurred while processing this request.");
+    } else {
+      resp.mutable_error()->set_errormessage(getErrorMessage().toStdString());
+    }
     resp.mutable_error()->set_iserror(true);
-    resp.mutable_error()->set_errormessage(getErrorMessage().toStdString());
   }
 
   return resp;
