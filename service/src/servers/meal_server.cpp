@@ -62,7 +62,7 @@ namespace MealServer {
   MealListing loadMealNames
     (const MealLoadRequest& req, int loggedInUserId)
   {
-    MealListing listing;
+    MealListing listing(false);
 
     if (req.omit()) return listing;
 
@@ -70,7 +70,18 @@ namespace MealServer {
 
     if (req.all()) {
 
-      listing.addObjects(Meal::getAllMealNames(loggedInUserId, !req.omitgenerics()));
+      QMap<int, QString> idMap;
+      QMap<Meal::MealIdTuple, QString> tupleMap;
+
+      idMap = Meal::getAllMealNames(loggedInUserId, !req.omitgenerics());
+
+      for (QMap<int, QString>::const_iterator i = idMap.begin();
+           i != idMap.end(); ++i)
+      {
+        tupleMap[Meal::MealIdTuple(-1, QDate(), i.key())] = i.value();
+      }
+
+      listing.addObjects(tupleMap);
 
     } else {
 
