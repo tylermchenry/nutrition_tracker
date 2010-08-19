@@ -130,10 +130,16 @@ class DeletedMealListing
 namespace MealServer
 {
   MealLoadResponseObjects loadMeals
-    (const MealLoadRequest& req, int loggedInUserId);
+    (const MealLoadRequest& req);
 
   MealListing loadMealNames
-    (const MealLoadRequest& req, int loggedInUserId);
+    (const MealLoadRequest& req);
+
+  StoredMealListing storeMeals
+    (const MealStoreRequest& req);
+
+  DeletedMealListing deleteMeals
+    (const MealDeleteRequest& req);
 }
 
 #endif /* MEAL_SERVER_H_ */
