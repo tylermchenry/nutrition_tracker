@@ -45,6 +45,17 @@ class User
       (const QString& username, const QString& password,
        QString& errorMessage);
 
+    // This function does not validate the user's password. It is simply a
+    // bare assertion that the logged in user should be a particular ID. This
+    // is intended for use by the service backend, and will cause errors to be
+    // returned from the service if it used from the front-end instead of the
+    // proper logInAs function.
+    inline static void setLoggedInUserId(int userId)
+      { loggedInUser = getUser(userId); }
+
+    inline static int getLoggedInUserId()
+      { return loggedInUser ? loggedInUser->getId() : -1; }
+
     inline static QSharedPointer<User> getLoggedInUser()
       { return loggedInUser; }
 
