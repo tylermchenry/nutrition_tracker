@@ -234,7 +234,8 @@ template <typename S, typename T>
   void ComponentModificationListing<K,R,CK>::CMLResponseObjects::
   setId(S*, T* pb_mods, const K& id) const
 {
-  listing.setId(*(pb_mods->mutable_collectionid()), id);
+  CK pb_id = pb_mods->mutable_collectionid();
+  listing.setId(pb_id, id);
 }
 
 
