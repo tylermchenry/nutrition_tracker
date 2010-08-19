@@ -2,7 +2,7 @@
 
 namespace SearchServer
 {
-  SearchResultListing searchFoods(const SearchRequest& req, int loggedInUserId)
+  SearchResultListing searchFoods(const SearchRequest& req)
   {
     BackEnd::SearchRequest be_req;
     SearchResultListing resultListing;
@@ -26,7 +26,7 @@ namespace SearchServer
 
     be_req.maxResults = req.maxresults();
 
-    be_req.userId = loggedInUserId;
+    be_req.userId = User::getLoggedInUserId();
 
     resultListing.addObjects(BackEnd::getBackEnd()->searchFoods(be_req));
 

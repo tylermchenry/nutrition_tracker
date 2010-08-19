@@ -30,7 +30,7 @@ namespace TemplateServer {
   }
 
   TemplateListing loadTemplateNames
-    (const TemplateLoadRequest& req, int loggedInUserId)
+    (const TemplateLoadRequest& req)
   {
     TemplateListing listing;
 
@@ -47,7 +47,7 @@ namespace TemplateServer {
 
     for (int i = 0; i < req.requesteduserids_size(); ++i)
     {
-      if (req.requesteduserids(i) == loggedInUserId) {
+      if (req.requesteduserids(i) == User::getLoggedInUserId()) {
         listing.addObjects(Template::getFoodsForUser(req.requesteduserids(i)));
       } else {
         accessViolation = true;

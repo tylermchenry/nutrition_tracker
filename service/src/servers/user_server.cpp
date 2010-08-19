@@ -31,7 +31,7 @@ namespace UserServer {
     return resp_objs;
   }
 
-  StoredUserListing storeUsers(const UserStoreRequest& req, int loggedInUserId)
+  StoredUserListing storeUsers(const UserStoreRequest& req)
   {
     StoredUserListing confirmations;
     bool accessViolation = false;
@@ -39,7 +39,7 @@ namespace UserServer {
     for (int i = 0; i < req.users_size(); ++i) {
       const UserData& userData = req.users(i);
 
-      if (userData.userid() == loggedInUserId) {
+      if (userData.userid() == User::getLoggedInUserId()) {
 
         QSharedPointer<User> user = User::getUser(userData.userid());
 

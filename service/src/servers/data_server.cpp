@@ -304,7 +304,7 @@ QList<QSharedPointer<const Food> > DataLoadResponseObjects::reverseTopologicalSo
 
 namespace DataServer {
 
-  DataLoadResponseObjects loadData(const DataLoadRequest& req, int loggedInUserId)
+  DataLoadResponseObjects loadData(const DataLoadRequest& req)
   {
     DataLoadResponseObjects resp_objs((Omissions(req)));
 
@@ -334,17 +334,17 @@ namespace DataServer {
     if (req.has_mealloadrequest()) {
       if (req.mealloadrequest().nameandidonly()) {
         resp_objs.meal_listing = MealServer::loadMealNames
-            (req.mealloadrequest(), loggedInUserId);
+            (req.mealloadrequest());
       } else {
         resp_objs.meal_objects = MealServer::loadMeals
-          (req.mealloadrequest(), loggedInUserId);
+          (req.mealloadrequest());
       }
     }
 
     if (req.has_singlefoodloadrequest()) {
       if (req.singlefoodloadrequest().nameandidonly()) {
         resp_objs.single_food_listing = SingleFoodServer::loadSingleFoodNames
-          (req.singlefoodloadrequest(), loggedInUserId);
+          (req.singlefoodloadrequest());
       } else {
         SingleFoodServer::loadSingleFoods
           (resp_objs.food_objects, req.singlefoodloadrequest());
@@ -354,7 +354,7 @@ namespace DataServer {
     if (req.has_compositefoodloadrequest()) {
       if (req.compositefoodloadrequest().nameandidonly()) {
         resp_objs.composite_food_listing = CompositeFoodServer::loadCompositeFoodNames
-          (req.compositefoodloadrequest(), loggedInUserId);
+          (req.compositefoodloadrequest());
       } else {
         CompositeFoodServer::loadCompositeFoods
           (resp_objs.food_objects, req.compositefoodloadrequest());
@@ -364,7 +364,7 @@ namespace DataServer {
     if (req.has_templateloadrequest()) {
       if (req.templateloadrequest().nameandidonly()) {
         resp_objs.template_listing = TemplateServer::loadTemplateNames
-          (req.templateloadrequest(), loggedInUserId);
+          (req.templateloadrequest());
       } else {
         TemplateServer::loadTemplates
           (resp_objs.food_objects, req.templateloadrequest());

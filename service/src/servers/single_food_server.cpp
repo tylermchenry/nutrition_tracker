@@ -30,7 +30,7 @@ namespace SingleFoodServer {
   }
 
   SingleFoodListing loadSingleFoodNames
-    (const SingleFoodLoadRequest& req, int loggedInUserId)
+    (const SingleFoodLoadRequest& req)
   {
     SingleFoodListing listing;
 
@@ -47,7 +47,7 @@ namespace SingleFoodServer {
 
     for (int i = 0; i < req.requesteduserids_size(); ++i)
     {
-      if (req.requesteduserids(i) == loggedInUserId) {
+      if (req.requesteduserids(i) == User::getLoggedInUserId()) {
         listing.addObjects(SingleFood::getFoodsForUser(req.requesteduserids(i)));
       } else {
         accessViolation = true;
@@ -129,7 +129,7 @@ namespace SingleFoodServer {
   }
 
   StoredSingleFoodListing storeSingleFoods
-    (const SingleFoodStoreRequest& req, int loggedInUserId)
+    (const SingleFoodStoreRequest& req)
   {
     StoredSingleFoodListing confirmations;
     bool accessViolation = false;
@@ -142,9 +142,13 @@ namespace SingleFoodServer {
       if (foodData.has_id()) {
         QSharedPointer<SingleFood> food = SingleFood::getSingleFood(foodData.id());
 
+        if (!food) {
+          food = SingleFood::createNewFood();
+        }
+
         if (food) {
 
-          if (food->getOwnerId() == loggedInUserId) {
+          if (food->getOwnerId() == User::getLoggedInUserId()) {
 
             if (foodData.has_name()) {
               food->setName(QString::fromStdString(foodData.name()));
@@ -268,7 +272,7 @@ namespace SingleFoodServer {
   }
 
   DeletedSingleFoodListing deleteSingleFoods
-    (const SingleFoodDeleteRequest& req, int loggedInUserId)
+    (const SingleFoodDeleteRequest& req)
   {
     DeletedSingleFoodListing confirmations;
     bool accessViolation = false;
@@ -280,7 +284,7 @@ namespace SingleFoodServer {
 
       if (food) {
 
-        if (food->getOwnerId() == loggedInUserId) {
+        if (food->getOwnerId() == User::getLoggedInUserId()) {
 
           try {
             // TODO: Prevent users from deleting foods that are used by other

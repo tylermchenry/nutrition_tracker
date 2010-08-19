@@ -1,5 +1,6 @@
 #include "servers/composite_food_server.h"
 #include "servers/update_components.h"
+#include <libnutrition/data/impl/composite_food_impl.h>
 
 namespace CompositeFoodServer {
 
@@ -43,7 +44,7 @@ namespace CompositeFoodServer {
   }
 
   CompositeFoodListing loadCompositeFoodNames
-    (const CompositeFoodLoadRequest& req, int loggedInUserId)
+    (const CompositeFoodLoadRequest& req)
   {
     CompositeFoodListing listing(req.includedatesinname());
 
@@ -64,7 +65,7 @@ namespace CompositeFoodServer {
 
     for (int i = 0; i < req.requesteduserids_size(); ++i)
     {
-      if (req.requesteduserids(i) == loggedInUserId) {
+      if (req.requesteduserids(i) == User::getLoggedInUserId()) {
         listing.addObjects(CompositeFood::getFoodsForUser(req.requesteduserids(i)));
       } else {
         accessViolation = true;
@@ -80,7 +81,7 @@ namespace CompositeFoodServer {
   }
 
   StoredCompositeFoodListing storeCompositeFoods
-    (const CompositeFoodStoreRequest& req, int loggedInUserId)
+    (const CompositeFoodStoreRequest& req)
   {
     StoredCompositeFoodListing confirmations;
     bool accessViolation = false;
@@ -93,9 +94,17 @@ namespace CompositeFoodServer {
       if (foodData.has_id()) {
         QSharedPointer<CompositeFood> food = CompositeFood::getCompositeFood(foodData.id());
 
+        if (!food) {
+          if (foodData.isnonce()) {
+            food = CompositeFood::createNewNonceCompositeFood();
+          } else {
+            food = CompositeFood::createNewCompositeFood();
+          }
+        }
+
         if (food) {
 
-          if (food->getOwnerId() == loggedInUserId) {
+          if (food->getOwnerId() == User::getLoggedInUserId()) {
 
             if (foodData.has_name()) {
               food->setName(QString::fromStdString(foodData.name()));
@@ -189,7 +198,7 @@ namespace CompositeFoodServer {
   }
 
   DeletedCompositeFoodListing deleteCompositeFoods
-    (const CompositeFoodDeleteRequest& req, int loggedInUserId)
+    (const CompositeFoodDeleteRequest& req)
   {
     DeletedCompositeFoodListing confirmations;
     bool accessViolation = false;
@@ -201,7 +210,7 @@ namespace CompositeFoodServer {
 
       if (food) {
 
-        if (food->getOwnerId() == loggedInUserId) {
+        if (food->getOwnerId() == User::getLoggedInUserId()) {
 
           try {
             // TODO: Prevent users from deleting foods that are used by other

@@ -67,7 +67,7 @@ namespace LoginServer {
     } else if (success && user) {
 
       loggedInUserId = user->getId();
-      resp.set_userid(loggedInUserId);
+      resp.set_userid(User::getLoggedInUserId());
       resp.set_username(user->getUsername().toStdString());
       resp.set_realname(user->getRealName().toStdString());
 

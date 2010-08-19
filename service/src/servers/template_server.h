@@ -41,7 +41,7 @@ namespace TemplateServer
     (FoodLoadResponseObjects& resp_objs, const TemplateLoadRequest& req);
 
   TemplateListing loadTemplateNames
-    (const TemplateLoadRequest& req, int loggedInUserId);
+    (const TemplateLoadRequest& req);
 }
 
 #endif /* TEMPLATE_SERVER_H_ */

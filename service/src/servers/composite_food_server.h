@@ -115,13 +115,13 @@ namespace CompositeFoodServer
     (FoodLoadResponseObjects& resp_objs, const CompositeFoodLoadRequest& req);
 
   CompositeFoodListing loadCompositeFoodNames
-    (const CompositeFoodLoadRequest& req, int loggedInUserId);
+    (const CompositeFoodLoadRequest& req);
 
   StoredCompositeFoodListing storeCompositeFoods
-    (const CompositeFoodStoreRequest& req, int loggedInUserId);
+    (const CompositeFoodStoreRequest& req);
 
   DeletedCompositeFoodListing deleteCompositeFoods
-    (const CompositeFoodDeleteRequest& req, int loggedInUserId);
+    (const CompositeFoodDeleteRequest& req);
 }
 
 #endif /* COMPOSITE_FOOD_SERVER_H_ */

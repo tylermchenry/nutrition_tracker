@@ -39,7 +39,7 @@ class SearchResultListing
 
 namespace SearchServer
 {
-  SearchResultListing searchFoods(const SearchRequest& req, int loggedInUserId);
+  SearchResultListing searchFoods(const SearchRequest& req);
 }
 
 #endif /* SEARCH_SERVER_H_ */

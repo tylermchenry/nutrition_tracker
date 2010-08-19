@@ -65,13 +65,13 @@ namespace SingleFoodServer
     (FoodLoadResponseObjects& resp_objs, const SingleFoodLoadRequest& req);
 
   SingleFoodListing loadSingleFoodNames
-    (const SingleFoodLoadRequest& req, int loggedInUserId);
+    (const SingleFoodLoadRequest& req);
 
   StoredSingleFoodListing storeSingleFoods
-    (const SingleFoodStoreRequest& req, int loggedInUserId);
+    (const SingleFoodStoreRequest& req);
 
   DeletedSingleFoodListing deleteSingleFoods
-    (const SingleFoodDeleteRequest& req, int loggedInUserId);
+    (const SingleFoodDeleteRequest& req);
 }
 
 #endif /* SINGLE_FOOD_SERVER_H_ */

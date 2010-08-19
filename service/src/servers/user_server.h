@@ -56,7 +56,7 @@ namespace UserServer
 {
   UserLoadResponseObjects loadUsers(const UserLoadRequest& req);
 
-  StoredUserListing storeUsers(const UserStoreRequest& req, int loggedInUserId);
+  StoredUserListing storeUsers(const UserStoreRequest& req);
 }
 
 #endif /* USER_SERVER_H_ */

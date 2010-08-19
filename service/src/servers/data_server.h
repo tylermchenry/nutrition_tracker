@@ -54,7 +54,7 @@ class DataLoadResponseObjects
 
 namespace DataServer {
 
-  DataLoadResponseObjects loadData(const DataLoadRequest& req, int loggedInUserId);
+  DataLoadResponseObjects loadData(const DataLoadRequest& req);
 
 }
 
