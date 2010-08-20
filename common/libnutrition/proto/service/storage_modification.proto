@@ -1,0 +1,10 @@
+message StorageModification
+{
+	optional int32 oldId = 2;
+
+	optional int32 newId = 3;
+	
+	optional int32 oldOrder = 4;
+	
+	optional int32 newOrder = 5;
+}

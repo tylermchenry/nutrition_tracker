@@ -1,5 +1,5 @@
 import "libnutrition/proto/data/meal.proto";
-import "libnutrition/proto/data/food_component.proto";
+import "libnutrition/proto/service/storage_modification.proto";
 import "libnutrition/proto/service/error.proto";
 
 message MealIdentifier 
@@ -36,7 +36,7 @@ message MealStoreResponse
 	
 	message MealComponentModification {
 		optional MealIdentifier collectionId = 1; 
-		repeated ComponentModification componentModifications = 2;
+		repeated StorageModification componentModifications = 2;
 	}
 	
 	repeated MealComponentModification componentModifications = 2;

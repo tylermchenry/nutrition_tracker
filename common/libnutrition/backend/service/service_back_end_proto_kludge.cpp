@@ -22,6 +22,7 @@
 #include "libnutrition/proto/data/user.pb.h"
 #include "libnutrition/proto/data/data.pb.h"
 #include "libnutrition/proto/service/error.pb.h"
+#include "libnutrition/proto/service/storage_modification.pb.h"
 #include "libnutrition/proto/service/composite_food_messages.pb.h"
 #include "libnutrition/proto/service/group_messages.pb.h"
 #include "libnutrition/proto/service/meal_messages.pb.h"

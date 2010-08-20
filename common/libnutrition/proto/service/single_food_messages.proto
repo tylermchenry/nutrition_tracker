@@ -1,4 +1,5 @@
 import "libnutrition/proto/data/single_food.proto";
+import "libnutrition/proto/service/storage_modification.proto";
 import "libnutrition/proto/service/error.proto";
 
 message SingleFoodLoadRequest 
@@ -23,6 +24,9 @@ message SingleFoodStoreRequest
 message SingleFoodStoreResponse
 {
 	repeated int32 storedIds = 1;
+	
+	repeated StorageModification singleFoodModifications = 2;
+	
 	optional Error error = 100;
 }
 

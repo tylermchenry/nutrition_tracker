@@ -20,14 +20,3 @@ message FoodComponentData
 
 	optional int32 order = 7;	
 }
-
-message ComponentModification
-{
-	optional int32 oldComponentId = 2;
-
-	optional int32 newComponentId = 3;
-	
-	optional int32 oldOrder = 4;
-	
-	optional int32 newOrder = 5;
-}

@@ -44,7 +44,7 @@ HEADERS += libnutrition/backend/service/service_back_end.h \
     libnutrition/data/unit.h \
     libnutrition/data/user.h
 SOURCES += libnutrition/backend/service/service_back_end_proto_kludge.cpp \
-	libnutrition/backend/service/service_back_end_search.cpp \
+    libnutrition/backend/service/service_back_end_search.cpp \
     libnutrition/backend/service/service_back_end_meal.cpp \
     libnutrition/backend/service/service_back_end_template.cpp \
     libnutrition/backend/service/service_back_end_composite_food.cpp \
@@ -98,7 +98,7 @@ RESOURCES +=
 
 # Order is important for the protos, since some depend on each other's generated
 # header files, and qmake is not knowledgeable about this. Error and Component
-# must come first, and Data must come after everything except Login and Search
+# must come first, and Data must come after everything 
 
 DATA_PROTOS += libnutrition/proto/data/food_component.proto \
     libnutrition/proto/data/composite_food.proto \
@@ -127,7 +127,13 @@ probuf_data_impl.commands = $$escape_expand(\n)
 probuf_data_impl.variable_out = GENERATED_SOURCES
 QMAKE_EXTRA_COMPILERS += probuf_data_impl
 
+# Order is important for the protos, since some depend on each other's generated
+# header files, and qmake is not knowledgeable about this. Error, and Storage 
+# Modification must come first, and Data must come after everything except 
+# Login and Search
+
 SERVICE_PROTOS += libnutrition/proto/service/error.proto \
+    libnutrition/proto/service/storage_modification.proto \
     libnutrition/proto/service/composite_food_messages.proto \
     libnutrition/proto/service/group_messages.proto \
     libnutrition/proto/service/meal_messages.proto \

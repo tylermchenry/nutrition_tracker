@@ -1,5 +1,5 @@
 import "libnutrition/proto/data/template.proto";
-import "libnutrition/proto/data/food_component.proto";
+import "libnutrition/proto/service/storage_modification.proto";
 import "libnutrition/proto/service/error.proto";
 
 message TemplateLoadRequest 
@@ -25,12 +25,14 @@ message TemplateStoreResponse
 {
 	repeated int32 storedIds = 1;
 	
+	repeated StorageModification templateModifications = 2;
+	
 	message TemplateComponentModification {
 		optional int32 collectionId = 1; 
-		repeated ComponentModification componentModifications = 2;
+		repeated StorageModification componentModifications = 2;
 	}
 	
-	repeated TemplateComponentModification componentModifications = 2;
+	repeated TemplateComponentModification componentModifications = 3;
 	
 	optional Error error = 100;
 }
