@@ -87,6 +87,9 @@ class FoodCollection : virtual public Food
     virtual QVector<FoodComponent> addComponents
       (const QVector<FoodAmount>& components) = 0;
 
+    // Generally slow; use sparingly
+    virtual FoodComponent getComponent(int componentId) = 0;
+
     virtual FoodComponent changeComponentAmount
       (const FoodComponent& component, const FoodAmount& amount) = 0;
 

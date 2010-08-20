@@ -162,6 +162,23 @@ QVector<FoodComponent> FoodCollectionImpl::addComponents(const QVector<FoodAmoun
   return addedComponents;
 }
 
+FoodComponent FoodCollectionImpl::getComponent(int componentId)
+{
+  if (newIds.contains(componentId)) {
+    return getComponent(newIds[componentId]);
+  } else {
+    for (QMap<int, FoodComponent>::const_iterator i = components.begin();
+         i != components.end(); ++i)
+    {
+      if (i.value().getId() == componentId) {
+        return i.value();
+      }
+    }
+  }
+
+  return FoodComponent();
+}
+
 FoodComponent FoodCollectionImpl::changeComponentAmount(const FoodComponent& component, const FoodAmount& amount)
 {
   if (hasComponent(component)) {

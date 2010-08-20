@@ -89,6 +89,8 @@ class FoodCollectionImpl : public FoodImpl, virtual public FoodCollection
     virtual QVector<FoodComponent> addComponents
       (const QVector<FoodAmount>& components);
 
+    virtual FoodComponent getComponent(int componentId);
+
     virtual FoodComponent changeComponentAmount
       (const FoodComponent& component, const FoodAmount& amount);
 
