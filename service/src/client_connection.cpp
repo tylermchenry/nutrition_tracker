@@ -192,6 +192,16 @@ void ClientConnection::handleProtocolBuffer
       writeMessage(CompositeFoodServer::loadCompositeFoods(req).serializeCompositeFoods());
     }
 
+  } else if (name == pbName<CompositeFoodStoreRequest>()) {
+
+    CompositeFoodStoreRequest req = parseProtocolBuffer<CompositeFoodStoreRequest>(data);
+    writeMessage(CompositeFoodServer::storeCompositeFoods(req).serialize());
+
+  } else if (name == pbName<CompositeFoodDeleteRequest>()) {
+
+    CompositeFoodDeleteRequest req = parseProtocolBuffer<CompositeFoodDeleteRequest>(data);
+    writeMessage(CompositeFoodServer::deleteCompositeFoods(req).serialize());
+
   } else if (name == pbName<TemplateLoadRequest>()) {
 
     TemplateLoadRequest req = parseProtocolBuffer<TemplateLoadRequest>(data);
@@ -201,13 +211,34 @@ void ClientConnection::handleProtocolBuffer
       writeMessage(TemplateServer::loadTemplates(req).serializeTemplates());
     }
 
+  } else if (name == pbName<TemplateStoreRequest>()) {
+
+    TemplateStoreRequest req = parseProtocolBuffer<TemplateStoreRequest>(data);
+    writeMessage(TemplateServer::storeTemplates(req).serialize());
+
+  } else if (name == pbName<TemplateDeleteRequest>()) {
+
+    TemplateDeleteRequest req = parseProtocolBuffer<TemplateDeleteRequest>(data);
+    writeMessage(TemplateServer::deleteTemplates(req).serialize());
+
   } else if (name == pbName<MealLoadRequest>()) {
+
     MealLoadRequest req = parseProtocolBuffer<MealLoadRequest>(data);
     if (req.nameandidonly()) {
       writeMessage(MealServer::loadMealNames(req).serialize());
     } else {
       writeMessage(MealServer::loadMeals(req).serialize());
     }
+
+  } else if (name == pbName<MealStoreRequest>()) {
+
+    MealStoreRequest req = parseProtocolBuffer<MealStoreRequest>(data);
+    writeMessage(MealServer::storeMeals(req).serialize());
+
+  } else if (name == pbName<MealDeleteRequest>()) {
+
+    MealDeleteRequest req = parseProtocolBuffer<MealDeleteRequest>(data);
+    writeMessage(MealServer::deleteMeals(req).serialize());
 
   } else if (name == pbName<UserLoadRequest>()) {
 
