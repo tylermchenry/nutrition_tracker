@@ -186,7 +186,7 @@ void ComponentModificationListing<K,R,CK>::CMLResponseObjects::
  * physical structure: one field named collectionid, and another repeated field
  * named componentmodifications.
  *
- * The latter field is always of the type ComponentModification, so this is
+ * The latter field is always of the type StorageModification, so this is
  * easy to handle. The hard part is the collectionid, which is a simple int
  * for composite foods and templates, but a structure (sub-message) for meals.
  * Thus, we need a virtual function callback to set this id (the pure-virtual
@@ -216,19 +216,19 @@ template <typename T>
   for (QSet<int>::const_iterator i = modifiedIds.begin();
        i != modifiedIds.end(); ++i)
   {
-    ::ComponentModification* cmod = pb_mods->add_componentmodifications();
+    ::StorageModification* smod = pb_mods->add_componentmodifications();
 
     if (mods.idAssignments.contains(*i)) {
-      cmod->set_oldcomponentid(mods.idAssignments[*i]);
+      smod->set_oldid(mods.idAssignments[*i]);
     } else {
-      cmod->set_oldcomponentid(*i); // Set anyway for easy client lookup
+      smod->set_oldid(*i); // Set anyway for easy client lookup
     }
 
-    cmod->set_newcomponentid(*i); // Always set this for consistency
+    smod->set_newid(*i); // Always set this for consistency
 
     if (mods.orderChanges.contains(*i)) {
-      cmod->set_oldorder(mods.orderChanges[*i].first);
-      cmod->set_neworder(mods.orderChanges[*i].second);
+      smod->set_oldorder(mods.orderChanges[*i].first);
+      smod->set_neworder(mods.orderChanges[*i].second);
     }
   }
 }
