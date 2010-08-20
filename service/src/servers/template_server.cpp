@@ -55,10 +55,123 @@ namespace TemplateServer {
     }
 
     if (accessViolation) {
-      listing.setError("Some requested food names were omitted because they "
+      listing.setError("Some requested template names were omitted because they "
                        "belong to another user.");
     }
 
     return listing;
+  }
+
+  StoredTemplateListing storeTemplates
+    (const TemplateStoreRequest& req)
+  {
+    StoredTemplateListing confirmations;
+    bool accessViolation = false;
+    bool idsMissing = false;
+    bool idsInvalid = false;
+
+    for (int i = 0; i < req.templates_size(); ++i) {
+      const TemplateData& templData = req.templates(i);
+
+      if (templData.has_id()) {
+        QSharedPointer<Template> templ = Template::getTemplate(templData.id());
+
+        if (!templ) {
+          templ = Template::createNewTemplate();
+        }
+
+        if (templ) {
+
+          if (templ->getOwnerId() == User::getLoggedInUserId()) {
+
+            if (templData.has_name()) {
+              templ->setName(QString::fromStdString(templData.name()));
+            }
+
+            confirmations.addModifications
+              (templ->getTemplateId(),
+               UpdateComponents::updateComponents(templ, templData.components()));
+
+            try {
+              templ->saveToDatabase();
+              confirmations.addObject(templ);
+            } catch (const std::exception& ex) {
+              confirmations.setError("Failed to store template " + templ->getName() +
+                                     " to database. Error was: " +
+                                     QString::fromStdString(ex.what()));
+            }
+
+          } else {
+            accessViolation = true;
+          }
+        } else {
+          idsInvalid = true;
+        }
+      } else {
+        idsMissing = true;
+      }
+    }
+
+    if (accessViolation) {
+      confirmations.setError("Some template data was not stored because it is not "
+                             "owned by the currently logged in user.");
+    }
+
+    if (idsMissing) {
+      confirmations.setError("Some template data was not stored because the request "
+                             "contained no ID number");
+    }
+
+    if (idsInvalid) {
+      confirmations.setError("Some template data was not stored because the "
+                             "supplied ID numbers were invalid");
+    }
+
+    return confirmations;
+  }
+
+  DeletedTemplateListing deleteTemplates
+    (const TemplateDeleteRequest& req)
+  {
+    DeletedTemplateListing confirmations;
+    bool accessViolation = false;
+    bool idsInvalid = false;
+
+    for (int i = 0; i < req.deleteids_size(); ++i) {
+
+      QSharedPointer<Template> templ = Template::getTemplate(req.deleteids(i));
+
+      if (templ) {
+
+        if (templ->getOwnerId() == User::getLoggedInUserId()) {
+
+          try {
+            templ->deleteFromDatabase();
+            confirmations.addObject(templ);
+          } catch (const std::exception& ex) {
+            confirmations.setError("Failed to delete template " + templ->getName() +
+                                   " from database. Error was: " +
+                                   QString::fromStdString(ex.what()));
+          }
+
+        } else {
+          accessViolation = true;
+        }
+      } else {
+        idsInvalid = true;
+      }
+    }
+
+    if (accessViolation) {
+      confirmations.setError("Some template data was not deleted because it is not "
+                             "owned by the currently logged in user.");
+    }
+
+    if (idsInvalid) {
+      confirmations.setError("Some template data was not deleted because the "
+                             "supplied ID numbers were invalid");
+    }
+
+    return confirmations;
   }
 }

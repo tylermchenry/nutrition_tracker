@@ -5,10 +5,12 @@
 #include "libnutrition/data/template.h"
 #include "servers/food_server.h"
 #include "servers/listing.h"
+#include "servers/update_components.h"
 #include <QString>
 #include <QSet>
 
-class TemplateListing : public Listing<Template, TemplateLoadResponse>
+template <typename R>
+class TemplateListingBase : public Listing<Template, R>
 {
   protected:
 
@@ -23,6 +25,12 @@ class TemplateListing : public Listing<Template, TemplateLoadResponse>
     virtual QString getName
       (const QSharedPointer<const Template>& templ) const
         { return templ->getName(); }
+};
+
+class TemplateListing
+  : public TemplateListingBase<TemplateLoadResponse>
+{
+  protected:
 
     virtual void addListingToResponse
       (TemplateLoadResponse& resp, const int& id, const QString& name) const
@@ -33,6 +41,46 @@ class TemplateListing : public Listing<Template, TemplateLoadResponse>
     }
 };
 
+class StoredTemplateListing
+  : public TemplateListingBase<TemplateStoreResponse>,
+    public ComponentModificationListing<int, TemplateStoreResponse>
+{
+  public:
+
+    virtual TemplateStoreResponse serialize() const
+    {
+      TemplateStoreResponse resp;
+      return serialize(resp);
+    }
+
+    virtual TemplateStoreResponse serialize
+      (TemplateStoreResponse& resp) const
+    {
+      TemplateListingBase<TemplateStoreResponse>::serialize(resp);
+      ComponentModificationListing<int, TemplateStoreResponse>::serialize(resp);
+      return resp;
+    }
+
+  protected:
+
+    virtual void setId(int& collectionId, const int& id) const
+      { collectionId = id; }
+
+    virtual void addListingToResponse
+      (TemplateStoreResponse& resp, const int& id, const QString&) const
+        { resp.add_storedids(id); }
+};
+
+class DeletedTemplateListing
+  : public TemplateListingBase<TemplateDeleteResponse>
+{
+  protected:
+
+    virtual void addListingToResponse
+      (TemplateDeleteResponse& resp, const int& id, const QString&) const
+        { resp.add_deletedids(id); }
+};
+
 namespace TemplateServer
 {
   FoodLoadResponseObjects loadTemplates(const TemplateLoadRequest& req);
@@ -40,8 +88,11 @@ namespace TemplateServer
   FoodLoadResponseObjects& loadTemplates
     (FoodLoadResponseObjects& resp_objs, const TemplateLoadRequest& req);
 
-  TemplateListing loadTemplateNames
-    (const TemplateLoadRequest& req);
+  TemplateListing loadTemplateNames(const TemplateLoadRequest& req);
+
+  StoredTemplateListing storeTemplates(const TemplateStoreRequest& req);
+
+  DeletedTemplateListing deleteTemplates(const TemplateDeleteRequest& req);
 }
 
 #endif /* TEMPLATE_SERVER_H_ */
