@@ -25,7 +25,7 @@ message TemplateStoreResponse
 {
 	repeated int32 storedIds = 1;
 	
-	repeated StorageModification templateModifications = 2;
+	repeated StorageModification modifications = 2;
 	
 	message TemplateComponentModification {
 		optional int32 collectionId = 1; 

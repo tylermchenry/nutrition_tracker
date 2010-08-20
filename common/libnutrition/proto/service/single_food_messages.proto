@@ -25,7 +25,7 @@ message SingleFoodStoreResponse
 {
 	repeated int32 storedIds = 1;
 	
-	repeated StorageModification singleFoodModifications = 2;
+	repeated StorageModification modifications = 2;
 	
 	optional Error error = 100;
 }

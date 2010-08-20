@@ -27,7 +27,7 @@ message CompositeFoodStoreResponse
 {
 	repeated int32 storedIds = 1;
 	
-	repeated StorageModification compositeFoodModifications = 2;
+	repeated StorageModification modifications = 2;
 	
 	message CompositeFoodComponentModification {
 		optional int32 collectionId = 1; 
