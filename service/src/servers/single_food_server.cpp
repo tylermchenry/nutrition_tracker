@@ -234,8 +234,16 @@ namespace SingleFoodServer {
             }
 
             try {
+
               food->saveToDatabase();
+
               confirmations.addObject(food);
+
+              if (foodData.id() != food->getSingleFoodId()) {
+                confirmations.addModification
+                  (foodData.id(), food->getSingleFoodId());
+              }
+
             } catch (const std::exception& ex) {
               confirmations.setError("Failed to store food " + food->getName() +
                                      " to database. Error was: " +

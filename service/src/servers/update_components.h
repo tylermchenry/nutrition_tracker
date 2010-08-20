@@ -61,7 +61,8 @@ class ComponentModificationListing
 
     ComponentModificationListing();
 
-    void addModifications(const K& id, const ComponentModifications& mods);
+    void addComponentModifications
+      (const K& id, const ComponentModifications& mods);
 
     virtual R serialize() const;
     virtual R serialize(R& resp) const;
@@ -119,7 +120,7 @@ ComponentModificationListing<K,R,CK>::ComponentModificationListing()
 }
 
 template <typename K, typename R, typename CK>
-void ComponentModificationListing<K,R,CK>::addModifications
+void ComponentModificationListing<K,R,CK>::addComponentModifications
   (const K& id, const ComponentModifications& mods)
 {
   if (mods.isError()) {

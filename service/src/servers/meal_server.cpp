@@ -126,7 +126,7 @@ namespace MealServer {
             try {
               meal->saveToDatabase();
               confirmations.addObject(meal);
-              confirmations.addModifications
+              confirmations.addComponentModifications
                 (meal->getMealIdTuple(),
                  UpdateComponents::updateComponentModifications(meal, cmods));
             } catch (const std::exception& ex) {

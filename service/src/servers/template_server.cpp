@@ -93,11 +93,20 @@ namespace TemplateServer {
               UpdateComponents::updateComponents(templ, templData.components());
 
             try {
+
               templ->saveToDatabase();
+
               confirmations.addObject(templ);
-              confirmations.addModifications
+
+              confirmations.addComponentModifications
                 (templ->getTemplateId(),
                  UpdateComponents::updateComponentModifications(templ, cmods));
+
+              if (templData.id() != templ->getTemplateId()) {
+                confirmations.addModification
+                  (templData.id(), templ->getTemplateId());
+              }
+
             } catch (const std::exception& ex) {
               confirmations.setError("Failed to store template " + templ->getName() +
                                      " to database. Error was: " +

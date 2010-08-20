@@ -160,11 +160,20 @@ namespace CompositeFoodServer {
             }
 
             try {
+
               food->saveToDatabase();
+
               confirmations.addObject(food);
-              confirmations.addModifications
+
+              confirmations.addComponentModifications
                 (food->getCompositeFoodId(),
                  UpdateComponents::updateComponentModifications(food, cmods));
+
+              if (foodData.id() != food->getCompositeFoodId()) {
+                confirmations.addModification
+                  (foodData.id(), food->getCompositeFoodId());
+              }
+
             } catch (const std::exception& ex) {
               confirmations.setError("Failed to store food " + food->getName() +
                                      " to database. Error was: " +

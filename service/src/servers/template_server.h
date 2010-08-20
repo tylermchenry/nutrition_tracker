@@ -5,6 +5,7 @@
 #include "libnutrition/data/template.h"
 #include "servers/food_server.h"
 #include "servers/listing.h"
+#include "servers/modification_listing.h"
 #include "servers/update_components.h"
 #include <QString>
 #include <QSet>
@@ -43,6 +44,7 @@ class TemplateListing
 
 class StoredTemplateListing
   : public TemplateListingBase<TemplateStoreResponse>,
+    public ModificationListing<Template, TemplateStoreResponse>,
     public ComponentModificationListing<int, TemplateStoreResponse>
 {
   public:
@@ -57,6 +59,7 @@ class StoredTemplateListing
       (TemplateStoreResponse& resp) const
     {
       TemplateListingBase<TemplateStoreResponse>::serialize(resp);
+      ModificationListing<Template, TemplateStoreResponse>::serialize(resp);
       ComponentModificationListing<int, TemplateStoreResponse>::serialize(resp);
       return resp;
     }

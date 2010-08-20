@@ -5,6 +5,7 @@
 #include "libnutrition/data/single_food.h"
 #include "servers/food_server.h"
 #include "servers/listing.h"
+#include "servers/modification_listing.h"
 #include <QString>
 #include <QSet>
 
@@ -39,8 +40,26 @@ class SingleFoodListing : public SingleFoodListingBase<SingleFoodLoadResponse>
     }
 };
 
-class StoredSingleFoodListing : public SingleFoodListingBase<SingleFoodStoreResponse>
+class StoredSingleFoodListing
+  : public SingleFoodListingBase<SingleFoodStoreResponse>,
+    public ModificationListing<SingleFood, SingleFoodStoreResponse>
 {
+  public:
+
+    virtual SingleFoodStoreResponse serialize() const
+    {
+      SingleFoodStoreResponse resp;
+      return serialize(resp);
+    }
+
+    virtual SingleFoodStoreResponse serialize
+      (SingleFoodStoreResponse& resp) const
+    {
+      SingleFoodListingBase<SingleFoodStoreResponse>::serialize(resp);
+      ModificationListing<SingleFood, SingleFoodStoreResponse>::serialize(resp);
+      return resp;
+    }
+
   protected:
 
     virtual void addListingToResponse
