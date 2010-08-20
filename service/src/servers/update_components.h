@@ -39,6 +39,10 @@ namespace UpdateComponents {
   ComponentModifications updateComponents
     (const QSharedPointer<FoodCollection>& collection,
      const google::protobuf::RepeatedPtrField<FoodComponentData>& components);
+
+  ComponentModifications updateComponentModifications
+    (const QSharedPointer<FoodCollection>& collection,
+     const ComponentModifications& cmods);
 }
 
 /**

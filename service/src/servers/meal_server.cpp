@@ -105,6 +105,8 @@ namespace MealServer {
 
       if (mealData.has_userid() && mealData.has_date_iso8601() && mealData.has_mealid()) {
 
+        UpdateComponents::ComponentModifications cmods;
+
         QDate date = QDate::fromString
           (QString::fromStdString(mealData.date_iso8601()), Qt::ISODate);
 
@@ -118,13 +120,15 @@ namespace MealServer {
             // Name is ignored for now
             // TODO: Some way to create/modify meal names
 
-            confirmations.addModifications
-              (meal->getMealIdTuple(),
-               UpdateComponents::updateComponents(meal, mealData.components()));
+            cmods =
+              UpdateComponents::updateComponents(meal, mealData.components());
 
             try {
               meal->saveToDatabase();
               confirmations.addObject(meal);
+              confirmations.addModifications
+                (meal->getMealIdTuple(),
+                 UpdateComponents::updateComponentModifications(meal, cmods));
             } catch (const std::exception& ex) {
               confirmations.setError("Failed to store meal " + meal->getName() +
                                      " to database. Error was: " +

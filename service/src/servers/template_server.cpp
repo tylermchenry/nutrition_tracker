@@ -75,6 +75,7 @@ namespace TemplateServer {
 
       if (templData.has_id()) {
         QSharedPointer<Template> templ = Template::getTemplate(templData.id());
+        UpdateComponents::ComponentModifications cmods;
 
         if (!templ) {
           templ = Template::createNewTemplate();
@@ -88,13 +89,15 @@ namespace TemplateServer {
               templ->setName(QString::fromStdString(templData.name()));
             }
 
-            confirmations.addModifications
-              (templ->getTemplateId(),
-               UpdateComponents::updateComponents(templ, templData.components()));
+            cmods =
+              UpdateComponents::updateComponents(templ, templData.components());
 
             try {
               templ->saveToDatabase();
               confirmations.addObject(templ);
+              confirmations.addModifications
+                (templ->getTemplateId(),
+                 UpdateComponents::updateComponentModifications(templ, cmods));
             } catch (const std::exception& ex) {
               confirmations.setError("Failed to store template " + templ->getName() +
                                      " to database. Error was: " +

@@ -93,6 +93,7 @@ namespace CompositeFoodServer {
 
       if (foodData.has_id()) {
         QSharedPointer<CompositeFood> food = CompositeFood::getCompositeFood(foodData.id());
+        UpdateComponents::ComponentModifications cmods;
 
         if (!food) {
           if (foodData.isnonce()) {
@@ -110,9 +111,8 @@ namespace CompositeFoodServer {
               food->setName(QString::fromStdString(foodData.name()));
             }
 
-            confirmations.addModifications
-              (food->getCompositeFoodId(),
-               UpdateComponents::updateComponents(food, foodData.components()));
+            cmods =
+              UpdateComponents::updateComponents(food, foodData.components());
 
             if (foodData.has_weightamount()) {
               food->setBaseAmount
@@ -162,6 +162,9 @@ namespace CompositeFoodServer {
             try {
               food->saveToDatabase();
               confirmations.addObject(food);
+              confirmations.addModifications
+                (food->getCompositeFoodId(),
+                 UpdateComponents::updateComponentModifications(food, cmods));
             } catch (const std::exception& ex) {
               confirmations.setError("Failed to store food " + food->getName() +
                                      " to database. Error was: " +

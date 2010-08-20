@@ -255,5 +255,36 @@ namespace UpdateComponents {
     return recordModifications
       (receivedComponentsById, idAssignments, existingComponentsById, errors);
   }
+
+  ComponentModifications updateComponentModifications
+    (const QSharedPointer<FoodCollection>& collection,
+     const ComponentModifications& cmods)
+  {
+    ComponentModifications new_cmods;
+
+    if (cmods.isError()) {
+      new_cmods.setError(cmods.getErrorMessage());
+    }
+
+    for (QMap<int, int>::const_iterator i = cmods.idAssignments.begin();
+         i != cmods.idAssignments.end(); ++i)
+    {
+      FoodComponent component = collection->getComponent(i.key());
+      if (component.getContainingCollection() == collection) {
+        new_cmods.idAssignments[component.getId()] = i.value();
+      }
+    }
+
+    for (QMap<int, QPair<int, int> >::const_iterator i = cmods.orderChanges.begin();
+         i != cmods.orderChanges.end(); ++i)
+    {
+      FoodComponent component = collection->getComponent(i.key());
+      if (component.getContainingCollection() == collection) {
+        new_cmods.orderChanges[component.getId()] = i.value();
+      }
+    }
+
+    return new_cmods;
+  }
 }
 
